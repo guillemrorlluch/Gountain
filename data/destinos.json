@@ -1,4 +1,3 @@
-const destinos = [
   {
     "id": "gr11",
     "nombre": "GR11 / Transpirenaica",
@@ -2101,5 +2100,3 @@ const destinos = [
     "resena": "Volcán con lago de cráter; campamentos en el borde."
   }
 ];
-
-export default destinos;
