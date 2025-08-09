@@ -1,0 +1,1854 @@
+[
+  {
+    "id": "gr11",
+    "nombre": "GR11 / Transpirenaica",
+    "coords": [
+      42.63,
+      1.44
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 3000,
+    "dificultad": "Trek",
+    "meses": "Jun–Oct",
+    "temp_aprox": "5–20°C; 0–8°C collados",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX",
+      "Scarpa Zodiac Tech LT GTX",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Vivac regulado",
+    "gas": "Sí",
+    "permisos": "Normas por CCAA",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Clásico Pirineos."
+  },
+  {
+    "id": "carros",
+    "nombre": "Carros de Foc",
+    "coords": [
+      42.6,
+      0.98
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 3000,
+    "dificultad": "Trek técnico",
+    "meses": "Jun–Sep",
+    "temp_aprox": "8–20°C; alto 2–12°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX",
+      "Bestard Teix Lady GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "PN restringido; refugios",
+    "gas": "Restringido",
+    "permisos": "Normas PN",
+    "guia": "No",
+    "coste_estancia": "40–70 €",
+    "resena": "Alta ruta por refugios."
+  },
+  {
+    "id": "perdidos",
+    "nombre": "Alta Ruta de los Perdidos",
+    "coords": [
+      42.67,
+      -0.01
+    ],
+    "pais": "España/Francia",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 3355,
+    "dificultad": "PD",
+    "meses": "Jul–Sep",
+    "temp_aprox": "5–18°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX",
+      "Scarpa Ribelle Lite HD"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "crampones (temprano)"
+    ],
+    "vivac": "Vivac nocturno limitado",
+    "gas": "Restringido",
+    "permisos": "Normas PN",
+    "guia": "No",
+    "coste_estancia": "45–75 €",
+    "resena": "Etapas técnicas y paisajes top."
+  },
+  {
+    "id": "aneto",
+    "nombre": "Aneto",
+    "coords": [
+      42.63,
+      0.65
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 3404,
+    "dificultad": "PD",
+    "meses": "Jul–Sep",
+    "temp_aprox": "0–10°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "crampones",
+      "piolet (temprano)"
+    ],
+    "vivac": "Sí en altura",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Paso de Mahoma."
+  },
+  {
+    "id": "posets",
+    "nombre": "Posets",
+    "coords": [
+      42.65,
+      0.45
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Pico/Travesía",
+    "altitud_m": 3375,
+    "dificultad": "F/PD",
+    "meses": "Jun–Oct",
+    "temp_aprox": "5–15°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "casco (opcional)"
+    ],
+    "vivac": "Parque Natural",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Crestas y bloques."
+  },
+  {
+    "id": "perdiguero",
+    "nombre": "Perdiguero",
+    "coords": [
+      42.7,
+      0.54
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 3222,
+    "dificultad": "PD-",
+    "meses": "Jun–Oct",
+    "temp_aprox": "5–12°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Sí en altura",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Cresta final panorámica."
+  },
+  {
+    "id": "picos-europa",
+    "nombre": "Picos de Europa (Anillo)",
+    "coords": [
+      43.17,
+      -4.82
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 2648,
+    "dificultad": "Trek técnico",
+    "meses": "Jun–Sep",
+    "temp_aprox": "8–22°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX",
+      "Scarpa Zodiac Tech LT GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Regulado; refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "40–70 €",
+    "resena": "Terreno kárstico y aéreo."
+  },
+  {
+    "id": "vignemale",
+    "nombre": "Vignemale",
+    "coords": [
+      42.77,
+      -0.13
+    ],
+    "pais": "Francia/España",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 3298,
+    "dificultad": "PD (glaciar)",
+    "meses": "Jul–Sep",
+    "temp_aprox": "0–10°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": true
+    },
+    "equipo": [
+      "crampones",
+      "piolet",
+      "arnes"
+    ],
+    "vivac": "Sí",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Glaciar + roca final."
+  },
+  {
+    "id": "hrp",
+    "nombre": "HRP Alta Ruta Pirenaica",
+    "coords": [
+      42.7,
+      0.2
+    ],
+    "pais": "Francia/España",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 3000,
+    "dificultad": "Trek duro",
+    "meses": "Jul–Sep",
+    "temp_aprox": "0–20°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Frecuente",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Más alta y salvaje."
+  },
+  {
+    "id": "aragon-3000",
+    "nombre": "Aragón +3000 (Infiernos, Garmo)",
+    "coords": [
+      42.77,
+      -0.25
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Pico/Travesía",
+    "altitud_m": 3080,
+    "dificultad": "PD-",
+    "meses": "Jun–Oct",
+    "temp_aprox": "2–15°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Sí",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Varios tresmiles cercanos."
+  },
+  {
+    "id": "mulleres",
+    "nombre": "Mulleres",
+    "coords": [
+      42.67,
+      0.77
+    ],
+    "pais": "España",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 3010,
+    "dificultad": "PD-",
+    "meses": "Jun–Oct",
+    "temp_aprox": "3–14°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Sí",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–60 €",
+    "resena": "Cresta amable."
+  },
+  {
+    "id": "tmb",
+    "nombre": "Tour du Mont Blanc",
+    "coords": [
+      45.83,
+      6.86
+    ],
+    "pais": "FR/IT/CH",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 2665,
+    "dificultad": "Trek",
+    "meses": "Jun–Sep",
+    "temp_aprox": "5–20°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campings/refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "40–80 €",
+    "resena": "Clásico alpino."
+  },
+  {
+    "id": "haute",
+    "nombre": "Haute Route Cham–Zermatt",
+    "coords": [
+      46.02,
+      7.54
+    ],
+    "pais": "FR/CH",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 3000,
+    "dificultad": "PD–AD",
+    "meses": "Jul–Sep",
+    "temp_aprox": "0–12°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": true
+    },
+    "equipo": [
+      "crampones",
+      "piolet",
+      "arnes"
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "Recomendable",
+    "coste_estancia": "55–90 €",
+    "resena": "Glaciares y collados altos."
+  },
+  {
+    "id": "alta-via-2",
+    "nombre": "Alta Via 2",
+    "coords": [
+      46.48,
+      11.86
+    ],
+    "pais": "Italia",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 3000,
+    "dificultad": "Trek técnico",
+    "meses": "Jun–Sep",
+    "temp_aprox": "5–18°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX",
+      "Bestard Teix Lady GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II/ferratas",
+      "arnes": true
+    },
+    "equipo": [
+      "casco",
+      "set ferrata (variantes)"
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "40–80 €",
+    "resena": "Dolomitas salvajes."
+  },
+  {
+    "id": "matterhorn",
+    "nombre": "Matterhorn (Hörnli)",
+    "coords": [
+      45.9763,
+      7.6586
+    ],
+    "pais": "CH/IT",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 4478,
+    "dificultad": "AD",
+    "meses": "Jul–Sep",
+    "temp_aprox": "-10–0°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "Nepal (doble bota técnica de alta montaña)"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "III",
+      "arnes": true
+    },
+    "equipo": [
+      "crampones",
+      "arnes",
+      "casco",
+      "cuerda"
+    ],
+    "vivac": "No",
+    "gas": "En refugio",
+    "permisos": "No",
+    "guia": "Muy recomendable",
+    "coste_estancia": "70–140 €",
+    "resena": "Ruta clásica muy aérea."
+  },
+  {
+    "id": "montblanc",
+    "nombre": "Mont Blanc",
+    "coords": [
+      45.8326,
+      6.8652
+    ],
+    "pais": "FR/IT",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 4809,
+    "dificultad": "AD-",
+    "meses": "Jul–Ago",
+    "temp_aprox": "-10–0°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "La Sportiva Nepal Cube GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "II",
+      "arnes": true
+    },
+    "equipo": [
+      "crampones",
+      "piolet",
+      "arnes",
+      "casco"
+    ],
+    "vivac": "Muy restringido",
+    "gas": "Zonas designadas",
+    "permisos": "No",
+    "guia": "Recomendable",
+    "coste_estancia": "60–95 €",
+    "resena": "Glaciares y aristas."
+  },
+  {
+    "id": "gran-paradiso",
+    "nombre": "Gran Paradiso",
+    "coords": [
+      45.533,
+      7.267
+    ],
+    "pais": "Italia",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 4061,
+    "dificultad": "PD",
+    "meses": "Jun–Sep",
+    "temp_aprox": "-6–6°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Ribelle Lite HD"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "II corto",
+      "arnes": true
+    },
+    "equipo": [
+      "crampones",
+      "piolet ligero",
+      "arnes"
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "50–80 €",
+    "resena": "4000 accesible."
+  },
+  {
+    "id": "monterosa",
+    "nombre": "Monte Rosa (Dufour)",
+    "coords": [
+      45.936,
+      7.867
+    ],
+    "pais": "CH/IT",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 4634,
+    "dificultad": "AD-",
+    "meses": "Jul–Sep",
+    "temp_aprox": "-12–-2°C",
+    "botas": [
+      "La Sportiva Nepal Cube GTX",
+      "Nepal (doble bota técnica de alta montaña)"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "II hielo",
+      "arnes": true
+    },
+    "equipo": [
+      "crampones",
+      "piolet",
+      "arnes",
+      "cuerda"
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "Recomendable",
+    "coste_estancia": "60–100 €",
+    "resena": "Alta montaña glacial."
+  },
+  {
+    "id": "zugspitze",
+    "nombre": "Zugspitze (Höllental)",
+    "coords": [
+      47.421,
+      10.985
+    ],
+    "pais": "Alemania",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 2962,
+    "dificultad": "PD-",
+    "meses": "Jun–Sep",
+    "temp_aprox": "0–10°C",
+    "botas": [
+      "Scarpa Zodiac Tech LT GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "Ferrata/C",
+      "arnes": true
+    },
+    "equipo": [
+      "set ferrata",
+      "casco"
+    ],
+    "vivac": "Restringido",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "30–80 €",
+    "resena": "Glaciar + ferrata."
+  },
+  {
+    "id": "adlerweg",
+    "nombre": "Adlerweg (Tirol)",
+    "coords": [
+      47.27,
+      11.39
+    ],
+    "pais": "Austria",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 3000,
+    "dificultad": "Trek técnico",
+    "meses": "Jun–Sep",
+    "temp_aprox": "5–18°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX",
+      "Scarpa Zodiac Tech LT GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Refugios AV",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "40–70 €",
+    "resena": "Etapas variadas."
+  },
+  {
+    "id": "triglav",
+    "nombre": "Triglav",
+    "coords": [
+      46.38,
+      13.84
+    ],
+    "pais": "Eslovenia",
+    "continente": "Europa",
+    "tipo": "Pico/Travesía",
+    "altitud_m": 2864,
+    "dificultad": "PD-",
+    "meses": "Jun–Sep",
+    "temp_aprox": "0–12°C",
+    "botas": [
+      "Scarpa Zodiac Tech LT GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "Ferrata B–C",
+      "arnes": true
+    },
+    "equipo": [
+      "set ferrata",
+      "casco"
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "30–60 €",
+    "resena": "Cumbre emblema."
+  },
+  {
+    "id": "ben-nevis",
+    "nombre": "Ben Nevis (CMD Arête)",
+    "coords": [
+      56.8,
+      -5.0
+    ],
+    "pais": "Reino Unido",
+    "continente": "Europa",
+    "tipo": "Pico",
+    "altitud_m": 1345,
+    "dificultad": "PD- inv.",
+    "meses": "May–Sep",
+    "temp_aprox": "2–12°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Permitido",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0–30 €",
+    "resena": "Arista estética; clima cambiante."
+  },
+  {
+    "id": "cuillin",
+    "nombre": "Cuillin Ridge",
+    "coords": [
+      57.2,
+      -6.23
+    ],
+    "pais": "Reino Unido",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 992,
+    "dificultad": "AD roca",
+    "meses": "May–Sep",
+    "temp_aprox": "5–15°C",
+    "botas": [
+      "Scarpa Zodiac Tech LT GTX",
+      "Scarpa Ribelle Lite HD"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "III",
+      "arnes": true
+    },
+    "equipo": [
+      "arnes",
+      "casco",
+      "cuerda ligera"
+    ],
+    "vivac": "Sí",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "Recomendable",
+    "coste_estancia": "0–20 €",
+    "resena": "Arista técnica larga."
+  },
+  {
+    "id": "sarek",
+    "nombre": "Sarek Traverse",
+    "coords": [
+      67.35,
+      17.43
+    ],
+    "pais": "Suecia",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 2100,
+    "dificultad": "Trek salvaje",
+    "meses": "Jul–Sep",
+    "temp_aprox": "0–15°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Libre LNT",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "0 €",
+    "resena": "Navegación sin senderos."
+  },
+  {
+    "id": "toubkal",
+    "nombre": "Toubkal",
+    "coords": [
+      31.06,
+      -7.92
+    ],
+    "pais": "Marruecos",
+    "continente": "África",
+    "tipo": "Pico",
+    "altitud_m": 4167,
+    "dificultad": "F/PD inv.",
+    "meses": "Abr–Oct",
+    "temp_aprox": "-6–8°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "crampones inv."
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No (inv. útil)",
+    "coste_estancia": "20–45 €",
+    "resena": "Clásico Atlas."
+  },
+  {
+    "id": "teide",
+    "nombre": "Teide",
+    "coords": [
+      28.27,
+      -16.64
+    ],
+    "pais": "España (Canarias)",
+    "continente": "África",
+    "tipo": "Pico",
+    "altitud_m": 3715,
+    "dificultad": "F",
+    "meses": "Todo el año",
+    "temp_aprox": "5–18°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "No en PN",
+    "gas": "No",
+    "permisos": "Permiso cima",
+    "guia": "No",
+    "coste_estancia": "0–30 €",
+    "resena": "Volcán panorámico."
+  },
+  {
+    "id": "kilimanjaro",
+    "nombre": "Kilimanjaro",
+    "coords": [
+      -3.07,
+      37.35
+    ],
+    "pais": "Tanzania",
+    "continente": "África",
+    "tipo": "Pico",
+    "altitud_m": 5895,
+    "dificultad": "F",
+    "meses": "Jun–Oct/Dec–Mar",
+    "temp_aprox": "-10–10°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campamentos",
+    "gas": "Sí",
+    "permisos": "Sí (parque)",
+    "guia": "Obligatorio",
+    "coste_estancia": "Alto",
+    "resena": "Aclimatación clave."
+  },
+  {
+    "id": "rwenzori",
+    "nombre": "Rwenzori Margherita",
+    "coords": [
+      0.39,
+      29.88
+    ],
+    "pais": "Uganda/DRC",
+    "continente": "África",
+    "tipo": "Pico",
+    "altitud_m": 5109,
+    "dificultad": "AD-",
+    "meses": "Dec–Mar/Jun–Sep",
+    "temp_aprox": "-10–0°C",
+    "botas": [
+      "La Sportiva Nepal Cube GTX",
+      "Nepal (doble bota técnica de alta montaña)"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "II hielo",
+      "arnes": true
+    },
+    "equipo": [
+      "glaciar completo"
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "Sí",
+    "guia": "Obligatorio",
+    "coste_estancia": "Medio",
+    "resena": "Montaña ecuatorial glacial."
+  },
+  {
+    "id": "siroua",
+    "nombre": "Jebel Siroua",
+    "coords": [
+      30.66,
+      -7.43
+    ],
+    "pais": "Marruecos",
+    "continente": "África",
+    "tipo": "Travesía",
+    "altitud_m": 3304,
+    "dificultad": "Trek",
+    "meses": "Abr–Oct",
+    "temp_aprox": "0–20°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Tiendas/aldeas",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "Bajo",
+    "resena": "Volcánico y pastoral."
+  },
+  {
+    "id": "makay",
+    "nombre": "Makay (Madagascar)",
+    "coords": [
+      -21.33,
+      45.15
+    ],
+    "pais": "Madagascar",
+    "continente": "África",
+    "tipo": "Travesía",
+    "altitud_m": 1300,
+    "dificultad": "Trek técnico",
+    "meses": "May–Oct",
+    "temp_aprox": "15–30°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Zodiac Tech LT GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campamentos",
+    "gas": "Sí",
+    "permisos": "Sí",
+    "guia": "Recomendable",
+    "coste_estancia": "10–30 €",
+    "resena": "Cañones y mesetas."
+  },
+  {
+    "id": "roraima",
+    "nombre": "Monte Roraima",
+    "coords": [
+      5.14,
+      -60.76
+    ],
+    "pais": "VEN/BRA/GUY",
+    "continente": "América del Sur",
+    "tipo": "Travesía",
+    "altitud_m": 2810,
+    "dificultad": "Trek",
+    "meses": "Dic–Abr",
+    "temp_aprox": "10–25°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campamentos oficiales",
+    "gas": "Sí",
+    "permisos": "Sí (acceso)",
+    "guia": "Obligatorio",
+    "coste_estancia": "Bajo",
+    "resena": "Tepuy icónico."
+  },
+  {
+    "id": "huayhuash",
+    "nombre": "Huayhuash Trek",
+    "coords": [
+      -10.27,
+      -76.88
+    ],
+    "pais": "Perú",
+    "continente": "América del Sur",
+    "tipo": "Travesía",
+    "altitud_m": 5000,
+    "dificultad": "Trek alto",
+    "meses": "May–Sep",
+    "temp_aprox": "-8–12°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campamentos",
+    "gas": "Sí",
+    "permisos": "Sí (comunidades)",
+    "guia": "No",
+    "coste_estancia": "Bajo/medio",
+    "resena": "Cordillera espectacular."
+  },
+  {
+    "id": "salkantay",
+    "nombre": "Salkantay",
+    "coords": [
+      -13.28,
+      -72.54
+    ],
+    "pais": "Perú",
+    "continente": "América del Sur",
+    "tipo": "Travesía",
+    "altitud_m": 4630,
+    "dificultad": "Trek",
+    "meses": "May–Oct",
+    "temp_aprox": "-5–15°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Lodges/camps",
+    "gas": "Sí",
+    "permisos": "Sí (operadores)",
+    "guia": "No",
+    "coste_estancia": "Bajo/medio",
+    "resena": "Alternativa al Camino Inca."
+  },
+  {
+    "id": "huascaran",
+    "nombre": "Huascarán",
+    "coords": [
+      -9.12,
+      -77.6
+    ],
+    "pais": "Perú",
+    "continente": "América del Sur",
+    "tipo": "Pico",
+    "altitud_m": 6768,
+    "dificultad": "AD/D",
+    "meses": "May–Sep",
+    "temp_aprox": "-20–-8°C",
+    "botas": [
+      "Nepal (doble bota técnica de alta montaña)",
+      "Botas triple capa (8000 m+)"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "III mixto",
+      "arnes": true
+    },
+    "equipo": [
+      "técnico hielo"
+    ],
+    "vivac": "Alta montaña",
+    "gas": "Sí",
+    "permisos": "Sí (PN)",
+    "guia": "Muy recomendable",
+    "coste_estancia": "Medio",
+    "resena": "Alta montaña seria."
+  },
+  {
+    "id": "alpamayo",
+    "nombre": "Alpamayo (aprox)",
+    "coords": [
+      -8.75,
+      -77.65
+    ],
+    "pais": "Perú",
+    "continente": "América del Sur",
+    "tipo": "Pico",
+    "altitud_m": 5947,
+    "dificultad": "D",
+    "meses": "May–Sep",
+    "temp_aprox": "-18–-6°C",
+    "botas": [
+      "Nepal (doble bota técnica de alta montaña)"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "IV hielo",
+      "arnes": true
+    },
+    "equipo": [
+      "técnico hielo"
+    ],
+    "vivac": "Campamentos",
+    "gas": "Sí",
+    "permisos": "Sí (PN)",
+    "guia": "Recomendable",
+    "coste_estancia": "Medio",
+    "resena": "Pirámide perfecta."
+  },
+  {
+    "id": "aconcagua",
+    "nombre": "Aconcagua (Normal)",
+    "coords": [
+      -32.65,
+      -70.01
+    ],
+    "pais": "Argentina",
+    "continente": "América del Sur",
+    "tipo": "Pico",
+    "altitud_m": 6961,
+    "dificultad": "F",
+    "meses": "Dic–Feb",
+    "temp_aprox": "-25–-5°C",
+    "botas": [
+      "La Sportiva Nepal Cube GTX",
+      "Nepal (doble bota técnica de alta montaña)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campamentos",
+    "gas": "Sí",
+    "permisos": "Sí (permiso)",
+    "guia": "No",
+    "coste_estancia": "Alto",
+    "resena": "No técnico pero alto."
+  },
+  {
+    "id": "patagonia",
+    "nombre": "Patagonia – Fitz/Torres",
+    "coords": [
+      -50.94,
+      -73.1
+    ],
+    "pais": "CL/AR",
+    "continente": "América del Sur",
+    "tipo": "Travesía",
+    "altitud_m": 2500,
+    "dificultad": "Trek técnico",
+    "meses": "Dic–Mar",
+    "temp_aprox": "0–15°C; viento",
+    "botas": [
+      "Scarpa Zodiac Tech LT GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Bestard Teix Lady GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campings oficiales",
+    "gas": "Sí",
+    "permisos": "Sí (PN)",
+    "guia": "No",
+    "coste_estancia": "Bajo/medio",
+    "resena": "Viento épico y vistas."
+  },
+  {
+    "id": "rainier",
+    "nombre": "Mount Rainier",
+    "coords": [
+      46.85,
+      -121.76
+    ],
+    "pais": "USA",
+    "continente": "América del Norte",
+    "tipo": "Pico",
+    "altitud_m": 4392,
+    "dificultad": "AD-",
+    "meses": "Jun–Sep",
+    "temp_aprox": "-12–2°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "La Sportiva Nepal Cube GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": true
+    },
+    "equipo": [
+      "glaciar"
+    ],
+    "vivac": "Permiso NPS",
+    "gas": "Sí",
+    "permisos": "Sí",
+    "guia": "Recomendable",
+    "coste_estancia": "15–30 €",
+    "resena": "Glaciar clásico EEUU."
+  },
+  {
+    "id": "whitney",
+    "nombre": "Mount Whitney (MR)",
+    "coords": [
+      36.5785,
+      -118.2923
+    ],
+    "pais": "USA",
+    "continente": "América del Norte",
+    "tipo": "Pico",
+    "altitud_m": 4421,
+    "dificultad": "PD/AD inv.",
+    "meses": "Jun–Oct",
+    "temp_aprox": "-6–10°C",
+    "botas": [
+      "Scarpa Zodiac Tech LT GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "III",
+      "arnes": true
+    },
+    "equipo": [
+      "casco",
+      "arnes (inv.)"
+    ],
+    "vivac": "Permisos limitados",
+    "gas": "Sí",
+    "permisos": "Sí",
+    "guia": "No",
+    "coste_estancia": "Bajo",
+    "resena": "Arista rocosa."
+  },
+  {
+    "id": "pct",
+    "nombre": "Pacific Crest Trail",
+    "coords": [
+      41.5,
+      -120.0
+    ],
+    "pais": "USA",
+    "continente": "América del Norte",
+    "tipo": "Travesía",
+    "altitud_m": 4000,
+    "dificultad": "Trek largo",
+    "meses": "Abr–Sep",
+    "temp_aprox": "-5–35°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Backcountry",
+    "gas": "Sí",
+    "permisos": "Sí (PCTA/NPS)",
+    "guia": "No",
+    "coste_estancia": "Bajo",
+    "resena": "4.200 km por la costa oeste."
+  },
+  {
+    "id": "jmt",
+    "nombre": "John Muir Trail",
+    "coords": [
+      37.73,
+      -119.57
+    ],
+    "pais": "USA",
+    "continente": "América del Norte",
+    "tipo": "Travesía",
+    "altitud_m": 4200,
+    "dificultad": "Trek alto",
+    "meses": "Jul–Sep",
+    "temp_aprox": "-3–20°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Backcountry",
+    "gas": "Sí",
+    "permisos": "Sí",
+    "guia": "No",
+    "coste_estancia": "Bajo",
+    "resena": "Sierra Nevada espectacular."
+  },
+  {
+    "id": "yellow",
+    "nombre": "Yellowstone Grand Loop",
+    "coords": [
+      44.6,
+      -110.5
+    ],
+    "pais": "USA",
+    "continente": "América del Norte",
+    "tipo": "Travesía",
+    "altitud_m": 2400,
+    "dificultad": "Trek medio",
+    "meses": "Jun–Sep",
+    "temp_aprox": "0–25°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "bear canister"
+    ],
+    "vivac": "Permisos backcountry",
+    "gas": "Sí",
+    "permisos": "Sí (NPS)",
+    "guia": "No",
+    "coste_estancia": "Bajo",
+    "resena": "Fauna y geiseres."
+  },
+  {
+    "id": "wind",
+    "nombre": "Wind River High Route",
+    "coords": [
+      43.16,
+      -109.65
+    ],
+    "pais": "USA",
+    "continente": "América del Norte",
+    "tipo": "Travesía",
+    "altitud_m": 4000,
+    "dificultad": "PD-",
+    "meses": "Jul–Sep",
+    "temp_aprox": "-2–18°C",
+    "botas": [
+      "Scarpa Zodiac Tech LT GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I–II",
+      "arnes": false
+    },
+    "equipo": [
+      "mapa/GPS"
+    ],
+    "vivac": "Backcountry",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "Bajo",
+    "resena": "Alta ruta salvaje."
+  },
+  {
+    "id": "denali",
+    "nombre": "Denali (West Buttress)",
+    "coords": [
+      63.07,
+      -151.01
+    ],
+    "pais": "USA",
+    "continente": "América del Norte",
+    "tipo": "Pico",
+    "altitud_m": 6190,
+    "dificultad": "AD",
+    "meses": "May–Jun",
+    "temp_aprox": "-30–-10°C",
+    "botas": [
+      "Botas triple capa (8000 m+)"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "III nieve",
+      "arnes": true
+    },
+    "equipo": [
+      "glaciar completo"
+    ],
+    "vivac": "Campamentos glaciar",
+    "gas": "Sí",
+    "permisos": "Sí (NPS)",
+    "guia": "Recomendable",
+    "coste_estancia": "Medio/alto",
+    "resena": "8000 de Alaska."
+  },
+  {
+    "id": "wapta",
+    "nombre": "Wapta Icefield",
+    "coords": [
+      51.6,
+      -116.45
+    ],
+    "pais": "Canadá",
+    "continente": "América del Norte",
+    "tipo": "Travesía",
+    "altitud_m": 3000,
+    "dificultad": "PD",
+    "meses": "Jul–Sep",
+    "temp_aprox": "-15–5°C",
+    "botas": [
+      "Scarpa Ribelle Lite HD",
+      "La Sportiva Nepal Cube GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": true
+    },
+    "equipo": [
+      "equipo glaciar"
+    ],
+    "vivac": "Refugios ACC",
+    "gas": "Sí",
+    "permisos": "Sí (Parks)",
+    "guia": "Recomendable",
+    "coste_estancia": "40–60 €",
+    "resena": "Travesía glacial sencilla."
+  },
+  {
+    "id": "annapurna",
+    "nombre": "Annapurna Circuit",
+    "coords": [
+      28.6,
+      84.09
+    ],
+    "pais": "Nepal",
+    "continente": "Asia",
+    "tipo": "Travesía",
+    "altitud_m": 5416,
+    "dificultad": "Trek alto",
+    "meses": "Oct–Nov/Mar–May",
+    "temp_aprox": "-10–10°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Lodges",
+    "gas": "Sí",
+    "permisos": "Sí (ACAP/TIMS)",
+    "guia": "No",
+    "coste_estancia": "10–25 €",
+    "resena": "Thorang La 5416 m."
+  },
+  {
+    "id": "manaslu",
+    "nombre": "Manaslu Circuit",
+    "coords": [
+      28.57,
+      84.58
+    ],
+    "pais": "Nepal",
+    "continente": "Asia",
+    "tipo": "Travesía",
+    "altitud_m": 5106,
+    "dificultad": "Trek alto",
+    "meses": "Oct–Nov/Mar–May",
+    "temp_aprox": "-8–8°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Lodges",
+    "gas": "Sí",
+    "permisos": "Sí + guía",
+    "guia": "Obligatorio",
+    "coste_estancia": "10–25 €",
+    "resena": "Menos masificado."
+  },
+  {
+    "id": "ebc",
+    "nombre": "Everest Base Camp",
+    "coords": [
+      28.0,
+      86.85
+    ],
+    "pais": "Nepal",
+    "continente": "Asia",
+    "tipo": "Travesía",
+    "altitud_m": 5545,
+    "dificultad": "Trek alto",
+    "meses": "Oct–Nov/Mar–May",
+    "temp_aprox": "-12–5°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Lodges",
+    "gas": "Sí",
+    "permisos": "Sí (SNP/Khumbu)",
+    "guia": "No",
+    "coste_estancia": "10–30 €",
+    "resena": "Clásico del Khumbu."
+  },
+  {
+    "id": "island",
+    "nombre": "Island Peak",
+    "coords": [
+      27.92,
+      86.93
+    ],
+    "pais": "Nepal",
+    "continente": "Asia",
+    "tipo": "Pico",
+    "altitud_m": 6189,
+    "dificultad": "AD-",
+    "meses": "Oct–Nov/Mar–May",
+    "temp_aprox": "-15–-5°C",
+    "botas": [
+      "La Sportiva Nepal Cube GTX",
+      "Nepal (doble bota técnica de alta montaña)"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "II–III",
+      "arnes": true
+    },
+    "equipo": [
+      "glaciar completo"
+    ],
+    "vivac": "Campamentos",
+    "gas": "Sí",
+    "permisos": "Sí (NMA)",
+    "guia": "Muy rec.",
+    "coste_estancia": "Medio",
+    "resena": "Seis mil de iniciación."
+  },
+  {
+    "id": "k2bc",
+    "nombre": "K2 Base Camp",
+    "coords": [
+      35.48,
+      76.51
+    ],
+    "pais": "Pakistán",
+    "continente": "Asia",
+    "tipo": "Travesía",
+    "altitud_m": 5000,
+    "dificultad": "Trek alto",
+    "meses": "Jun–Sep",
+    "temp_aprox": "-10–12°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Campamentos",
+    "gas": "Sí",
+    "permisos": "Sí",
+    "guia": "Obligatorio",
+    "coste_estancia": "Medio",
+    "resena": "Glaciares del Baltoro."
+  },
+  {
+    "id": "fuji",
+    "nombre": "Monte Fuji",
+    "coords": [
+      35.36,
+      138.73
+    ],
+    "pais": "Japón",
+    "continente": "Asia",
+    "tipo": "Pico",
+    "altitud_m": 3776,
+    "dificultad": "F",
+    "meses": "Jul–Sep",
+    "temp_aprox": "0–15°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Refugios temporada",
+    "gas": "Sí",
+    "permisos": "Tasa",
+    "guia": "No",
+    "coste_estancia": "Medio",
+    "resena": "Volcán emblemático."
+  },
+  {
+    "id": "damavand",
+    "nombre": "Damavand",
+    "coords": [
+      35.95,
+      52.11
+    ],
+    "pais": "Irán",
+    "continente": "Asia",
+    "tipo": "Pico",
+    "altitud_m": 5610,
+    "dificultad": "F/PD inv.",
+    "meses": "Jun–Sep",
+    "temp_aprox": "-10–8°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Refugios",
+    "gas": "Sí",
+    "permisos": "Sí (permit)",
+    "guia": "No",
+    "coste_estancia": "Bajo/medio",
+    "resena": "Volcán alto con fumarolas."
+  },
+  {
+    "id": "markha",
+    "nombre": "Markha Valley",
+    "coords": [
+      33.99,
+      77.62
+    ],
+    "pais": "India",
+    "continente": "Asia",
+    "tipo": "Travesía",
+    "altitud_m": 5200,
+    "dificultad": "Trek alto",
+    "meses": "Jun–Sep",
+    "temp_aprox": "-5–15°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Homestays/camp",
+    "gas": "Sí",
+    "permisos": "Sí (ILP)",
+    "guia": "No",
+    "coste_estancia": "Bajo",
+    "resena": "Pasos a 5k."
+  },
+  {
+    "id": "milford",
+    "nombre": "Milford Track",
+    "coords": [
+      -44.68,
+      167.89
+    ],
+    "pais": "Nueva Zelanda",
+    "continente": "Oceanía",
+    "tipo": "Travesía",
+    "altitud_m": 1600,
+    "dificultad": "Trek",
+    "meses": "Oct–Abr",
+    "temp_aprox": "5–18°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Huts DOC",
+    "gas": "Sí",
+    "permisos": "Reserva",
+    "guia": "No",
+    "coste_estancia": "Alto",
+    "resena": "Gran clásico NZ."
+  },
+  {
+    "id": "tongariro",
+    "nombre": "Tongariro Crossing",
+    "coords": [
+      -39.11,
+      175.69
+    ],
+    "pais": "Nueva Zelanda",
+    "continente": "Oceanía",
+    "tipo": "Pico/Travesía",
+    "altitud_m": 1886,
+    "dificultad": "Trek técnico",
+    "meses": "Oct–May",
+    "temp_aprox": "0–18°C",
+    "botas": [
+      "Bestard Teix Lady GTX",
+      "La Sportiva Aequilibrium ST GTX",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": [
+      "—"
+    ],
+    "vivac": "Huts/camp DOC",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "No",
+    "coste_estancia": "Medio",
+    "resena": "Vistas volcánicas."
+  }
+]

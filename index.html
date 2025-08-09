@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Mapa de Rutas & Botas</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+  <header class="topbar">
+    <button id="btnMenu" aria-label="Abrir filtros">☰</button>
+    <h1>Mapa de Rutas & Botas</h1>
+    <button id="btnInfo" aria-label="Abrir glosario">ℹ️</button>
+  </header>
+
+  <main id="app">
+    <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
+      <div class="panel-section">
+        <h2>Filtros</h2>
+        <details open>
+          <summary>Continente</summary>
+          <div id="filter-continente" class="chips"></div>
+        </details>
+        <details>
+          <summary>Dificultad</summary>
+          <div id="filter-dificultad" class="chips"></div>
+        </details>
+        <details>
+          <summary>Botas</summary>
+          <div id="filter-botas" class="chips"></div>
+        </details>
+        <details>
+          <summary>Tipo</summary>
+          <div id="filter-tipo" class="chips"></div>
+        </details>
+        <button id="clearFilters" class="btn">Limpiar filtros</button>
+      </div>
+    </aside>
+
+    <aside id="glossary" class="panel hidden" aria-label="Glosario">
+      <div class="panel-section">
+        <h2>Glosario</h2>
+        <details open><summary>Siglas</summary>
+          <ul>
+            <li><b>PN</b>: Parque Nacional (normas de acampada y gas)</li>
+            <li><b>UIAA</b>: Escala internacional de dificultad</li>
+            <li><b>F</b>: Fácil</li>
+            <li><b>PD</b>: Poco Difícil</li>
+            <li><b>AD</b>: Bastante Difícil</li>
+            <li><b>D</b>: Difícil</li>
+            <li><b>Vivac</b>: Pernocta con tienda ligera (montar al atardecer, recoger al amanecer)</li>
+            <li><b>Scrambling</b>: Progresión con manos/pies en roca sin ser escalada deportiva</li>
+          </ul>
+        </details>
+        <details><summary>Leyenda de botas</summary>
+          <ul id="legend-botas"></ul>
+        </details>
+      </div>
+    </aside>
+
+    <div id="map"></div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw-v4.js'));
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+:root {
+  --bg: #0b1220;
+  --panel: #0f172a;
+  --text: #f8fafc;
+  --muted: #cbd5e1;
+  --accent: #22c55e;
+}
+* { box-sizing: border-box; }
+html, body, #app, #map { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 52px; background: #111827d0;
+  display: flex; align-items: center; gap: 10px; padding: 0 12px; backdrop-filter: blur(8px); z-index: 1000;
+  border-bottom: 1px solid #1f2937;
+}
+.topbar h1 { font-size: 16px; margin: 0; font-weight: 700; letter-spacing: .3px; }
+.topbar button { background: #1f2937; color: var(--text); border: 1px solid #374151; border-radius: 10px; padding: 6px 10px; cursor: pointer; }
+#map { position: fixed; inset: 52px 0 0 0; }
+
+.panel {
+  position: fixed; top: 52px; bottom: 0; width: 320px; background: var(--panel); border-right: 1px solid #1f2937; z-index:1001; overflow:auto;
+}
+#sidebar { left: 0; }
+#glossary { right: 0; border-right:none; border-left: 1px solid #1f2937; }
+.hidden { display: none; }
+
+.panel-section { padding: 12px; }
+.panel-section h2 { margin: 8px 0 6px; font-size: 14px; }
+details { background:#0b1326; border:1px solid #1f2a44; border-radius:10px; padding:8px 10px; margin:10px 0; }
+summary { cursor: pointer; color:var(--muted); font-weight:700; }
+.chips { display:flex; flex-wrap: wrap; gap:8px; margin-top:8px; }
+
+.chip { 
+  border:1px solid #64748b;
+  border-radius:999px;
+  padding:6px 12px;
+  color:#ffffff;
+  background: rgba(148, 163, 184, 0.22);
+  cursor:pointer;
+  font-size:13px;
+  user-select:none;
+  transition: background .2s, color .2s, border-color .2s, transform .05s;
+}
+.chip:hover { background: rgba(148, 163, 184, 0.35); }
+.chip:active { transform: translateY(1px); }
+.chip.active { background:#16a34a; color:#ffffff; border-color:#16a34a; }
+
+.btn { width: 100%; padding:10px 12px; border-radius:10px; border:1px solid #334155; background:#0b1326; color:#e5e7eb; cursor:pointer; margin-top:8px; }
+
+.leaflet-container { background:#0b1220; }
+.leaflet-popup-content-wrapper { background:#0b1326; color:#e5e7eb; border:1px solid #1f2a44; }
+.leaflet-popup-tip { background:#0b1326; }
+
+.badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #334155; margin-right:6px; }
