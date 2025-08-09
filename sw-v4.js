@@ -6,8 +6,8 @@ const ASSETS = [
   './styles.css?v=4',
   './manifest.json',
   './data/destinos.json',
-  './assets/icon-192.png',
-  './assets/icon-512.png'
+  './assets/Gountain Time.png',
+  './assets/Gountain Time_1'
 ];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
