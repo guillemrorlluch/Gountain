@@ -1,23 +1,18 @@
 {
   "headers": [
     {
-      "source": "/sw-*.js",
+      "source": "/sw-.*\\.js",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" },
-        { "key": "Service-Worker-Allowed", "value": "/" }
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     },
     {
-      "source": "/data/destinos.json",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache" }
-      ]
-    },
-    {
-      "source": "/manifest.json",
+      "source": "/data/.*\\.json",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache" }
       ]
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false"
 }
