@@ -12,13 +12,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <link rel="stylesheet" href="styles.css?v=4">
 </head>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.getRegistrations().then(regs => {
-      regs.forEach(reg => reg.unregister());
-    });
-  }
-</script>
 <body>
   <header class="topbar">
     <button id="btnMenu" aria-label="Abrir filtros">☰</button>
