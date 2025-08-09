@@ -1,3 +1,4 @@
+[
   {
     "id": "gr11",
     "nombre": "GR11 / Transpirenaica",
@@ -840,8 +841,8 @@
     "id": "patagonia",
     "nombre": "Patagonia – Fitz/Torres",
     "coords": [-50.94, -73.1],
-    "pais": "CL/AR",
-    "conteniente": "América del Sur",
+    "pais": "Chile/Argentina",
+    "continente": "América del Sur",
     "tipo": "Travesía",
     "altitud_m": 2500,
     "dificultad": "Trek técnico",
@@ -1317,7 +1318,7 @@
   {
     "id": "pico-el-toro",
     "nombre": "Pico El Toro",
-    "coords": [8.50, -71.03],
+    "coords": [8.5, -71.03],
     "pais": "Venezuela",
     "continente": "América del Sur",
     "tipo": "Pico",
@@ -1378,7 +1379,7 @@
     "resena": "Cumbre mítica; trepadas sencillas pero aéreas."
   },
   {
-    "id": "muskala",
+    "id": "musala",
     "nombre": "Musala (Rila)",
     "coords": [42.179, 23.585],
     "pais": "Bulgaria",
@@ -2076,102 +2077,5 @@
     "guia": "Habitual",
     "coste_estancia": "Bajo",
     "resena": "Volcán con lago de cráter; campamentos en el borde."
-  },
-{
-  "id": "bolivar",
-  "nombre": "Pico Bolívar",
-  "coords": [8.54, -71.05],
-  "pais": "Venezuela",
-  "continente": "América",
-  "tipo": "Pico",
-  "altitud_m": 4978,
-  "dificultad": "AD",
-  "meses": "Dic–Mar",
-  "temp_aprox": "-8–5°C",
-  "botas": [
-    "La Sportiva Nepal Evo GTX",
-    "Scarpa Mont Blanc Pro GTX"
-  ],
-  "scramble": { "si": true, "grado": "II–III", "arnes": true },
-  "equipo": ["crampones", "piolet", "casco", "arnés", "cuerda"],
-  "vivac": "Permitido en alta montaña",
-  "gas": "Sí",
-  "permisos": "PN Sierra Nevada",
-  "guia": "Recomendado",
-  "coste_estancia": "0–30 €",
-  "resena": "Techo de Venezuela, accesible desde Mérida."
-},
-{
-  "id": "humboldt",
-  "nombre": "Pico Humboldt",
-  "coords": [8.53, -71.05],
-  "pais": "Venezuela",
-  "continente": "América",
-  "tipo": "Pico",
-  "altitud_m": 4940,
-  "dificultad": "AD",
-  "meses": "Dic–Mar",
-  "temp_aprox": "-8–5°C",
-  "botas": [
-    "La Sportiva Nepal Evo GTX",
-    "Scarpa Mont Blanc Pro GTX"
-  ],
-  "scramble": { "si": true, "grado": "II–III", "arnes": true },
-  "equipo": ["crampones", "piolet", "casco", "arnés", "cuerda"],
-  "vivac": "Permitido en alta montaña",
-  "gas": "Sí",
-  "permisos": "PN Sierra Nevada",
-  "guia": "Recomendado",
-  "coste_estancia": "0–30 €",
-  "resena": "Segundo pico más alto de Venezuela, junto al Bolívar."
-},
-{
-  "id": "espejo",
-  "nombre": "Pico Espejo",
-  "coords": [8.52, -71.06],
-  "pais": "Venezuela",
-  "continente": "América",
-  "tipo": "Pico",
-  "altitud_m": 4765,
-  "dificultad": "PD",
-  "meses": "Dic–Mar",
-  "temp_aprox": "-5–5°C",
-  "botas": [
-    "La Sportiva Aequilibrium ST GTX",
-    "Scarpa Ribelle Lite HD"
-  ],
-  "scramble": { "si": true, "grado": "I–II", "arnes": false },
-  "equipo": ["casco (opcional)"],
-  "vivac": "Permitido en alta montaña",
-  "gas": "Sí",
-  "permisos": "PN Sierra Nevada",
-  "guia": "Opcional",
-  "coste_estancia": "0–20 €",
-  "resena": "Famoso por el teleférico que llega a su base."
-},
-{
-  "id": "bonpland",
-  "nombre": "Pico Bonpland",
-  "coords": [8.53, -71.08],
-  "pais": "Venezuela",
-  "continente": "América",
-  "tipo": "Pico",
-  "altitud_m": 4883,
-  "dificultad": "AD",
-  "meses": "Dic–Mar",
-  "temp_aprox": "-7–5°C",
-  "botas": [
-    "La Sportiva Nepal Evo GTX",
-    "Scarpa Mont Blanc Pro GTX"
-  ],
-  "scramble": { "si": true, "grado": "II", "arnes": true },
-  "equipo": ["crampones", "piolet", "casco", "arnés", "cuerda"],
-  "vivac": "Permitido en alta montaña",
-  "gas": "Sí",
-  "permisos": "PN Sierra Nevada",
-  "guia": "Recomendado",
-  "coste_estancia": "0–30 €",
-  "resena": "Hermano del Humboldt, muy cercano y accesible desde Laguna Verde."
-}
-
-];
+  }
+]
