@@ -138,13 +138,41 @@ function renderMarkers() {
 
 loadData();
 
-// ... aquí va todo tu código de la app ...
+// Registro del SW + actualización automática
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw-v5.js', { updateViaCache: 'none' });
+      console.log('✅ SW registrado:', reg.scope);
 
-// 🔹 Registro del Service Worker para controlar el caché
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw-v4.js")
-      .then(reg => console.log("✅ Service Worker registrado:", reg.scope))
-      .catch(err => console.error("❌ Error al registrar SW:", err));
+      // Buscar updates cuando vuelves a la pestaña
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') reg.update();
+      });
+
+      // Si ya hay uno nuevo esperando, actívalo ya
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+
+      // Cuando se detecta uno nuevo, pídele que active ya
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        if (!newSW) return;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+
+      // Recarga una vez que el nuevo SW toma el control
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      });
+    } catch (err) {
+      console.error('❌ Error registrando SW:', err);
+    }
   });
 }
