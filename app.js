@@ -137,3 +137,14 @@ function renderMarkers() {
 }
 
 loadData();
+
+// ... aquí va todo tu código de la app ...
+
+// 🔹 Registro del Service Worker para controlar el caché
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw-v4.js")
+      .then(reg => console.log("✅ Service Worker registrado:", reg.scope))
+      .catch(err => console.error("❌ Error al registrar SW:", err));
+  });
+}
