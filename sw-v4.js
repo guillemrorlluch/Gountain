@@ -1,38 +1,48 @@
-self.addEventListener("install", () => self.skipWaiting());
-
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.map(key => caches.delete(key))))
-  );
-  self.clients.claim();
-});
-
-const CACHE = 'rutas-botas-v4';
-const ASSETS = [
-  './',
-  './index.html',
-  './app.js',
-  './styles.css?v=4',
-  './manifest.json',
-  './data/destinos.json',
-  './assets/Gountain Time.png',
-  './assets/Gountain Time_1'
+const CACHE_NAME = "pwa-cache-v4-" + new Date().getTime();
+const urlsToCache = [
+  "/",
+  "/index.html",
+  "/styles.css",
+  "/app.js",
+  "/data/destinos.json",
+  "/assets/icon-192.png",
+  "/assets/icon-512.png"
 ];
-self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+
+// Instalación: cachea los archivos
+self.addEventListener("install", (event) => {
+  self.skipWaiting(); // fuerza la activación inmediata
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
-self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))));
+
+// Activación: limpia caches antiguos
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name.startsWith("pwa-cache-") && name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    }).then(() => self.clients.claim()) // toma control de las pestañas abiertas
+  );
 });
-self.addEventListener('fetch', (e) => {
-  const url = new URL(e.request.url);
-  if (url.origin === location.origin) {
-    e.respondWith(
-      caches.match(e.request).then(res => res || fetch(e.request).then(r => {
-        const copy = r.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
-        return r;
-      }))
-    );
-  }
+
+// Fetch: red online primero, fallback al cache
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, clone);
+        });
+        return response;
+      })
+      .catch(() => caches.match(event.request))
+  );
 });
