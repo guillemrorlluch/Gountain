@@ -104,7 +104,7 @@ function popupHtml(d) {
 }
 
 async function loadData() {
-  const res = await fetch('./data/destinos.json');
+  const res = await fetch('/data/destinos.json?v=6', { cache: 'no-store' });
   const data = await res.json();
   state.data = data;
   data.forEach(d => {
@@ -138,13 +138,17 @@ function renderMarkers() {
 
 loadData();
 
-// Registro del SW + actualización automática
+// app.js
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('/sw-v5.js', { updateViaCache: 'none' });
-      console.log('✅ SW registrado:', reg.scope);
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js?v=6');
+  });
 
+  // (opcional) recarga automática cuando cambie el SW
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  });
+}
       // Buscar updates cuando vuelves a la pestaña
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') reg.update();
