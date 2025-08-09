@@ -1251,8 +1251,6 @@
     "coste_estancia": "Medio",
     "resena": "Vistas volcánicas."
   },
-
-  /* ======== VENEZUELA – SIERRA NEVADA DE MÉRIDA ======== */
   {
     "id": "pico-bolivar",
     "nombre": "Pico Bolívar",
@@ -1358,8 +1356,6 @@
     "coste_estancia": "Bajo",
     "resena": "Hermano del Toro; combinable en la misma jornada."
   },
-
-  /* ======== BÁLTICOS / BALCANES / GRECIA ======== */
   {
     "id": "olympus-mytikas",
     "nombre": "Monte Olympus (Mytikas)",
@@ -1444,8 +1440,6 @@
     "coste_estancia": "Bajo",
     "resena": "Clásico de Durmitor con vistas al macizo kárstico."
   },
-
-  /* ======== ALEMANIA / TIROL / ZILLERTAL ======== */
   {
     "id": "watzmann-traverse",
     "nombre": "Watzmann Traverse",
@@ -1537,8 +1531,6 @@
     "coste_estancia": "40–75 €",
     "resena": "Etapas largas y paisajes glaciares del Zillertal."
   },
-
-  /* ======== DOLOMITAS / ITALIA EXTRA ======== */
   {
     "id": "alta-via-1",
     "nombre": "Alta Via 1",
@@ -1602,8 +1594,6 @@
     "coste_estancia": "40–70 €",
     "resena": "Pasarelas históricas en el Cristallo; muy estética."
   },
-
-  /* ======== REINO UNIDO EXTRA ======== */
   {
     "id": "helvellyn-striding",
     "nombre": "Helvellyn por Striding Edge",
@@ -1646,8 +1636,6 @@
     "coste_estancia": "Bajo",
     "resena": "Fina arista roja; muy aérea y famosa."
   },
-
-  /* ======== FRANCIA / CÓRCEGA ======== */
   {
     "id": "gr20",
     "nombre": "GR20 Córcega",
@@ -1669,8 +1657,6 @@
     "coste_estancia": "40–70 €",
     "resena": "La travesía ‘dura’ por excelencia del Mediterráneo."
   },
-
-  /* ======== ESPAÑA EXTRA ======== */
   {
     "id": "balaitous",
     "nombre": "Balaitous por la Brecha Latour",
@@ -1692,8 +1678,6 @@
     "coste_estancia": "Bajo",
     "resena": "Gran clásico técnico del Pirineo occidental."
   },
-
-  /* ======== ÁFRICA EXTRA ======== */
   {
     "id": "mgoun",
     "nombre": "M'Goun",
@@ -1757,8 +1741,6 @@
     "coste_estancia": "Medio",
     "resena": "Alternativa técnica al Kili; paisaje alpino precioso."
   },
-
-  /* ======== ANDES / MX / EC / BO / CL / CO ======== */
   {
     "id": "huayna-potosi",
     "nombre": "Huayna Potosí",
@@ -1948,8 +1930,6 @@
     "coste_estancia": "Medio",
     "resena": "Cráteres y seracs; ambiente glaciar sureño."
   },
-
-  /* ======== USA EXTRA ======== */
   {
     "id": "grand-teton",
     "nombre": "Grand Teton (Upper Exum o Owen-Spalding)",
@@ -2034,8 +2014,6 @@
     "coste_estancia": "Bajo",
     "resena": "Gran volcán del norte de California; clásica primaveral."
   },
-
-  /* ======== ASIA / TURQUÍA / JAPÓN EXTRA ======== */
   {
     "id": "ararat",
     "nombre": "Monte Ararat",
@@ -2098,5 +2076,102 @@
     "guia": "Habitual",
     "coste_estancia": "Bajo",
     "resena": "Volcán con lago de cráter; campamentos en el borde."
-  }
+  },
+{
+  "id": "bolivar",
+  "nombre": "Pico Bolívar",
+  "coords": [8.54, -71.05],
+  "pais": "Venezuela",
+  "continente": "América",
+  "tipo": "Pico",
+  "altitud_m": 4978,
+  "dificultad": "AD",
+  "meses": "Dic–Mar",
+  "temp_aprox": "-8–5°C",
+  "botas": [
+    "La Sportiva Nepal Evo GTX",
+    "Scarpa Mont Blanc Pro GTX"
+  ],
+  "scramble": { "si": true, "grado": "II–III", "arnes": true },
+  "equipo": ["crampones", "piolet", "casco", "arnés", "cuerda"],
+  "vivac": "Permitido en alta montaña",
+  "gas": "Sí",
+  "permisos": "PN Sierra Nevada",
+  "guia": "Recomendado",
+  "coste_estancia": "0–30 €",
+  "resena": "Techo de Venezuela, accesible desde Mérida."
+},
+{
+  "id": "humboldt",
+  "nombre": "Pico Humboldt",
+  "coords": [8.53, -71.05],
+  "pais": "Venezuela",
+  "continente": "América",
+  "tipo": "Pico",
+  "altitud_m": 4940,
+  "dificultad": "AD",
+  "meses": "Dic–Mar",
+  "temp_aprox": "-8–5°C",
+  "botas": [
+    "La Sportiva Nepal Evo GTX",
+    "Scarpa Mont Blanc Pro GTX"
+  ],
+  "scramble": { "si": true, "grado": "II–III", "arnes": true },
+  "equipo": ["crampones", "piolet", "casco", "arnés", "cuerda"],
+  "vivac": "Permitido en alta montaña",
+  "gas": "Sí",
+  "permisos": "PN Sierra Nevada",
+  "guia": "Recomendado",
+  "coste_estancia": "0–30 €",
+  "resena": "Segundo pico más alto de Venezuela, junto al Bolívar."
+},
+{
+  "id": "espejo",
+  "nombre": "Pico Espejo",
+  "coords": [8.52, -71.06],
+  "pais": "Venezuela",
+  "continente": "América",
+  "tipo": "Pico",
+  "altitud_m": 4765,
+  "dificultad": "PD",
+  "meses": "Dic–Mar",
+  "temp_aprox": "-5–5°C",
+  "botas": [
+    "La Sportiva Aequilibrium ST GTX",
+    "Scarpa Ribelle Lite HD"
+  ],
+  "scramble": { "si": true, "grado": "I–II", "arnes": false },
+  "equipo": ["casco (opcional)"],
+  "vivac": "Permitido en alta montaña",
+  "gas": "Sí",
+  "permisos": "PN Sierra Nevada",
+  "guia": "Opcional",
+  "coste_estancia": "0–20 €",
+  "resena": "Famoso por el teleférico que llega a su base."
+},
+{
+  "id": "bonpland",
+  "nombre": "Pico Bonpland",
+  "coords": [8.53, -71.08],
+  "pais": "Venezuela",
+  "continente": "América",
+  "tipo": "Pico",
+  "altitud_m": 4883,
+  "dificultad": "AD",
+  "meses": "Dic–Mar",
+  "temp_aprox": "-7–5°C",
+  "botas": [
+    "La Sportiva Nepal Evo GTX",
+    "Scarpa Mont Blanc Pro GTX"
+  ],
+  "scramble": { "si": true, "grado": "II", "arnes": true },
+  "equipo": ["crampones", "piolet", "casco", "arnés", "cuerda"],
+  "vivac": "Permitido en alta montaña",
+  "gas": "Sí",
+  "permisos": "PN Sierra Nevada",
+  "guia": "Recomendado",
+  "coste_estancia": "0–30 €",
+  "resena": "Hermano del Humboldt, muy cercano y accesible desde Laguna Verde."
+}
+
 ];
