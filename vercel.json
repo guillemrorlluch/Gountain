@@ -1,18 +1,18 @@
 {
   "headers": [
     {
-      "source": "/sw-.*\\.js",
+      "source": "/sw-(.*)\\.js",
       "headers": [
         { "key": "Cache-Control", "value": "no-store" }
       ]
     },
     {
-      "source": "/data/.*\\.json",
+      "source": "/data/(.*)\\.json",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache" }
       ]
     }
   ],
   "cleanUrls": true,
-  "trailingSlash": false"
+  "trailingSlash": false
 }
