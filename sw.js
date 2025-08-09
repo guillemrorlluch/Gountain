@@ -1,13 +1,12 @@
-// sw.js  (mejor usar nombre fijo y solo cambiar VERSION)
-const VERSION = 'v6';                  // <— bump aquí
+// sw.js — v6
+const VERSION = 'v6';
 const STATIC_CACHE = `static-${VERSION}`;
 const DATA_CACHE   = `data-${VERSION}`;
 
-
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/styles.css?v=6',
+  '/',                 // raíz
+  '/index.html',       // HTML principal
+  '/styles.css?v=6',   // con query para bustear caché
   '/app.js?v=6',
   '/manifest.json?v=6',
   '/assets/icons/GountainTime-192.png',
@@ -22,9 +21,10 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys
-        .filter(k => k !== STATIC_CACHE && k !== DATA_CACHE)
-        .map(k => caches.delete(k))
+      Promise.all(
+        keys
+          .filter(k => k !== STATIC_CACHE && k !== DATA_CACHE)
+          .map(k => caches.delete(k))
       )
     )
   );
@@ -41,7 +41,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // JSON: network-first (si no hay red, cae al caché)
+  // JSON: network-first
   if (url.pathname.startsWith('/data/')) {
     event.respondWith(
       fetch(req).then(res => {
