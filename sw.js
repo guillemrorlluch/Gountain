@@ -1,11 +1,17 @@
-// sw-v5.js
-const VERSION = 'v5';
+// sw.js  (mejor usar nombre fijo y solo cambiar VERSION)
+const VERSION = 'v6';                  // <— bump aquí
 const STATIC_CACHE = `static-${VERSION}`;
 const DATA_CACHE   = `data-${VERSION}`;
 
+
 const STATIC_ASSETS = [
-  '/', '/index.html', '/styles.css', '/app.js',
-  '/assets/icon-192.png', '/assets/icon-512.png'
+  '/',
+  '/index.html',
+  '/styles.css?v=6',
+  '/app.js?v=6',
+  '/manifest.json?v=6',
+  '/assets/icons/GountainTime-192.png',
+  '/assets/icons/GountainTime-512.png'
 ];
 
 self.addEventListener('install', (event) => {
