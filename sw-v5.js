@@ -1,0 +1,60 @@
+// sw-v5.js
+const VERSION = 'v5';
+const STATIC_CACHE = `static-${VERSION}`;
+const DATA_CACHE   = `data-${VERSION}`;
+
+const STATIC_ASSETS = [
+  '/', '/index.html', '/styles.css', '/app.js',
+  '/assets/icon-192.png', '/assets/icon-512.png'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(caches.open(STATIC_CACHE).then(c => c.addAll(STATIC_ASSETS)));
+  self.skipWaiting(); // activar al instante
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys
+        .filter(k => k !== STATIC_CACHE && k !== DATA_CACHE)
+        .map(k => caches.delete(k))
+      )
+    )
+  );
+  self.clients.claim(); // tomar control sin recarga manual
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+
+  const url = new URL(req.url);
+
+  // JSON: network-first (si no hay red, cae al caché)
+  if (url.pathname.startsWith('/data/')) {
+    event.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(DATA_CACHE).then(c => c.put(req, copy));
+        return res;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Resto: stale-while-revalidate
+  event.respondWith(
+    caches.match(req).then(cached => {
+      const fetchPromise = fetch(req).then(res => {
+        caches.open(STATIC_CACHE).then(c => c.put(req, res.clone()));
+        return res;
+      }).catch(() => cached);
+      return cached || fetchPromise;
+    })
+  );
+});
