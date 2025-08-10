@@ -381,9 +381,12 @@ if (typeof window !== 'undefined') {
       const el = document.createElement('div');
       el.className = 'marker';
       el.style.backgroundColor = markerColor(d);
+      const popup = new maplibregl.Popup({
+        maxWidth: window.matchMedia('(max-width: 600px)').matches ? '300px' : '400px'
+      }).setHTML(popupHtml(d));
       return new maplibregl.Marker({ element: el })
         .setLngLat([d.coords[1], d.coords[0]])
-        .setPopup(new maplibregl.Popup().setHTML(popupHtml(d)));
+        .setPopup(popup);
     }
   
   function renderMarkers() {
