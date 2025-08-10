@@ -24,3 +24,14 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys =>
+      Promise.all(
+        keys.map(key => {
+          if (key !== STATIC_CACHE && key !== DATA_CACHE) {
+            return caches.delete(key);
+          }
+        })
+      )
+    )
+  );
+  self.clients.claim();
+});
