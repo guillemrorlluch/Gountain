@@ -286,16 +286,13 @@ if (typeof window !== 'undefined') {
   }
 
     function addMarker(d) {
-    const el = document.createElement('div');
-    el.style.width = '12px';
-    el.style.height = '12px';
-    el.style.backgroundColor = markerColor(d);
-    el.style.borderRadius = '50%';
-    el.style.border = '2px solid #fff';
-    return new maplibregl.Marker({ element: el })
-      .setLngLat([d.coords[1], d.coords[0]])
-      .setPopup(new maplibregl.Popup().setHTML(popupHtml(d)));
-  }
+      const el = document.createElement('div');
+      el.className = 'marker';
+      el.style.backgroundColor = markerColor(d);
+      return new maplibregl.Marker({ element: el })
+        .setLngLat([d.coords[1], d.coords[0]])
+        .setPopup(new maplibregl.Popup().setHTML(popupHtml(d)));
+    }
   
   function renderMarkers() {
     clearMarkers();
