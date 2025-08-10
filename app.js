@@ -95,20 +95,19 @@ if (typeof window !== 'undefined') {
   }
   let labelsVisible = true;
   let terrainVisible = false;
-
+  let satelliteEnabled = false;
+  
   map.on('error', (e) => {
     console.error('Map load error', e.error);
     if (e && e.sourceId) {
       showError(`Error al cargar ${e.sourceId}. Reintentando...`);
       if (e.sourceId === 'satellite') {
-          if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
+        if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
         if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'visible');
         if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
         setTimeout(() => {
           hideError();
-          if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
-          if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'none');
-          if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'none');
+          updateSatelliteVisibility();
         }, 5000);
       }
     } else {
@@ -286,6 +285,7 @@ if (typeof window !== 'undefined') {
 
     updateLabelVisibility();
     updateTerrainVisibility();
+    updateSatelliteVisibility();
   });
 
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }));
@@ -348,18 +348,37 @@ if (typeof window !== 'undefined') {
     updateTerrainVisibility();
   }
 
-  function showSatellite() {
+  function updateSatelliteVisibility() {
     if (MAPBOX_TOKEN || MAPTILER_KEY) {
-      if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
-      if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'none');
-      if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'none');
+      if (satelliteEnabled) {
+        if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
+        if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'none');
+        if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'none');
+      } else {
+        if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
+        if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
+        if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'visible');
+      }
     } else {
-      if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
-      if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'visible');
-      if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
+      if (satelliteEnabled) {
+        if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
+        if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'visible');
+        if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
+      } else {
+        if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
+        if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'none');
+        if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'none');
+      }
     }
-    if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
-    if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
+    if (btnSat) {
+      btnSat.textContent = satelliteEnabled ? '🗺️' : '🛰️';
+      btnSat.classList.toggle('active', satelliteEnabled);
+    }
+  }
+
+  function toggleSatellite() {
+    satelliteEnabled = !satelliteEnabled;
+    updateSatelliteVisibility();
   }
 
   // --- Estado ---
@@ -378,7 +397,7 @@ if (typeof window !== 'undefined') {
   $('#btnMenu').onclick = () => $('#sidebar').classList.toggle('hidden');
   $('#btnInfo').onclick = () => $('#glossary').classList.toggle('hidden');
   const btnSat = $('#btnSat');
-  btnSat.onclick = showSatellite;
+  btnSat.onclick = toggleSatellite;
   const btnTerrain = $('#btnTerrain');
   btnTerrain.onclick = toggleTerrain;
   if (!MAPBOX_TOKEN) btnTerrain.classList.add('hidden');
