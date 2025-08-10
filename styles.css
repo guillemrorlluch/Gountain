@@ -75,3 +75,19 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 }
 
 .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #334155; margin-right:6px; }
+
+.compass-ctrl {
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.compass-arrow {
+  width:0;
+  height:0;
+  border-left:8px solid transparent;
+  border-right:8px solid transparent;
+  border-bottom:14px solid #f8fafc;
+  transform-origin:50% 80%;
+}
