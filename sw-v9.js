@@ -6,11 +6,11 @@ const DATA_CACHE   = `data-${VERSION}`;
 const STATIC_ASSETS = [
   '/',                 // raíz
   '/index.html',       // HTML principal
-  '/styles.css?v=6',   // con query para bustear caché
-  '/app.js?v=6',
-  '/manifest.json?v=6',
-  '/assets/icons/GountainTime-192.png',
-  '/assets/icons/GountainTime-512.png'
+  '/styles.css?v=9',   // con query para bustear caché
+  '/app.js?v=9',
+  '/manifest.json?v=9',
+  '/assets/icons/GountainTime-192.png?v=9',
+  '/assets/icons/GountainTime-512.png?v=9'
 ];
 
 self.addEventListener('install', (event) => {
