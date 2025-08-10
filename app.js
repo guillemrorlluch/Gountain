@@ -61,108 +61,17 @@ if (typeof window !== 'undefined') {
   const DATA_URL = `/data/destinos.json?v=${DATA_VER}`;
   
   // --- Mapa ---
-  const MAPBOX_TOKEN = window.MAPBOX_TOKEN || '';
-  // Additional Mapbox styles for experimentation
-  const EXTRA_MAPBOX_STYLES = [
-    'mapbox://styles/mapbox/streets-v12',
-    'mapbox://styles/mapbox/outdoors-v12',
-    'mapbox://styles/mapbox/light-v11',
-    'mapbox://styles/mapbox/dark-v11',
-    'mapbox://styles/mapbox/satellite-streets-v12'
-  ];
+  const MAPBOX_TOKEN =
+    window.MAPBOX_TOKEN && !window.MAPBOX_TOKEN.includes('your_token_here')
+      ? window.MAPBOX_TOKEN
+      : '';
+  const MAPTILER_KEY = window.MAPTILER_KEY || '';
+  
   const style = {
     version: 8,
-    // si quieres etiquetas, añade glyphs públicos
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-    sources: {
-      nasa: {
-        type: 'raster',
-        tiles: [
-          'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg'
-        ],
-        tileSize: 256,
-        maxzoom: 9,
-        attribution: 'Imagery © NASA'
-      },
-      ...(MAPBOX_TOKEN
-        ? {
-            satellite: {
-              type: 'raster',
-              tiles: [
-                `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
-              ],
-              tileSize: 512,
-              maxzoom: 19,
-              attribution: '© Mapbox, © Maxar/DigitalGlobe'
-            },
-            'mb-dem': {
-              type: 'raster-dem',
-              tiles: [
-                `https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=${MAPBOX_TOKEN}`
-              ],
-              tileSize: 512,
-              maxzoom: 14
-            },
-            'mapbox-streets': {
-              type: 'vector',
-              url: 'mapbox://mapbox.mapbox-streets-v8'
-            }
-          }
-        : {})
-    },
-    layers: [
-      { id: 'nasa', type: 'raster', source: 'nasa' },
-      ...(MAPBOX_TOKEN
-      ? [
-          { id: 'satellite', type: 'raster', source: 'satellite' },
-          {
-            id: 'country-label',
-            type: 'symbol',
-            source: 'mapbox-streets',
-            'source-layer': 'country_label',
-            layout: {
-              'text-field': ['get', 'name_en'],
-              'text-size': 14
-            },
-            paint: {
-              'text-color': '#000',
-              'text-halo-color': '#fff',
-              'text-halo-width': 1
-            }
-          },
-          {
-            id: 'place-label',
-            type: 'symbol',
-            source: 'mapbox-streets',
-            'source-layer': 'place_label',
-            layout: {
-              'text-field': ['get', 'name_en'],
-              'text-size': 12
-            },
-                       paint: {
-              'text-color': '#000',
-              'text-halo-color': '#fff',
-              'text-halo-width': 1
-            }
-          },
-          {
-            id: 'state-label',
-            type: 'symbol',
-            source: 'mapbox-streets',
-            'source-layer': 'state_label',
-            layout: {
-              'text-field': ['get', 'name_en'],
-              'text-size': 12
-            },
-            paint: {
-              'text-color': '#222',
-              'text-halo-color': '#fff',
-              'text-halo-width': 1
-            }
-          }
-        ]
-        : [])
-    ]
+    sources: {},
+    layers: []
   };
 
   const map = new maplibregl.Map({
@@ -192,15 +101,15 @@ if (typeof window !== 'undefined') {
     if (e && e.sourceId) {
       showError(`Error al cargar ${e.sourceId}. Reintentando...`);
       if (e.sourceId === 'satellite') {
-        if (map.getLayer('nasa')) map.setLayoutProperty('nasa', 'visibility', 'visible');
+          if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
+        if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'visible');
         if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
         setTimeout(() => {
           hideError();
           if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
-          if (map.getLayer('nasa')) map.setLayoutProperty('nasa', 'visibility', 'none');
+          if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'none');
+          if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'none');
         }, 5000);
-      } else if (e.sourceId === 'nasa' && MAPBOX_TOKEN) {
-        if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
       }
     } else {
       showError('Error al cargar el mapa');
@@ -211,6 +120,7 @@ if (typeof window !== 'undefined') {
   });
 
   map.on('load', () => {
+    // Center on user's location if available
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -220,13 +130,94 @@ if (typeof window !== 'undefined') {
         { enableHighAccuracy: true }
       );
     }
+    
+    // NASA imagery
+    map.addSource('nasa-bluemarble', {
+      type: 'raster',
+      tiles: [
+        'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg'
+      ],
+      tileSize: 256,
+      minzoom: 0,
+      maxzoom: 8,
+      attribution: 'Imagery © NASA'
+    });
+    map.addLayer({ id: 'nasa-bluemarble', type: 'raster', source: 'nasa-bluemarble', minzoom: 0, maxzoom: 8, layout: { visibility: 'none' } });
+
+    map.addSource('nasa-viirs', {
+      type: 'raster',
+      tiles: [
+        'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg'
+      ],
+      tileSize: 256,
+      minzoom: 9,
+      maxzoom: 13,
+      attribution: 'Imagery © NASA'
+    });
+    map.addLayer({ id: 'nasa-viirs', type: 'raster', source: 'nasa-viirs', minzoom: 9, maxzoom: 13, layout: { visibility: 'none' } });
+
     if (MAPBOX_TOKEN) {
-      map.setTerrain({ source: 'mb-dem' });
-      map.addLayer({
-        id: 'hillshade',
-        type: 'hillshade',
-        source: 'mb-dem'
+      map.addSource('satellite', {
+        type: 'raster',
+        tiles: [
+          `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
+        ],
+        tileSize: 512,
+        maxzoom: 19,
+        attribution: '© Mapbox, © Maxar/DigitalGlobe'
       });
+      map.addLayer({ id: 'satellite', type: 'raster', source: 'satellite' });
+
+      map.addSource('streets', {
+        type: 'vector',
+        tiles: [
+          `https://api.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.vector.pbf?access_token=${MAPBOX_TOKEN}`
+        ],
+        minzoom: 0,
+        maxzoom: 14
+      });
+
+      map.addLayer({
+        id: 'country-boundaries',
+        type: 'line',
+        source: 'streets',
+        'source-layer': 'admin',
+        filter: ['==', ['get', 'admin_level'], 2],
+        paint: { 'line-color': '#333', 'line-width': 1, 'line-opacity': 0.5 }
+      });
+
+      map.addLayer({
+        id: 'country-label',
+        type: 'symbol',
+        source: 'streets',
+        'source-layer': 'country_label',
+        layout: { 'text-field': ['get', 'name_en'], 'text-size': 14 },
+        paint: { 'text-color': '#000', 'text-halo-color': '#fff', 'text-halo-width': 1 }
+      });
+      map.addLayer({
+        id: 'place-label',
+        type: 'symbol',
+        source: 'streets',
+        'source-layer': 'place_label',
+        layout: { 'text-field': ['get', 'name_en'], 'text-size': 12 },
+        paint: { 'text-color': '#000', 'text-halo-color': '#fff', 'text-halo-width': 1 }
+      });
+       map.addLayer({
+        id: 'state-label',
+        type: 'symbol',
+        source: 'streets',
+        'source-layer': 'state_label',
+        layout: { 'text-field': ['get', 'name_en'], 'text-size': 12 },
+        paint: { 'text-color': '#222', 'text-halo-color': '#fff', 'text-halo-width': 1 }
+      });
+      
+      map.addSource('mb-dem', {
+        type: 'raster-dem',
+        tiles: [`https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=${MAPBOX_TOKEN}`],
+        tileSize: 512,
+        maxzoom: 14
+      });
+      map.addLayer({ id: 'hillshade', type: 'hillshade', source: 'mb-dem', layout: { visibility: 'none' } });
       map.addSource('contours', {
         type: 'vector',
         tiles: [
@@ -240,31 +231,61 @@ if (typeof window !== 'undefined') {
         type: 'line',
         source: 'contours',
         'source-layer': 'contour',
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#877b59',
-          'line-width': 1,
-          'line-opacity': 0.5
-        }
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+        paint: { 'line-color': '#877b59', 'line-width': 1, 'line-opacity': 0.5 }
       });
-      map.setTerrain(null);
-    }
-    map.addLayer({
-      id: 'sky',
-      type: 'sky',
-      paint: {
-        'sky-type': 'atmosphere',
-        'sky-atmosphere-sun-intensity': 15
-      }
-    });
-    showSatellite();
+    } else if (MAPTILER_KEY) {
+      map.addSource('satellite', {
+        type: 'raster',
+        tiles: [`https://api.maptiler.com/tiles/satellite/{z}/{x}/{y}.jpg?key=${MAPTILER_KEY}`],
+        tileSize: 256,
+        maxzoom: 20,
+        attribution: '© MapTiler, © OpenStreetMap contributors'
+      });
+      map.addLayer({ id: 'satellite', type: 'raster', source: 'satellite' });
 
-    map.once('idle', () => {
-      map.on('click', handleMapClick);
-    });
+      map.addSource('streets', {
+        type: 'vector',
+        tiles: [`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${MAPTILER_KEY}`],
+        minzoom: 0,
+        maxzoom: 14
+      });
+      map.addLayer({
+        id: 'country-boundaries',
+        type: 'line',
+        source: 'streets',
+        'source-layer': 'administrative',
+        filter: ['==', ['get', 'admin_level'], 2],
+        paint: { 'line-color': '#333', 'line-width': 1, 'line-opacity': 0.5 }
+      });
+    } else {
+      map.addSource('satellite', {
+        type: 'raster',
+        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        maxzoom: 19,
+        attribution: '© OpenStreetMap contributors'
+      });
+      map.addLayer({ id: 'satellite', type: 'raster', source: 'satellite' });
+
+      map.addSource('streets', {
+        type: 'vector',
+        tiles: ['https://demotiles.maplibre.org/tiles/v3/{z}/{x}/{y}.pbf'],
+        minzoom: 0,
+        maxzoom: 14
+      });
+      map.addLayer({
+        id: 'country-boundaries',
+        type: 'line',
+        source: 'streets',
+        'source-layer': 'administrative',
+        filter: ['==', ['get', 'admin_level'], 2],
+        paint: { 'line-color': '#333', 'line-width': 1, 'line-opacity': 0.5 }
+      });
+    }
+
+    updateLabelVisibility();
+    updateTerrainVisibility();
   });
 
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }));
@@ -328,43 +349,17 @@ if (typeof window !== 'undefined') {
   }
 
   function showSatellite() {
-    if (MAPBOX_TOKEN && map.getLayer('satellite')) {
-      map.setLayoutProperty('satellite', 'visibility', 'visible');
-      map.setLayoutProperty('nasa', 'visibility', 'none');
+    if (MAPBOX_TOKEN || MAPTILER_KEY) {
+      if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
+      if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'none');
+      if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'none');
     } else {
-      map.setLayoutProperty('nasa', 'visibility', 'visible');
+      if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
+      if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'visible');
       if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
     }
     if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
     if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
-    }
-  
-    updateLabelVisibility();
-    updateTerrainVisibility();
-  
-    function handleMapClick(e) {
-    const { lngLat, point } = e;
-    let elev = null;
-    if (map.getSource('mb-dem')) {
-      const q = map.queryTerrainElevation(lngLat);
-      if (q !== null && q !== undefined) elev = Math.round(q);
-    }
-    let place = '';
-    if (map.getSource('mapbox-streets')) {
-      const feats = map.queryRenderedFeatures(point, {
-        layers: ['place-label', 'country-label']
-      });
-      const pl = feats.find(f => f.layer.id === 'place-label');
-      const co = feats.find(f => f.layer.id === 'country-label');
-      if (pl) place += pl.properties.name_en;
-      if (co) place += (place ? ', ' : '') + co.properties.name_en;
-    }
-    const parts = [];
-    if (place) parts.push(`<b>${place}</b>`);
-    if (elev !== null && elev !== 0) parts.push(`<b>Elevation:</b> ${elev} m`);
-    if (!parts.length) return;
-    const html = `<div>${parts.join('<br>')}</div>`;
-    new maplibregl.Popup().setLngLat(lngLat).setHTML(html).addTo(map);
   }
 
   // --- Estado ---
@@ -534,3 +529,11 @@ if (typeof window !== 'undefined') {
             if (nw.state === 'installed' && navigator.serviceWorker.controller) {
               nw.postMessage({ type: 'SKIP_WAITING' });
             }
+          });
+        });
+      } catch (err) {
+        console.error('❌ Error registrando SW:', err);
+      }
+    });
+  }
+}
