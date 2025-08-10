@@ -3428,5 +3428,98 @@
     "id_orden": 94,
     "google_search": "https://www.google.com/search?q=Patagonia+–+Fitz/Torres",
     "link": "https://www.google.com/search?q=Patagonia+–+Fitz/Torres+Chile/Argentina"
+  },
+  {
+    "id": "tatry",
+    "nombre": "Tatry Mountain",
+    "coords": [49.2898, 19.9500],
+    "pais": "Polonia",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 2655,
+    "dificultad": "Trek",
+    "meses": "Jun–Sep",
+    "temp_aprox": "5–20°C",
+    "botas": [
+      "Cualquiera",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": ["—"],
+    "vivac": "Permitido en zonas designadas",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "Opcional",
+    "coste_estancia": "Variable",
+    "resena": "Paisajes alpinos y rutas bien señalizadas.",
+    "id_orden": 999,
+    "google_search": "https://www.google.com/search?q=Tatry+Mountain+Zakopane+Polonia",
+    "link": "https://www.google.com/search?q=Tatry+Mountain+Zakopane+Polonia"
+  },
+  {
+    "id": "etna",
+    "nombre": "Monte Etna",
+    "coords": [37.7510, 14.9934],
+    "pais": "Italia",
+    "continente": "Europa",
+    "tipo": "Ascensión volcánica",
+    "altitud_m": 3329,
+    "dificultad": "PD",
+    "meses": "May–Oct",
+    "temp_aprox": "5–20°C",
+    "botas": [
+      "La Sportiva Aequilibrium ST GTX",
+      "Scarpa Ribelle Lite HD"
+    ],
+    "scramble": {
+      "si": true,
+      "grado": "I",
+      "arnes": false
+    },
+    "equipo": ["Casco", "Ropa cortavientos"],
+    "vivac": "No permitido",
+    "gas": "Sí",
+    "permisos": "Sí",
+    "guia": "Recomendado",
+    "coste_estancia": "Variable",
+    "resena": "Uno de los volcanes más activos del mundo, con rutas de lava y vistas espectaculares.",
+    "id_orden": 999,
+    "google_search": "https://www.google.com/search?q=Monte+Etna+Sicilia+Italia",
+    "link": "https://www.google.com/search?q=Monte+Etna+Sicilia+Italia"
+  },
+  {
+    "id": "black_forest",
+    "nombre": "Black Forest",
+    "coords": [48.0790, 8.2080],
+    "pais": "Alemania",
+    "continente": "Europa",
+    "tipo": "Travesía",
+    "altitud_m": 1493,
+    "dificultad": "Trek",
+    "meses": "May–Oct",
+    "temp_aprox": "5–18°C",
+    "botas": [
+      "Cualquiera",
+      "Otras ligeras (para trekking no técnico)"
+    ],
+    "scramble": {
+      "si": false,
+      "grado": "-",
+      "arnes": false
+    },
+    "equipo": ["—"],
+    "vivac": "Permitido en zonas designadas",
+    "gas": "Sí",
+    "permisos": "No",
+    "guia": "Opcional",
+    "coste_estancia": "Variable",
+    "resena": "Bosques densos y rutas escénicas.",
+    "id_orden": 999,
+    "google_search": "https://www.google.com/search?q=Black+Forest+Alemania",
+    "link": "https://www.google.com/search?q=Black+Forest+Alemania"
   }
 ]
