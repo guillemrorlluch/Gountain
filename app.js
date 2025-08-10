@@ -58,7 +58,7 @@ if (typeof window !== 'undefined') {
               tileSize: 256,
               attribution: '© Mapbox, © Maxar/DigitalGlobe'
             },
-            mb-dem': {
+            'mb-dem': {
               type: 'raster-dem',
               tiles: [
                 `https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=${MAPBOX_TOKEN}`
@@ -164,7 +164,11 @@ if (typeof window !== 'undefined') {
         'sky-atmosphere-sun-intensity': 15
       }
     });
-      showNASA();
+    showNASA();
+
+    map.once('idle', () => {
+      map.on('click', handleMapClick);
+    });
   });
 
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }));
@@ -204,6 +208,29 @@ if (typeof window !== 'undefined') {
     map.setLayoutProperty('nasa', 'visibility', 'visible');
     if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
     if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
+  }
+
+  function handleMapClick(e) {
+    const { lngLat, point } = e;
+    let elev = null;
+    if (map.getSource('mb-dem')) {
+      const q = map.queryTerrainElevation(lngLat);
+      if (q !== null && q !== undefined) elev = Math.round(q);
+    }
+    let place = '';
+    if (map.getSource('mapbox-streets')) {
+      const feats = map.queryRenderedFeatures(point, {
+        layers: ['place-label', 'country-label']
+      });
+      const pl = feats.find(f => f.layer.id === 'place-label');
+      const co = feats.find(f => f.layer.id === 'country-label');
+      if (pl) place += pl.properties.name_en;
+      if (co) place += (place ? ', ' : '') + co.properties.name_en;
+    }
+    const html = `<div><b>${place || 'Unknown location'}</b><br><b>Elevation:</b> ${
+      elev !== null ? `${elev} m` : 'N/A'
+    }</div>`;
+    new maplibregl.Popup().setLngLat(lngLat).setHTML(html).addTo(map);
   }
 
   // --- Estado ---
