@@ -30,10 +30,15 @@ const state = {
 const $ = (sel) => document.querySelector(sel);
 $('#btnMenu').onclick = () => $('#sidebar').classList.toggle('hidden');
 $('#btnInfo').onclick = () => $('#glossary').classList.toggle('hidden');
-$('#clearFilters').onclick = () => { for (const k of Object.keys(state.filters)) state.filters[k].clear(); renderFilters(); renderMarkers(); };
+$('#clearFilters').onclick = () => { 
+  for (const k of Object.keys(state.filters)) state.filters[k].clear(); 
+  renderFilters(); 
+  renderMarkers(); 
+};
 
 function bootLegendList() {
-  const ul = document.getElementById('legend-botas'); ul.innerHTML = '';
+  const ul = document.getElementById('legend-botas'); 
+  ul.innerHTML = '';
   for (const [k,color] of Object.entries(BOOT_COLORS)) {
     const li = document.createElement('li');
     li.innerHTML = `<span style="display:inline-block;width:10px;height:10px;background:${color};border-radius:2px;margin-right:6px;"></span>${k}`;
@@ -46,7 +51,12 @@ function chip(label, group, key) {
   el.className = 'chip';
   el.textContent = label;
   if (state.filters[group].has(key)) el.classList.add('active');
-  el.onclick = () => { if (state.filters[group].has(key)) state.filters[group].delete(key); else state.filters[group].add(key); el.classList.toggle('active'); renderMarkers(); };
+  el.onclick = () => { 
+    if (state.filters[group].has(key)) state.filters[group].delete(key); 
+    else state.filters[group].add(key); 
+    el.classList.toggle('active'); 
+    renderMarkers(); 
+  };
   return el;
 }
 
@@ -81,15 +91,30 @@ function withinFilters(d) {
 }
 
 function markerColor(d) {
-  const pr = ["Scarpa Ribelle Lite HD","La Sportiva Aequilibrium ST GTX","Scarpa Zodiac Tech LT GTX","Bestard Teix Lady GTX","La Sportiva Nepal Cube GTX","Nepal (doble bota técnica de alta montaña)","Botas triple capa (8000 m+)","Cualquiera","Depende","Otras ligeras (para trekking no técnico)"];
+  const pr = [
+    "Scarpa Ribelle Lite HD",
+    "La Sportiva Aequilibrium ST GTX",
+    "Scarpa Zodiac Tech LT GTX",
+    "Bestard Teix Lady GTX",
+    "La Sportiva Nepal Cube GTX",
+    "Nepal (doble bota técnica de alta montaña)",
+    "Botas triple capa (8000 m+)",
+    "Cualquiera",
+    "Depende",
+    "Otras ligeras (para trekking no técnico)"
+  ];
   for (const p of pr) if (d.botas.includes(p)) return BOOT_COLORS[p] || '#22c55e';
   return '#22c55e';
 }
 
 function popupHtml(d) {
   const bootsBadges = d.botas.map(b => `<span class="badge">${b}</span>`).join(' ');
+  const title = d.link
+    ? `<a href="${d.link}" target="_blank" style="font-weight:700;font-size:15px;margin-bottom:4px;color:#3b82f6;text-decoration:underline;">${d.nombre} (${d.pais})</a>`
+    : `<div style="font-weight:700;font-size:15px;margin-bottom:4px">${d.nombre} (${d.pais})</div>`;
+
   return `<div style="min-width:260px;max-width:360px">
-    <div style="font-weight:700;font-size:15px;margin-bottom:4px">${d.nombre} (${d.pais})</div>
+    ${title}
     <div><b>Continente:</b> ${d.continente} · <b>Tipo:</b> ${d.tipo}</div>
     <div><b>Altitud:</b> ${d.altitud_m} m · <b>Dificultad:</b> ${d.dificultad}</div>
     <div style="margin-top:4px"><b>Meses:</b> ${d.meses} · <b>Temp aprox:</b> ${d.temp_aprox}</div>
@@ -118,7 +143,10 @@ async function loadData() {
   bootLegendList();
 }
 
-function clearMarkers() { state.markers.forEach(m => map.removeLayer(m)); state.markers = []; }
+function clearMarkers() { 
+  state.markers.forEach(m => map.removeLayer(m)); 
+  state.markers = []; 
+}
 
 function renderMarkers() {
   clearMarkers();
@@ -138,19 +166,17 @@ function renderMarkers() {
 
 loadData();
 
-// ---- Service Worker (final de app.js) ----
+// ---- Service Worker ----
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
       const reg = await navigator.serviceWorker.register('/sw.js');
       console.log('✅ SW registrado:', reg.scope);
 
-      // Si ya hay uno nuevo "waiting", actívalo ya
       if (reg.waiting) {
         reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
 
-      // Cuando detecte actualización, fuerza que el nuevo tome el control
       reg.addEventListener('updatefound', () => {
         const nw = reg.installing;
         if (!nw) return;
@@ -161,7 +187,6 @@ if ('serviceWorker' in navigator) {
         });
       });
 
-      // Recarga una vez que el nuevo SW toma el control
       let refreshing = false;
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (refreshing) return;
