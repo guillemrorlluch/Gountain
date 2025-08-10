@@ -47,8 +47,16 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 
 .btn { width: 100%; padding:10px 12px; border-radius:10px; border:1px solid #334155; background:#0b1326; color:#e5e7eb; cursor:pointer; margin-top:8px; }
 
-.leaflet-container { background:#0b1220; }
-.leaflet-popup-content-wrapper { background:#0b1326; color:#e5e7eb; border:1px solid #1f2a44; }
-.leaflet-popup-tip { background:#0b1326; }
+
+.maplibregl-map { background:#0b1220; }
+.maplibregl-popup-content { background:#0b1326; color:#e5e7eb; border:1px solid #1f2a44; }
+.maplibregl-popup-tip { background:#0b1326; }
+
+.marker {
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid #fff;
+}
 
 .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #334155; margin-right:6px; }
