@@ -52,6 +52,7 @@ if (typeof window !== 'undefined') {
         type: 'raster',
         tiles: [
           'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg'
+        ],
         tileSize: 256,
         maxzoom: 9,
         attribution: 'Imagery © NASA'
@@ -128,21 +129,6 @@ if (typeof window !== 'undefined') {
             },
             paint: {
               'text-color': '#222',
-              'text-halo-color': '#fff',
-              'text-halo-width': 1
-            }
-          },
-          {
-            id: 'place-label',
-            type: 'symbol',
-            source: 'mapbox-streets',
-            'source-layer': 'place_label',
-            layout: {
-              'text-field': ['get', 'name_en'],
-              'text-size': 12
-            },
-            paint: {
-              'text-color': '#333',
               'text-halo-color': '#fff',
               'text-halo-width': 1
             }
@@ -282,12 +268,12 @@ if (typeof window !== 'undefined') {
     }
     if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
     if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
-  }
+    }
+  
     updateLabelVisibility();
     updateTerrainVisibility();
-  }
-
-  function handleMapClick(e) {
+  
+    function handleMapClick(e) {
     const { lngLat, point } = e;
     let elev = null;
     if (map.getSource('mb-dem')) {
