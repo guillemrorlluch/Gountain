@@ -4,7 +4,7 @@
 const DATA_VER = '9';
 const DATA_URL = `/data/destinos.json?v=${DATA_VER}`;
 
-// Paleta por botas
+// Paleta para botas
 const BOOT_COLORS = {
   "Cualquiera": "#22c55e",
   "Depende": "#f59e0b",
