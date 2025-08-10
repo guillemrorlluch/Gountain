@@ -16,6 +16,18 @@ body { background: var(--bg); color: var(--text); font-family: ui-sans-serif, sy
 .topbar h1 { font-size: 16px; margin: 0; font-weight: 700; letter-spacing: .3px; }
 .topbar button { background: #1f2937; color: var(--text); border: 1px solid #374151; border-radius: 10px; padding: 6px 10px; cursor: pointer; }
 #map { position: fixed; inset: 52px 0 0 0; }
+#map-error {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #b91c1c;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  z-index: 2000;
+  font-size: 14px;
+}
 
 .panel {
   position: fixed; top: 52px; bottom: 0; width: 320px; background: var(--panel); border-right: 1px solid #1f2937; z-index:1001; overflow:auto;
