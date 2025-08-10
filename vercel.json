@@ -7,11 +7,20 @@
       ]
     },
     {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
       "source": "/data/(.*)\\.json",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/sw.js", "destination": "/sw-v9.js" }
   ],
   "cleanUrls": true,
   "trailingSlash": false
