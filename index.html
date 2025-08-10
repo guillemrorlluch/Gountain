@@ -98,9 +98,15 @@
   <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
-   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
   </script>
+
+  <script>
+    // inject your Mapbox access token here
+    window.MAPBOX_TOKEN = 'pk.your_token_here';
+  </script>
+
   <script src="/app.js?v=9"></script>
-</body>
-</html>
+  </body>
+  </html>
