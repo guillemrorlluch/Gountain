@@ -49,8 +49,23 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 
 
 .maplibregl-map { background:#0b1220; }
-.maplibregl-popup-content { background:#0b1326; color:#e5e7eb; border:1px solid #1f2a44; }
-.maplibregl-popup-tip { background:#0b1326; }
+.maplibregl-popup-content,
+.leaflet-popup-content-wrapper {
+  background:#0b1326;
+  color:#e5e7eb;
+  border:1px solid #1f2a44;
+  width:fit-content;
+  max-width:400px;
+  max-height:80vh;
+  overflow-y:auto;
+}
+.maplibregl-popup-tip,
+.leaflet-popup-tip { background:#0b1326; }
+
+@media (max-width: 600px) {
+  .maplibregl-popup-content,
+  .leaflet-popup-content-wrapper { max-width:300px; }
+}
 
 .marker {
   width:14px;
