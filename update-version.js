@@ -1,31 +1,13 @@
-// update-version.js
-const fs = require('fs');
-const path = require('path');
-const { VERSION } = require('./config');
+import fs from 'fs';
 
-// Archivos donde quieres reemplazar la versión
-const files = [
-  'index.html',
-  'manifest.json',
-  'styles.css',
-  'app.js',
-  'sw-v7.js'
-];
+// Lee versión de config.js
+const { VERSION } = await import(`./config.js?${Date.now()}`);
 
-files.forEach(file => {
-  const filePath = path.join(__dirname, file);
-  
-  if (fs.existsSync(filePath)) {
-    let content = fs.readFileSync(filePath, 'utf8');
-    
-    // Reemplaza todas las versiones antiguas por la nueva
-    content = content.replace(/v\d+/g, VERSION);
-    
-    fs.writeFileSync(filePath, content, 'utf8');
-    console.log(`✅ Actualizado ${file} a ${VERSION}`);
-  } else {
-    console.warn(`⚠️ No se encontró ${file}`);
-  }
+const filesToUpdate = ['app.js', 'index.html', 'manifest.json', 'styles.css'];
+
+filesToUpdate.forEach(file => {
+  let content = fs.readFileSync(file, 'utf8');
+  content = content.replace(/v\d+/g, VERSION);
+  fs.writeFileSync(file, content, 'utf8');
+  console.log(`✅ ${file} actualizado a ${VERSION}`);
 });
-
-console.log(`\n🚀 Versión actualizada a ${VERSION} en todos los archivos listados.`);
