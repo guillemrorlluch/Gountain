@@ -88,6 +88,34 @@ if (typeof window !== 'undefined') {
   map.on('load', () => {
     if (MAPBOX_TOKEN) {
       map.setTerrain({ source: 'mb-dem' });
+      map.addLayer({
+        id: 'hillshade',
+        type: 'hillshade',
+        source: 'mb-dem'
+      });
+      map.addSource('contours', {
+        type: 'vector',
+        tiles: [
+          `https://api.mapbox.com/v4/mapbox.mapbox-terrain-v2/{z}/{x}/{y}.vector.pbf?access_token=${MAPBOX_TOKEN}`
+        ],
+        minzoom: 0,
+        maxzoom: 14
+      });
+      map.addLayer({
+        id: 'contours-line',
+        type: 'line',
+        source: 'contours',
+        'source-layer': 'contour',
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#877b59',
+          'line-width': 1,
+          'line-opacity': 0.5
+        }
+      });
     }
     map.addLayer({
       id: 'sky',
