@@ -531,6 +531,13 @@ if (typeof window !== 'undefined') {
             }
           });
         });
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
       } catch (err) {
         console.error('❌ Error registrando SW:', err);
       }
