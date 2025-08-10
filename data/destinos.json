@@ -32,7 +32,8 @@
     "coste_estancia": "0 €",
     "resena": "Navegación sin senderos.",
     "id_orden": 1,
-    "google_search": "https://www.google.com/search?q=Sarek+Traverse"
+    "google_search": "https://www.google.com/search?q=Sarek+Traverse",
+    "link": "https://www.google.com/search?q=Sarek+Traverse+Suecia"
   },
   {
     "id": "denali",
@@ -66,7 +67,8 @@
     "coste_estancia": "Medio/alto",
     "resena": "8000 de Alaska.",
     "id_orden": 2,
-    "google_search": "https://www.google.com/search?q=Denali+(West+Buttress)"
+    "google_search": "https://www.google.com/search?q=Denali+(West+Buttress)",
+    "link": "https://www.google.com/search?q=Denali+(West+Buttress)+USA"
   },
   {
     "id": "cuillin",
@@ -103,7 +105,8 @@
     "coste_estancia": "0–20 €",
     "resena": "Arista técnica larga.",
     "id_orden": 3,
-    "google_search": "https://www.google.com/search?q=Cuillin+Ridge"
+    "google_search": "https://www.google.com/search?q=Cuillin+Ridge",
+    "link": "https://www.google.com/search?q=Cuillin+Ridge+Reino+Unido"
   },
   {
     "id": "ben-nevis",
@@ -138,7 +141,8 @@
     "coste_estancia": "0–30 €",
     "resena": "Arista estética; clima cambiante.",
     "id_orden": 4,
-    "google_search": "https://www.google.com/search?q=Ben+Nevis+(CMD+Arête)"
+    "google_search": "https://www.google.com/search?q=Ben+Nevis+(CMD+Arête)",
+    "link": "https://www.google.com/search?q=Ben+Nevis+(CMD+Arête)+Reino+Unido"
   },
   {
     "id": "helvellyn-striding",
@@ -173,7 +177,8 @@
     "coste_estancia": "Bajo",
     "resena": "Arista clásica del Lake District.",
     "id_orden": 5,
-    "google_search": "https://www.google.com/search?q=Helvellyn+por+Striding+Edge"
+    "google_search": "https://www.google.com/search?q=Helvellyn+por+Striding+Edge",
+    "link": "https://www.google.com/search?q=Helvellyn+por+Striding+Edge+Reino+Unido"
   },
   {
     "id": "crib-goch",
@@ -208,7 +213,8 @@
     "coste_estancia": "Bajo",
     "resena": "Fina arista roja; muy aérea y famosa.",
     "id_orden": 6,
-    "google_search": "https://www.google.com/search?q=Snowdon+–+Crib+Goch"
+    "google_search": "https://www.google.com/search?q=Snowdon+–+Crib+Goch",
+    "link": "https://www.google.com/search?q=Snowdon+–+Crib+Goch+Gales+(RU)"
   },
   {
     "id": "wapta",
@@ -243,7 +249,8 @@
     "coste_estancia": "40–60 €",
     "resena": "Travesía glacial sencilla.",
     "id_orden": 7,
-    "google_search": "https://www.google.com/search?q=Wapta+Icefield"
+    "google_search": "https://www.google.com/search?q=Wapta+Icefield",
+    "link": "https://www.google.com/search?q=Wapta+Icefield+Canadá"
   },
   {
     "id": "watzmann-traverse",
@@ -279,7 +286,8 @@
     "coste_estancia": "40–70 €",
     "resena": "Arista alpina larga y aérea sobre Berchtesgaden.",
     "id_orden": 8,
-    "google_search": "https://www.google.com/search?q=Watzmann+Traverse"
+    "google_search": "https://www.google.com/search?q=Watzmann+Traverse",
+    "link": "https://www.google.com/search?q=Watzmann+Traverse+Alemania"
   },
   {
     "id": "alpspitze-ferrata",
@@ -315,7 +323,8 @@
     "coste_estancia": "30–60 €",
     "resena": "Clásica ferrata con grandes vistas al Zugspitze.",
     "id_orden": 9,
-    "google_search": "https://www.google.com/search?q=Alpspitze+(Via+Ferrata)"
+    "google_search": "https://www.google.com/search?q=Alpspitze+(Via+Ferrata)",
+    "link": "https://www.google.com/search?q=Alpspitze+(Via+Ferrata)+Alemania"
   },
   {
     "id": "zugspitze",
@@ -352,7 +361,8 @@
     "coste_estancia": "30–80 €",
     "resena": "Glaciar + ferrata.",
     "id_orden": 10,
-    "google_search": "https://www.google.com/search?q=Zugspitze+(Höllental)"
+    "google_search": "https://www.google.com/search?q=Zugspitze+(Höllental)",
+    "link": "https://www.google.com/search?q=Zugspitze+(Höllental)+Alemania"
   },
   {
     "id": "adlerweg",
@@ -388,7 +398,8 @@
     "coste_estancia": "40–70 €",
     "resena": "Etapas variadas.",
     "id_orden": 11,
-    "google_search": "https://www.google.com/search?q=Adlerweg+(Tirol)"
+    "google_search": "https://www.google.com/search?q=Adlerweg+(Tirol)",
+    "link": "https://www.google.com/search?q=Adlerweg+(Tirol)+Austria"
   },
   {
     "id": "stubaier-hohenweg",
@@ -424,7 +435,8 @@
     "coste_estancia": "40–75 €",
     "resena": "Circuito de refugios más famoso del Tirol.",
     "id_orden": 12,
-    "google_search": "https://www.google.com/search?q=Stubaier+Höhenweg"
+    "google_search": "https://www.google.com/search?q=Stubaier+Höhenweg",
+    "link": "https://www.google.com/search?q=Stubaier+Höhenweg+Austria"
   },
   {
     "id": "berliner-hohenweg",
@@ -459,7 +471,8 @@
     "coste_estancia": "40–75 €",
     "resena": "Etapas largas y paisajes glaciares del Zillertal.",
     "id_orden": 13,
-    "google_search": "https://www.google.com/search?q=Berliner+Höhenweg+(Zillertal)"
+    "google_search": "https://www.google.com/search?q=Berliner+Höhenweg+(Zillertal)",
+    "link": "https://www.google.com/search?q=Berliner+Höhenweg+(Zillertal)+Austria"
   },
   {
     "id": "rainier",
@@ -494,7 +507,8 @@
     "coste_estancia": "15–30 €",
     "resena": "Glaciar clásico EEUU.",
     "id_orden": 14,
-    "google_search": "https://www.google.com/search?q=Mount+Rainier"
+    "google_search": "https://www.google.com/search?q=Mount+Rainier",
+    "link": "https://www.google.com/search?q=Mount+Rainier+USA"
   },
   {
     "id": "tre-cime-loop",
@@ -529,7 +543,8 @@
     "coste_estancia": "Medio",
     "resena": "Icono fotográfico; circuito panorámico sencillo.",
     "id_orden": 15,
-    "google_search": "https://www.google.com/search?q=Tre+Cime+di+Lavaredo+(Loop)"
+    "google_search": "https://www.google.com/search?q=Tre+Cime+di+Lavaredo+(Loop)",
+    "link": "https://www.google.com/search?q=Tre+Cime+di+Lavaredo+(Loop)+Italia"
   },
   {
     "id": "ivano-dibona",
@@ -565,7 +580,8 @@
     "coste_estancia": "40–70 €",
     "resena": "Pasarelas históricas en el Cristallo; muy estética.",
     "id_orden": 16,
-    "google_search": "https://www.google.com/search?q=Via+Ferrata+Ivano+Dibona"
+    "google_search": "https://www.google.com/search?q=Via+Ferrata+Ivano+Dibona",
+    "link": "https://www.google.com/search?q=Via+Ferrata+Ivano+Dibona+Italia"
   },
   {
     "id": "alta-via-1",
@@ -600,7 +616,8 @@
     "coste_estancia": "40–80 €",
     "resena": "Hermana más ‘friendly’ de la AV2.",
     "id_orden": 17,
-    "google_search": "https://www.google.com/search?q=Alta+Via+1"
+    "google_search": "https://www.google.com/search?q=Alta+Via+1",
+    "link": "https://www.google.com/search?q=Alta+Via+1+Italia"
   },
   {
     "id": "alta-via-2",
@@ -637,7 +654,8 @@
     "coste_estancia": "40–80 €",
     "resena": "Dolomitas salvajes.",
     "id_orden": 18,
-    "google_search": "https://www.google.com/search?q=Alta+Via+2"
+    "google_search": "https://www.google.com/search?q=Alta+Via+2",
+    "link": "https://www.google.com/search?q=Alta+Via+2+Italia"
   },
   {
     "id": "triglav",
@@ -674,7 +692,8 @@
     "coste_estancia": "30–60 €",
     "resena": "Cumbre emblema.",
     "id_orden": 19,
-    "google_search": "https://www.google.com/search?q=Triglav"
+    "google_search": "https://www.google.com/search?q=Triglav",
+    "link": "https://www.google.com/search?q=Triglav+Eslovenia"
   },
   {
     "id": "haute",
@@ -711,7 +730,8 @@
     "coste_estancia": "55–90 €",
     "resena": "Glaciares y collados altos.",
     "id_orden": 20,
-    "google_search": "https://www.google.com/search?q=Haute+Route+Cham–Zermatt"
+    "google_search": "https://www.google.com/search?q=Haute+Route+Cham–Zermatt",
+    "link": "https://www.google.com/search?q=Haute+Route+Cham–Zermatt+FR/CH"
   },
   {
     "id": "matterhorn",
@@ -749,7 +769,8 @@
     "coste_estancia": "70–140 €",
     "resena": "Ruta clásica muy aérea.",
     "id_orden": 21,
-    "google_search": "https://www.google.com/search?q=Matterhorn+(Hörnli)"
+    "google_search": "https://www.google.com/search?q=Matterhorn+(Hörnli)",
+    "link": "https://www.google.com/search?q=Matterhorn+(Hörnli)+CH/IT"
   },
   {
     "id": "monterosa",
@@ -787,7 +808,8 @@
     "coste_estancia": "60–100 €",
     "resena": "Alta montaña glacial.",
     "id_orden": 22,
-    "google_search": "https://www.google.com/search?q=Monte+Rosa+(Dufour)"
+    "google_search": "https://www.google.com/search?q=Monte+Rosa+(Dufour)",
+    "link": "https://www.google.com/search?q=Monte+Rosa+(Dufour)+CH/IT"
   },
   {
     "id": "montblanc",
@@ -825,7 +847,8 @@
     "coste_estancia": "60–95 €",
     "resena": "Glaciares y aristas.",
     "id_orden": 23,
-    "google_search": "https://www.google.com/search?q=Mont+Blanc"
+    "google_search": "https://www.google.com/search?q=Mont+Blanc",
+    "link": "https://www.google.com/search?q=Mont+Blanc+FR/IT"
   },
   {
     "id": "tmb",
@@ -861,7 +884,8 @@
     "coste_estancia": "40–80 €",
     "resena": "Clásico alpino.",
     "id_orden": 24,
-    "google_search": "https://www.google.com/search?q=Tour+du+Mont+Blanc"
+    "google_search": "https://www.google.com/search?q=Tour+du+Mont+Blanc",
+    "link": "https://www.google.com/search?q=Tour+du+Mont+Blanc+FR/IT/CH"
   },
   {
     "id": "gran-paradiso",
@@ -898,7 +922,8 @@
     "coste_estancia": "50–80 €",
     "resena": "4000 accesible.",
     "id_orden": 25,
-    "google_search": "https://www.google.com/search?q=Gran+Paradiso"
+    "google_search": "https://www.google.com/search?q=Gran+Paradiso",
+    "link": "https://www.google.com/search?q=Gran+Paradiso+Italia"
   },
   {
     "id": "yellow",
@@ -933,7 +958,8 @@
     "coste_estancia": "Bajo",
     "resena": "Fauna y geiseres.",
     "id_orden": 26,
-    "google_search": "https://www.google.com/search?q=Yellowstone+Grand+Loop"
+    "google_search": "https://www.google.com/search?q=Yellowstone+Grand+Loop",
+    "link": "https://www.google.com/search?q=Yellowstone+Grand+Loop+USA"
   },
   {
     "id": "grand-teton",
@@ -970,7 +996,8 @@
     "coste_estancia": "Medio",
     "resena": "Gran clásico alpino de roca en los Tetons.",
     "id_orden": 27,
-    "google_search": "https://www.google.com/search?q=Grand+Teton+(Upper+Exum+o+Owen-Spalding)"
+    "google_search": "https://www.google.com/search?q=Grand+Teton+(Upper+Exum+o+Owen-Spalding)",
+    "link": "https://www.google.com/search?q=Grand+Teton+(Upper+Exum+o+Owen-Spalding)+USA"
   },
   {
     "id": "picos-europa",
@@ -1006,7 +1033,8 @@
     "coste_estancia": "40–70 €",
     "resena": "Terreno kárstico y aéreo.",
     "id_orden": 28,
-    "google_search": "https://www.google.com/search?q=Picos+de+Europa+(Anillo)"
+    "google_search": "https://www.google.com/search?q=Picos+de+Europa+(Anillo)",
+    "link": "https://www.google.com/search?q=Picos+de+Europa+(Anillo)+España"
   },
   {
     "id": "wind",
@@ -1041,7 +1069,8 @@
     "coste_estancia": "Bajo",
     "resena": "Alta ruta salvaje.",
     "id_orden": 29,
-    "google_search": "https://www.google.com/search?q=Wind+River+High+Route"
+    "google_search": "https://www.google.com/search?q=Wind+River+High+Route",
+    "link": "https://www.google.com/search?q=Wind+River+High+Route+USA"
   },
   {
     "id": "bobotov-kuk",
@@ -1076,7 +1105,8 @@
     "coste_estancia": "Bajo",
     "resena": "Clásico de Durmitor con vistas al macizo kárstico.",
     "id_orden": 30,
-    "google_search": "https://www.google.com/search?q=Bobotov+Kuk+(Durmitor)"
+    "google_search": "https://www.google.com/search?q=Bobotov+Kuk+(Durmitor)",
+    "link": "https://www.google.com/search?q=Bobotov+Kuk+(Durmitor)+Montenegro"
   },
   {
     "id": "balaitous",
@@ -1113,7 +1143,8 @@
     "coste_estancia": "Bajo",
     "resena": "Gran clásico técnico del Pirineo occidental.",
     "id_orden": 31,
-    "google_search": "https://www.google.com/search?q=Balaitous+por+la+Brecha+Latour"
+    "google_search": "https://www.google.com/search?q=Balaitous+por+la+Brecha+Latour",
+    "link": "https://www.google.com/search?q=Balaitous+por+la+Brecha+Latour+España/Francia"
   },
   {
     "id": "aragon-3000",
@@ -1148,7 +1179,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Varios tresmiles cercanos.",
     "id_orden": 32,
-    "google_search": "https://www.google.com/search?q=Aragón++3000+(Infiernos,+Garmo)"
+    "google_search": "https://www.google.com/search?q=Aragón++3000+(Infiernos,+Garmo)",
+    "link": "https://www.google.com/search?q=Aragón++3000+(Infiernos,+Garmo)+España"
   },
   {
     "id": "vignemale",
@@ -1185,7 +1217,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Glaciar + roca final.",
     "id_orden": 33,
-    "google_search": "https://www.google.com/search?q=Vignemale"
+    "google_search": "https://www.google.com/search?q=Vignemale",
+    "link": "https://www.google.com/search?q=Vignemale+Francia/España"
   },
   {
     "id": "hrp",
@@ -1220,7 +1253,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Más alta y salvaje.",
     "id_orden": 34,
-    "google_search": "https://www.google.com/search?q=HRP+Alta+Ruta+Pirenaica"
+    "google_search": "https://www.google.com/search?q=HRP+Alta+Ruta+Pirenaica",
+    "link": "https://www.google.com/search?q=HRP+Alta+Ruta+Pirenaica+Francia/España"
   },
   {
     "id": "perdiguero",
@@ -1255,7 +1289,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Cresta final panorámica.",
     "id_orden": 35,
-    "google_search": "https://www.google.com/search?q=Perdiguero"
+    "google_search": "https://www.google.com/search?q=Perdiguero",
+    "link": "https://www.google.com/search?q=Perdiguero+España"
   },
   {
     "id": "perdidos",
@@ -1291,7 +1326,8 @@
     "coste_estancia": "45–75 €",
     "resena": "Etapas técnicas y paisajes top.",
     "id_orden": 36,
-    "google_search": "https://www.google.com/search?q=Alta+Ruta+de+los+Perdidos"
+    "google_search": "https://www.google.com/search?q=Alta+Ruta+de+los+Perdidos",
+    "link": "https://www.google.com/search?q=Alta+Ruta+de+los+Perdidos+España/Francia"
   },
   {
     "id": "mulleres",
@@ -1326,7 +1362,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Cresta amable.",
     "id_orden": 37,
-    "google_search": "https://www.google.com/search?q=Mulleres"
+    "google_search": "https://www.google.com/search?q=Mulleres",
+    "link": "https://www.google.com/search?q=Mulleres+España"
   },
   {
     "id": "posets",
@@ -1361,7 +1398,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Crestas y bloques.",
     "id_orden": 38,
-    "google_search": "https://www.google.com/search?q=Posets"
+    "google_search": "https://www.google.com/search?q=Posets",
+    "link": "https://www.google.com/search?q=Posets+España"
   },
   {
     "id": "aneto",
@@ -1397,7 +1435,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Paso de Mahoma.",
     "id_orden": 39,
-    "google_search": "https://www.google.com/search?q=Aneto"
+    "google_search": "https://www.google.com/search?q=Aneto",
+    "link": "https://www.google.com/search?q=Aneto+España"
   },
   {
     "id": "gr11",
@@ -1434,7 +1473,8 @@
     "coste_estancia": "0–60 €",
     "resena": "Clásico Pirineos.",
     "id_orden": 40,
-    "google_search": "https://www.google.com/search?q=GR11+/+Transpirenaica"
+    "google_search": "https://www.google.com/search?q=GR11+/+Transpirenaica",
+    "link": "https://www.google.com/search?q=GR11+/+Transpirenaica+España"
   },
   {
     "id": "carros",
@@ -1470,7 +1510,8 @@
     "coste_estancia": "40–70 €",
     "resena": "Alta ruta por refugios.",
     "id_orden": 41,
-    "google_search": "https://www.google.com/search?q=Carros+de+Foc"
+    "google_search": "https://www.google.com/search?q=Carros+de+Foc",
+    "link": "https://www.google.com/search?q=Carros+de+Foc+España"
   },
   {
     "id": "maja-jezerce",
@@ -1505,7 +1546,8 @@
     "coste_estancia": "Bajo",
     "resena": "“Alpes malditos”: terreno calizo, remoto y bonito.",
     "id_orden": 42,
-    "google_search": "https://www.google.com/search?q=Maja+Jezercë+(Prokletije)"
+    "google_search": "https://www.google.com/search?q=Maja+Jezercë+(Prokletije)",
+    "link": "https://www.google.com/search?q=Maja+Jezercë+(Prokletije)+Albania/Montenegro"
   },
   {
     "id": "gr20",
@@ -1540,7 +1582,8 @@
     "coste_estancia": "40–70 €",
     "resena": "La travesía ‘dura’ por excelencia del Mediterráneo.",
     "id_orden": 43,
-    "google_search": "https://www.google.com/search?q=GR20+Córcega"
+    "google_search": "https://www.google.com/search?q=GR20+Córcega",
+    "link": "https://www.google.com/search?q=GR20+Córcega+Francia"
   },
   {
     "id": "musala",
@@ -1575,7 +1618,8 @@
     "coste_estancia": "Bajo",
     "resena": "Techo de los Balcanes centrales; sendero marcado.",
     "id_orden": 44,
-    "google_search": "https://www.google.com/search?q=Musala+(Rila)"
+    "google_search": "https://www.google.com/search?q=Musala+(Rila)",
+    "link": "https://www.google.com/search?q=Musala+(Rila)+Bulgaria"
   },
   {
     "id": "pct",
@@ -1611,7 +1655,8 @@
     "coste_estancia": "Bajo",
     "resena": "4.200 km por la costa oeste.",
     "id_orden": 45,
-    "google_search": "https://www.google.com/search?q=Pacific+Crest+Trail"
+    "google_search": "https://www.google.com/search?q=Pacific+Crest+Trail",
+    "link": "https://www.google.com/search?q=Pacific+Crest+Trail+USA"
   },
   {
     "id": "shasta",
@@ -1647,7 +1692,8 @@
     "coste_estancia": "Bajo",
     "resena": "Gran volcán del norte de California; clásica primaveral.",
     "id_orden": 46,
-    "google_search": "https://www.google.com/search?q=Mount+Shasta+(Avalanche+Gulch)"
+    "google_search": "https://www.google.com/search?q=Mount+Shasta+(Avalanche+Gulch)",
+    "link": "https://www.google.com/search?q=Mount+Shasta+(Avalanche+Gulch)+USA"
   },
   {
     "id": "longs-peak",
@@ -1682,7 +1728,8 @@
     "coste_estancia": "Bajo",
     "resena": "Larga ruta por ‘Keyhole’ con trepadas sostenidas.",
     "id_orden": 47,
-    "google_search": "https://www.google.com/search?q=Longs+Peak+(Keyhole)"
+    "google_search": "https://www.google.com/search?q=Longs+Peak+(Keyhole)",
+    "link": "https://www.google.com/search?q=Longs+Peak+(Keyhole)+USA"
   },
   {
     "id": "olympus-mytikas",
@@ -1717,7 +1764,8 @@
     "coste_estancia": "30–60 €",
     "resena": "Cumbre mítica; trepadas sencillas pero aéreas.",
     "id_orden": 48,
-    "google_search": "https://www.google.com/search?q=Monte+Olympus+(Mytikas)"
+    "google_search": "https://www.google.com/search?q=Monte+Olympus+(Mytikas)",
+    "link": "https://www.google.com/search?q=Monte+Olympus+(Mytikas)+Grecia"
   },
   {
     "id": "ararat",
@@ -1752,7 +1800,8 @@
     "coste_estancia": "Medio",
     "resena": "Volcán sagrado con ascenso progresivo por pendientes de nieve.",
     "id_orden": 49,
-    "google_search": "https://www.google.com/search?q=Monte+Ararat"
+    "google_search": "https://www.google.com/search?q=Monte+Ararat",
+    "link": "https://www.google.com/search?q=Monte+Ararat+Turquía"
   },
   {
     "id": "half-dome",
@@ -1787,7 +1836,8 @@
     "coste_estancia": "Bajo",
     "resena": "Famosas cuerdas fijas de Yosemite; día largo.",
     "id_orden": 50,
-    "google_search": "https://www.google.com/search?q=Half+Dome+(Cables+Route)"
+    "google_search": "https://www.google.com/search?q=Half+Dome+(Cables+Route)",
+    "link": "https://www.google.com/search?q=Half+Dome+(Cables+Route)+USA"
   },
   {
     "id": "jmt",
@@ -1822,7 +1872,8 @@
     "coste_estancia": "Bajo",
     "resena": "Sierra Nevada espectacular.",
     "id_orden": 51,
-    "google_search": "https://www.google.com/search?q=John+Muir+Trail"
+    "google_search": "https://www.google.com/search?q=John+Muir+Trail",
+    "link": "https://www.google.com/search?q=John+Muir+Trail+USA"
   },
   {
     "id": "whitney",
@@ -1858,7 +1909,8 @@
     "coste_estancia": "Bajo",
     "resena": "Arista rocosa.",
     "id_orden": 52,
-    "google_search": "https://www.google.com/search?q=Mount+Whitney+(MR)"
+    "google_search": "https://www.google.com/search?q=Mount+Whitney+(MR)",
+    "link": "https://www.google.com/search?q=Mount+Whitney+(MR)+USA"
   },
   {
     "id": "damavand",
@@ -1893,7 +1945,8 @@
     "coste_estancia": "Bajo/medio",
     "resena": "Volcán alto con fumarolas.",
     "id_orden": 53,
-    "google_search": "https://www.google.com/search?q=Damavand"
+    "google_search": "https://www.google.com/search?q=Damavand",
+    "link": "https://www.google.com/search?q=Damavand+Irán"
   },
   {
     "id": "k2bc",
@@ -1928,7 +1981,8 @@
     "coste_estancia": "Medio",
     "resena": "Glaciares del Baltoro.",
     "id_orden": 54,
-    "google_search": "https://www.google.com/search?q=K2+Base+Camp"
+    "google_search": "https://www.google.com/search?q=K2+Base+Camp",
+    "link": "https://www.google.com/search?q=K2+Base+Camp+Pakistán"
   },
   {
     "id": "fuji",
@@ -1963,7 +2017,8 @@
     "coste_estancia": "Medio",
     "resena": "Volcán emblemático.",
     "id_orden": 55,
-    "google_search": "https://www.google.com/search?q=Monte+Fuji"
+    "google_search": "https://www.google.com/search?q=Monte+Fuji",
+    "link": "https://www.google.com/search?q=Monte+Fuji+Japón"
   },
   {
     "id": "markha",
@@ -1998,7 +2053,8 @@
     "coste_estancia": "Bajo",
     "resena": "Pasos a 5k.",
     "id_orden": 56,
-    "google_search": "https://www.google.com/search?q=Markha+Valley"
+    "google_search": "https://www.google.com/search?q=Markha+Valley",
+    "link": "https://www.google.com/search?q=Markha+Valley+India"
   },
   {
     "id": "mgoun",
@@ -2033,7 +2089,8 @@
     "coste_estancia": "Bajo",
     "resena": "Amplias lomas altas del Alto Atlas central.",
     "id_orden": 57,
-    "google_search": "https://www.google.com/search?q=M'Goun"
+    "google_search": "https://www.google.com/search?q=M'Goun",
+    "link": "https://www.google.com/search?q=M'Goun+Marruecos"
   },
   {
     "id": "toubkal",
@@ -2068,7 +2125,8 @@
     "coste_estancia": "20–45 €",
     "resena": "Clásico Atlas.",
     "id_orden": 58,
-    "google_search": "https://www.google.com/search?q=Toubkal"
+    "google_search": "https://www.google.com/search?q=Toubkal",
+    "link": "https://www.google.com/search?q=Toubkal+Marruecos"
   },
   {
     "id": "siroua",
@@ -2103,7 +2161,8 @@
     "coste_estancia": "Bajo",
     "resena": "Volcánico y pastoral.",
     "id_orden": 59,
-    "google_search": "https://www.google.com/search?q=Jebel+Siroua"
+    "google_search": "https://www.google.com/search?q=Jebel+Siroua",
+    "link": "https://www.google.com/search?q=Jebel+Siroua+Marruecos"
   },
   {
     "id": "annapurna",
@@ -2139,7 +2198,8 @@
     "coste_estancia": "10–25 €",
     "resena": "Thorang La 5416 m.",
     "id_orden": 60,
-    "google_search": "https://www.google.com/search?q=Annapurna+Circuit"
+    "google_search": "https://www.google.com/search?q=Annapurna+Circuit",
+    "link": "https://www.google.com/search?q=Annapurna+Circuit+Nepal"
   },
   {
     "id": "manaslu",
@@ -2174,7 +2234,8 @@
     "coste_estancia": "10–25 €",
     "resena": "Menos masificado.",
     "id_orden": 61,
-    "google_search": "https://www.google.com/search?q=Manaslu+Circuit"
+    "google_search": "https://www.google.com/search?q=Manaslu+Circuit",
+    "link": "https://www.google.com/search?q=Manaslu+Circuit+Nepal"
   },
   {
     "id": "teide",
@@ -2211,7 +2272,8 @@
     "coste_estancia": "0–30 €",
     "resena": "Volcán panorámico.",
     "id_orden": 62,
-    "google_search": "https://www.google.com/search?q=Teide"
+    "google_search": "https://www.google.com/search?q=Teide",
+    "link": "https://www.google.com/search?q=Teide+España+(Canarias)"
   },
   {
     "id": "ebc",
@@ -2246,7 +2308,8 @@
     "coste_estancia": "10–30 €",
     "resena": "Clásico del Khumbu.",
     "id_orden": 63,
-    "google_search": "https://www.google.com/search?q=Everest+Base+Camp"
+    "google_search": "https://www.google.com/search?q=Everest+Base+Camp",
+    "link": "https://www.google.com/search?q=Everest+Base+Camp+Nepal"
   },
   {
     "id": "island",
@@ -2281,7 +2344,8 @@
     "coste_estancia": "Medio",
     "resena": "Seis mil de iniciación.",
     "id_orden": 64,
-    "google_search": "https://www.google.com/search?q=Island+Peak"
+    "google_search": "https://www.google.com/search?q=Island+Peak",
+    "link": "https://www.google.com/search?q=Island+Peak+Nepal"
   },
   {
     "id": "yushan",
@@ -2316,7 +2380,8 @@
     "coste_estancia": "Bajo/medio",
     "resena": "Techo de Taiwán con sendero bien mantenido.",
     "id_orden": 65,
-    "google_search": "https://www.google.com/search?q=Yushan+(Jade+Mountain)"
+    "google_search": "https://www.google.com/search?q=Yushan+(Jade+Mountain)",
+    "link": "https://www.google.com/search?q=Yushan+(Jade+Mountain)+Taiwán"
   },
   {
     "id": "orizaba",
@@ -2351,7 +2416,8 @@
     "coste_estancia": "Bajo/medio",
     "resena": "Cincomil accesible de glaciar amplio.",
     "id_orden": 66,
-    "google_search": "https://www.google.com/search?q=Pico+de+Orizaba"
+    "google_search": "https://www.google.com/search?q=Pico+de+Orizaba",
+    "link": "https://www.google.com/search?q=Pico+de+Orizaba+México"
   },
   {
     "id": "ras-dashen",
@@ -2386,7 +2452,8 @@
     "coste_estancia": "Medio",
     "resena": "Altiplano espectacular con fauna endémica.",
     "id_orden": 67,
-    "google_search": "https://www.google.com/search?q=Ras+Dashen+(Simien)"
+    "google_search": "https://www.google.com/search?q=Ras+Dashen+(Simien)",
+    "link": "https://www.google.com/search?q=Ras+Dashen+(Simien)+Etiopía"
   },
   {
     "id": "pico-humboldt",
@@ -2423,7 +2490,8 @@
     "coste_estancia": "Bajo",
     "resena": "Aristas rocosas y ambiente de alta montaña tropical.",
     "id_orden": 68,
-    "google_search": "https://www.google.com/search?q=Pico+Humboldt"
+    "google_search": "https://www.google.com/search?q=Pico+Humboldt",
+    "link": "https://www.google.com/search?q=Pico+Humboldt+Venezuela"
   },
   {
     "id": "pico-bolivar",
@@ -2460,7 +2528,8 @@
     "coste_estancia": "Bajo",
     "resena": "Cumbre más alta de Venezuela; roca y neveros residuales.",
     "id_orden": 69,
-    "google_search": "https://www.google.com/search?q=Pico+Bolívar"
+    "google_search": "https://www.google.com/search?q=Pico+Bolívar",
+    "link": "https://www.google.com/search?q=Pico+Bolívar+Venezuela"
   },
   {
     "id": "pico-espejo",
@@ -2495,7 +2564,8 @@
     "coste_estancia": "Bajo",
     "resena": "Acceso clásico desde el sistema del teleférico.",
     "id_orden": 70,
-    "google_search": "https://www.google.com/search?q=Pico+Espejo"
+    "google_search": "https://www.google.com/search?q=Pico+Espejo",
+    "link": "https://www.google.com/search?q=Pico+Espejo+Venezuela"
   },
   {
     "id": "pico-el-leon",
@@ -2530,7 +2600,8 @@
     "coste_estancia": "Bajo",
     "resena": "Hermano del Toro; combinable en la misma jornada.",
     "id_orden": 71,
-    "google_search": "https://www.google.com/search?q=Pico+El+León"
+    "google_search": "https://www.google.com/search?q=Pico+El+León",
+    "link": "https://www.google.com/search?q=Pico+El+León+Venezuela"
   },
   {
     "id": "pico-el-toro",
@@ -2565,7 +2636,8 @@
     "coste_estancia": "Bajo",
     "resena": "Cresta rocosa continua con vistas a toda la Sierra.",
     "id_orden": 72,
-    "google_search": "https://www.google.com/search?q=Pico+El+Toro"
+    "google_search": "https://www.google.com/search?q=Pico+El+Toro",
+    "link": "https://www.google.com/search?q=Pico+El+Toro+Venezuela"
   },
   {
     "id": "ritacuba",
@@ -2599,7 +2671,8 @@
     "coste_estancia": "Medio",
     "resena": "Cordillera del Cocuy; glaciar en retroceso.",
     "id_orden": 73,
-    "google_search": "https://www.google.com/search?q=Ritacuba+Blanco+(El+Cocuy)"
+    "google_search": "https://www.google.com/search?q=Ritacuba+Blanco+(El+Cocuy)",
+    "link": "https://www.google.com/search?q=Ritacuba+Blanco+(El+Cocuy)+Colombia"
   },
   {
     "id": "roraima",
@@ -2634,7 +2707,8 @@
     "coste_estancia": "Bajo",
     "resena": "Tepuy icónico.",
     "id_orden": 74,
-    "google_search": "https://www.google.com/search?q=Monte+Roraima"
+    "google_search": "https://www.google.com/search?q=Monte+Roraima",
+    "link": "https://www.google.com/search?q=Monte+Roraima+VEN/BRA/GUY"
   },
   {
     "id": "rwenzori",
@@ -2669,7 +2743,8 @@
     "coste_estancia": "Medio",
     "resena": "Montaña ecuatorial glacial.",
     "id_orden": 75,
-    "google_search": "https://www.google.com/search?q=Rwenzori+Margherita"
+    "google_search": "https://www.google.com/search?q=Rwenzori+Margherita",
+    "link": "https://www.google.com/search?q=Rwenzori+Margherita+Uganda/DRC"
   },
   {
     "id": "kenya-lenana",
@@ -2704,7 +2779,8 @@
     "coste_estancia": "Medio",
     "resena": "Alternativa técnica al Kili; paisaje alpino precioso.",
     "id_orden": 76,
-    "google_search": "https://www.google.com/search?q=Monte+Kenia+–+Point+Lenana"
+    "google_search": "https://www.google.com/search?q=Monte+Kenia+–+Point+Lenana",
+    "link": "https://www.google.com/search?q=Monte+Kenia+–+Point+Lenana+Kenia"
   },
   {
     "id": "cotopaxi",
@@ -2739,7 +2815,8 @@
     "coste_estancia": "Medio",
     "resena": "Volcán cónico perfecto; ruta glaciar clásica.",
     "id_orden": 77,
-    "google_search": "https://www.google.com/search?q=Cotopaxi"
+    "google_search": "https://www.google.com/search?q=Cotopaxi",
+    "link": "https://www.google.com/search?q=Cotopaxi+Ecuador"
   },
   {
     "id": "chimborazo",
@@ -2773,7 +2850,8 @@
     "coste_estancia": "Medio",
     "resena": "Punto más alejado del centro de la Tierra; serio.",
     "id_orden": 78,
-    "google_search": "https://www.google.com/search?q=Chimborazo"
+    "google_search": "https://www.google.com/search?q=Chimborazo",
+    "link": "https://www.google.com/search?q=Chimborazo+Ecuador"
   },
   {
     "id": "kilimanjaro",
@@ -2808,7 +2886,8 @@
     "coste_estancia": "Alto",
     "resena": "Aclimatación clave.",
     "id_orden": 79,
-    "google_search": "https://www.google.com/search?q=Kilimanjaro"
+    "google_search": "https://www.google.com/search?q=Kilimanjaro",
+    "link": "https://www.google.com/search?q=Kilimanjaro+Tanzania"
   },
   {
     "id": "rinjani",
@@ -2843,7 +2922,8 @@
     "coste_estancia": "Bajo",
     "resena": "Volcán con lago de cráter; campamentos en el borde.",
     "id_orden": 80,
-    "google_search": "https://www.google.com/search?q=Rinjani"
+    "google_search": "https://www.google.com/search?q=Rinjani",
+    "link": "https://www.google.com/search?q=Rinjani+Indonesia"
   },
   {
     "id": "alpamayo",
@@ -2877,7 +2957,8 @@
     "coste_estancia": "Medio",
     "resena": "Pirámide perfecta.",
     "id_orden": 81,
-    "google_search": "https://www.google.com/search?q=Alpamayo+(aprox)"
+    "google_search": "https://www.google.com/search?q=Alpamayo+(aprox)",
+    "link": "https://www.google.com/search?q=Alpamayo+(aprox)+Perú"
   },
   {
     "id": "huascaran",
@@ -2912,7 +2993,8 @@
     "coste_estancia": "Medio",
     "resena": "Alta montaña seria.",
     "id_orden": 82,
-    "google_search": "https://www.google.com/search?q=Huascarán"
+    "google_search": "https://www.google.com/search?q=Huascarán",
+    "link": "https://www.google.com/search?q=Huascarán+Perú"
   },
   {
     "id": "huayhuash",
@@ -2947,7 +3029,8 @@
     "coste_estancia": "Bajo/medio",
     "resena": "Cordillera espectacular.",
     "id_orden": 83,
-    "google_search": "https://www.google.com/search?q=Huayhuash+Trek"
+    "google_search": "https://www.google.com/search?q=Huayhuash+Trek",
+    "link": "https://www.google.com/search?q=Huayhuash+Trek+Perú"
   },
   {
     "id": "salkantay",
@@ -2982,7 +3065,8 @@
     "coste_estancia": "Bajo/medio",
     "resena": "Alternativa al Camino Inca.",
     "id_orden": 84,
-    "google_search": "https://www.google.com/search?q=Salkantay"
+    "google_search": "https://www.google.com/search?q=Salkantay",
+    "link": "https://www.google.com/search?q=Salkantay+Perú"
   },
   {
     "id": "huayna-potosi",
@@ -3017,7 +3101,8 @@
     "coste_estancia": "Medio",
     "resena": "Seismil ‘escuela’ con arista final muy estética.",
     "id_orden": 85,
-    "google_search": "https://www.google.com/search?q=Huayna+Potosí"
+    "google_search": "https://www.google.com/search?q=Huayna+Potosí",
+    "link": "https://www.google.com/search?q=Huayna+Potosí+Bolivia"
   },
   {
     "id": "illimani",
@@ -3051,7 +3136,8 @@
     "coste_estancia": "Medio",
     "resena": "Emblema de La Paz; larga y comprometida.",
     "id_orden": 86,
-    "google_search": "https://www.google.com/search?q=Illimani"
+    "google_search": "https://www.google.com/search?q=Illimani",
+    "link": "https://www.google.com/search?q=Illimani+Bolivia"
   },
   {
     "id": "sajama",
@@ -3085,7 +3171,8 @@
     "coste_estancia": "Medio",
     "resena": "Volcán aislado y altísimo en el altiplano.",
     "id_orden": 87,
-    "google_search": "https://www.google.com/search?q=Nevado+Sajama"
+    "google_search": "https://www.google.com/search?q=Nevado+Sajama",
+    "link": "https://www.google.com/search?q=Nevado+Sajama+Bolivia"
   },
   {
     "id": "makay",
@@ -3121,7 +3208,8 @@
     "coste_estancia": "10–30 €",
     "resena": "Cañones y mesetas.",
     "id_orden": 88,
-    "google_search": "https://www.google.com/search?q=Makay+(Madagascar)"
+    "google_search": "https://www.google.com/search?q=Makay+(Madagascar)",
+    "link": "https://www.google.com/search?q=Makay+(Madagascar)+Madagascar"
   },
   {
     "id": "aconcagua",
@@ -3156,7 +3244,8 @@
     "coste_estancia": "Alto",
     "resena": "No técnico pero alto.",
     "id_orden": 89,
-    "google_search": "https://www.google.com/search?q=Aconcagua+(Normal)"
+    "google_search": "https://www.google.com/search?q=Aconcagua+(Normal)",
+    "link": "https://www.google.com/search?q=Aconcagua+(Normal)+Argentina"
   },
   {
     "id": "cerro-plomo",
@@ -3191,7 +3280,8 @@
     "coste_estancia": "Bajo",
     "resena": "Clásico de la RM con gran vista de los Andes.",
     "id_orden": 90,
-    "google_search": "https://www.google.com/search?q=Cerro+El+Plomo"
+    "google_search": "https://www.google.com/search?q=Cerro+El+Plomo",
+    "link": "https://www.google.com/search?q=Cerro+El+Plomo+Chile"
   },
   {
     "id": "tongariro",
@@ -3227,7 +3317,8 @@
     "coste_estancia": "Medio",
     "resena": "Vistas volcánicas.",
     "id_orden": 91,
-    "google_search": "https://www.google.com/search?q=Tongariro+Crossing"
+    "google_search": "https://www.google.com/search?q=Tongariro+Crossing",
+    "link": "https://www.google.com/search?q=Tongariro+Crossing+Nueva+Zelanda"
   },
   {
     "id": "tronador",
@@ -3262,7 +3353,8 @@
     "coste_estancia": "Medio",
     "resena": "Cráteres y seracs; ambiente glaciar sureño.",
     "id_orden": 92,
-    "google_search": "https://www.google.com/search?q=Cerro+Tronador+(Normal)"
+    "google_search": "https://www.google.com/search?q=Cerro+Tronador+(Normal)",
+    "link": "https://www.google.com/search?q=Cerro+Tronador+(Normal)+Argentina/Chile"
   },
   {
     "id": "milford",
@@ -3297,7 +3389,8 @@
     "coste_estancia": "Alto",
     "resena": "Gran clásico NZ.",
     "id_orden": 93,
-    "google_search": "https://www.google.com/search?q=Milford+Track"
+    "google_search": "https://www.google.com/search?q=Milford+Track",
+    "link": "https://www.google.com/search?q=Milford+Track+Nueva+Zelanda"
   },
   {
     "id": "patagonia",
@@ -3333,6 +3426,7 @@
     "coste_estancia": "Bajo/medio",
     "resena": "Viento épico y vistas.",
     "id_orden": 94,
-    "google_search": "https://www.google.com/search?q=Patagonia+–+Fitz/Torres"
+    "google_search": "https://www.google.com/search?q=Patagonia+–+Fitz/Torres",
+    "link": "https://www.google.com/search?q=Patagonia+–+Fitz/Torres+Chile/Argentina"
   }
 ]
