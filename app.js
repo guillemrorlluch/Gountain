@@ -10,29 +10,56 @@ function normalizeDiff(diff) {
   return diff.includes('Trek') ? 'Trek' : 'Trek';
 }
 
+// Paleta para botas
+const BOOT_COLORS = {
+  "Cualquiera": "#22c55e",
+  "Depende": "#f59e0b",
+  "Bestard Teix Lady GTX": "#3498db",
+  "Scarpa Ribelle Lite HD": "#e74c3c",
+  "Scarpa Zodiac Tech LT GTX": "#7f8c8d",
+  "La Sportiva Aequilibrium ST GTX": "#9b59b6",
+  "La Sportiva Nepal Cube GTX": "#ef4444",
+  "Nepal (doble bota técnica de alta montaña)": "#dc2626",
+  "Botas triple capa (8000 m+)": "#d97706",
+  "Otras ligeras (para trekking no técnico)": "#14b8a6"
+};
+
+function markerColor(d, bootColors = BOOT_COLORS) {
+  const pr = [
+    'Scarpa Ribelle Lite HD',
+    'La Sportiva Aequilibrium ST GTX',
+    'Scarpa Zodiac Tech LT GTX',
+    'Bestard Teix Lady GTX',
+    'La Sportiva Nepal Cube GTX',
+    'Nepal (doble bota técnica de alta montaña)',
+    'Botas triple capa (8000 m+)',
+    'Cualquiera',
+    'Depende',
+    'Otras ligeras (para trekking no técnico)'
+  ];
+  for (const p of pr)
+    if (Array.isArray(d.botas) && d.botas.includes(p)) return bootColors[p] || '#22c55e';
+  return '#22c55e';
+}
+
+function withinFilters(d, F) {
+  const cont = F.continente.size === 0 || F.continente.has(d.continente);
+  const dif = F.dificultad.size === 0 || F.dificultad.has(normalizeDiff(d.dificultad));
+  const tipo = F.tipo.size === 0 || F.tipo.has(d.tipo);
+  const botas =
+    F.botas.size === 0 || (Array.isArray(d.botas) && d.botas.some(b => F.botas.has(b)));
+  return cont && dif && tipo && botas;
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { normalizeDiff };
-  }
+  module.exports = { normalizeDiff, markerColor, withinFilters, BOOT_COLORS };
+}
 
 if (typeof window !== 'undefined') {
   // --- Config ---
   const DATA_VER = '9';
   const DATA_URL = `/data/destinos.json?v=${DATA_VER}`;
-
-  // Paleta para botas
-  const BOOT_COLORS = {
-    "Cualquiera": "#22c55e",
-    "Depende": "#f59e0b",
-    "Bestard Teix Lady GTX": "#3498db",
-    "Scarpa Ribelle Lite HD": "#e74c3c",
-    "Scarpa Zodiac Tech LT GTX": "#7f8c8d",
-    "La Sportiva Aequilibrium ST GTX": "#9b59b6",
-    "La Sportiva Nepal Cube GTX": "#ef4444",
-    "Nepal (doble bota técnica de alta montaña)": "#dc2626",
-    "Botas triple capa (8000 m+)": "#d97706",
-    "Otras ligeras (para trekking no técnico)": "#14b8a6"
-  };
-
+  
   // --- Mapa ---
   const MAPBOX_TOKEN = window.MAPBOX_TOKEN || '';
   // Additional Mapbox styles for experimentation
@@ -406,34 +433,10 @@ if (typeof window !== 'undefined') {
     [...state.tipos].sort().forEach(t => ft.appendChild(chip(t, 'tipo', t)));
   }
 
-  function withinFilters(d) {
-    const F = state.filters;
-    const cont = F.continente.size === 0 || F.continente.has(d.continente);
-    const dif = F.dificultad.size === 0 || F.dificultad.has(normalizeDiff(d.dificultad));
-    const tipo = F.tipo.size === 0 || F.tipo.has(d.tipo);
-    const botas =
-      F.botas.size === 0 || (Array.isArray(d.botas) && d.botas.some(b => F.botas.has(b)));
-    return cont && dif && tipo && botas;
-  }
-
-  function markerColor(d) {
-    const pr = [
-      'Scarpa Ribelle Lite HD',
-      'La Sportiva Aequilibrium ST GTX',
-      'Scarpa Zodiac Tech LT GTX',
-      'Bestard Teix Lady GTX',
-      'La Sportiva Nepal Cube GTX',
-      'Nepal (doble bota técnica de alta montaña)',
-      'Botas triple capa (8000 m+)',
-      'Cualquiera',
-      'Depende',
-      'Otras ligeras (para trekking no técnico)'
-    ];
-    for (const p of pr)
-      if (Array.isArray(d.botas) && d.botas.includes(p)) return BOOT_COLORS[p] || '#22c55e';
-    return '#22c55e';
-  }
-
+  // Helpers delegating to pure functions
+  const markerColorLocal = (d) => markerColor(d);
+  const withinFiltersLocal = (d) => withinFilters(d, state.filters);
+  
   function popupHtml(d) {
     const url = d.link || d.google_search || null;
     const title = url
@@ -487,7 +490,7 @@ if (typeof window !== 'undefined') {
     function addMarker(d) {
       const el = document.createElement('div');
       el.className = 'marker';
-      el.style.backgroundColor = markerColor(d);
+      el.style.backgroundColor = markerColorLocal(d);
       const popup = new maplibregl.Popup({
         maxWidth: window.matchMedia('(max-width: 600px)').matches ? '300px' : '400px'
       }).setHTML(popupHtml(d));
@@ -498,7 +501,7 @@ if (typeof window !== 'undefined') {
   
   function renderMarkers() {
     clearMarkers();
-    const filtered = state.data.filter(withinFilters);
+    const filtered = state.data.filter(withinFiltersLocal);
     const bounds = new maplibregl.LngLatBounds();
     filtered.forEach(d => {
       const marker = addMarker(d).addTo(map);
@@ -531,18 +534,3 @@ if (typeof window !== 'undefined') {
             if (nw.state === 'installed' && navigator.serviceWorker.controller) {
               nw.postMessage({ type: 'SKIP_WAITING' });
             }
-          });
-        });
-
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (refreshing) return;
-          refreshing = true;
-          window.location.reload();
-        });
-      } catch (err) {
-        console.error('❌ Error registrando SW:', err);
-      }
-    });
-  }
-}
