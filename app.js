@@ -95,7 +95,6 @@ if (typeof window !== 'undefined') {
   }
   let labelsVisible = true;
   let terrainVisible = false;
-  let satelliteEnabled = false;
   
   map.on('error', (e) => {
     console.error('Map load error', e.error);
