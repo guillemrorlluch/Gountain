@@ -147,10 +147,52 @@ if (typeof window !== 'undefined') {
     bearing: 0,
     antialias: true
   });
+  const errorEl = document.getElementById('map-error');
+  function showError(msg) {
+    if (!errorEl) return;
+    errorEl.textContent = msg;
+    errorEl.classList.remove('hidden');
+  }
+  function hideError() {
+    if (!errorEl) return;
+    errorEl.classList.add('hidden');
+  }
   let labelsVisible = true;
   let terrainVisible = false;
-  
+
+  map.on('error', (e) => {
+    console.error('Map load error', e.error);
+    if (e && e.sourceId) {
+      showError(`Error al cargar ${e.sourceId}. Reintentando...`);
+      if (e.sourceId === 'satellite') {
+        if (map.getLayer('nasa')) map.setLayoutProperty('nasa', 'visibility', 'visible');
+        if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
+        setTimeout(() => {
+          hideError();
+          if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
+          if (map.getLayer('nasa')) map.setLayoutProperty('nasa', 'visibility', 'none');
+        }, 5000);
+      } else if (e.sourceId === 'nasa' && MAPBOX_TOKEN) {
+        if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
+      }
+    } else {
+      showError('Error al cargar el mapa');
+    }
+  });
+  map.on('data', (ev) => {
+    if (ev.sourceId && ev.isSourceLoaded) hideError();
+  });
+
   map.on('load', () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          map.jumpTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 8 });
+        },
+        (err) => console.warn('geolocation error', err),
+        { enableHighAccuracy: true }
+      );
+    }
     if (MAPBOX_TOKEN) {
       map.setTerrain({ source: 'mb-dem' });
       map.addLayer({
