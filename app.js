@@ -37,6 +37,8 @@ if (typeof window !== 'undefined') {
   const MAPBOX_TOKEN = window.MAPBOX_TOKEN || '';
   const style = {
     version: 8,
+    // si quieres etiquetas, añade glyphs públicos
+    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     sources: {
       nasa: {
         type: 'raster',
@@ -54,9 +56,9 @@ if (typeof window !== 'undefined') {
                 `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`
               ],
               tileSize: 256,
-              attribution: '&copy; Mapbox'
+              attribution: '© Mapbox, © Maxar/DigitalGlobe'
             },
-            'mb-dem': {
+            mb-dem': {
               type: 'raster-dem',
               tiles: [
                 `https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=${MAPBOX_TOKEN}`
@@ -152,6 +154,7 @@ if (typeof window !== 'undefined') {
           'line-opacity': 0.5
         }
       });
+      hideTerrain();
     }
     map.addLayer({
       id: 'sky',
@@ -172,8 +175,19 @@ if (typeof window !== 'undefined') {
     })
   );
 
+    function hideTerrain() {
+    if (map.getLayer('hillshade')) map.setLayoutProperty('hillshade', 'visibility', 'none');
+    if (map.getLayer('contours-line')) map.setLayoutProperty('contours-line', 'visibility', 'none');
+  }
+
+  function showTerrain() {
+    if (map.getLayer('hillshade')) map.setLayoutProperty('hillshade', 'visibility', 'visible');
+    if (map.getLayer('contours-line')) map.setLayoutProperty('contours-line', 'visibility', 'visible');
+  }
+
   function showSatellite() {
     if (map.getLayer('satellite')) {
+    hideTerrain();
       map.setLayoutProperty('satellite', 'visibility', 'visible');
       map.setLayoutProperty('nasa', 'visibility', 'none');
     } else {
@@ -185,6 +199,7 @@ if (typeof window !== 'undefined') {
   }
 
   function showNASA() {
+    hideTerrain();
     if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
     map.setLayoutProperty('nasa', 'visibility', 'visible');
     if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
@@ -210,6 +225,9 @@ if (typeof window !== 'undefined') {
   btnSat.onclick = showSatellite;
   if (!MAPBOX_TOKEN) btnSat.classList.add('hidden');
   $('#btnNasa').onclick = showNASA;
+  const btnTerrain = $('#btnTerrain');
+  btnTerrain.onclick = showTerrain;
+  if (!MAPBOX_TOKEN) btnTerrain.classList.add('hidden');
   $('#clearFilters').onclick = () => {
     for (const k of Object.keys(state.filters)) state.filters[k].clear();
     renderFilters();
