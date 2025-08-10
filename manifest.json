@@ -1,7 +1,7 @@
 {
   "name": "Gountain Time",
   "short_name": "Gountain",
-  "start_url": "/?v=6",
+  "start_url": "/?v=8",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#00a0c6",
