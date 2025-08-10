@@ -12,8 +12,8 @@ const STATIC_ASSETS = [
   `/styles.css?v=${VER_PARAM}`,       // con query para bustear caché
   `/app.js?v=${VER_PARAM}`,
   `/manifest.json?v=${VER_PARAM}`,
-  '/assets/icons/GountainTime-192.png',
-  '/assets/icons/GountainTime-512.png'
+  '/assets/GountainTime-192.png',
+  '/assets/GountainTime-512.png'
 ];
 
 self.addEventListener('install', (event) => {
