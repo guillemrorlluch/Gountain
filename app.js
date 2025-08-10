@@ -38,7 +38,7 @@ if (typeof window !== 'undefined') {
   const style = {
     version: 8,
     sources: {
-       'nasa-bm': {
+      nasa: {
         type: 'raster',
         tiles: [
           'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg'
@@ -48,7 +48,7 @@ if (typeof window !== 'undefined') {
       },
       ...(MAPBOX_TOKEN
         ? {
-            'mb-sat': {
+            satellite: {
               type: 'raster',
               tiles: [
                 `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`
@@ -68,9 +68,9 @@ if (typeof window !== 'undefined') {
         : {})
     },
     layers: [
-      { id: 'nasa-bm', type: 'raster', source: 'nasa-bm' },
+      { id: 'nasa', type: 'raster', source: 'nasa' },
       ...(MAPBOX_TOKEN
-        ? [{ id: 'mb-sat', type: 'raster', source: 'mb-sat' }]
+      ? [{ id: 'satellite', type: 'raster', source: 'satellite' }]
         : [])
     ]
   };
@@ -125,6 +125,7 @@ if (typeof window !== 'undefined') {
         'sky-atmosphere-sun-intensity': 15
       }
     });
+      showNASA();
   });
 
   map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }));
@@ -134,7 +135,17 @@ if (typeof window !== 'undefined') {
       trackUserLocation: true
     })
   );
-  
+
+  function showSatellite() {
+    if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
+    map.setLayoutProperty('nasa', 'visibility', 'none');
+  }
+
+  function showNASA() {
+    if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
+    map.setLayoutProperty('nasa', 'visibility', 'visible');
+  }
+
   // --- Estado ---
   const state = {
     data: [],
@@ -150,6 +161,8 @@ if (typeof window !== 'undefined') {
   const $ = (sel) => document.querySelector(sel);
   $('#btnMenu').onclick = () => $('#sidebar').classList.toggle('hidden');
   $('#btnInfo').onclick = () => $('#glossary').classList.toggle('hidden');
+  $('#btnSat').onclick = showSatellite;
+  $('#btnNasa').onclick = showNASA;
   $('#clearFilters').onclick = () => {
     for (const k of Object.keys(state.filters)) state.filters[k].clear();
     renderFilters();
