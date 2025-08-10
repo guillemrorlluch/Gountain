@@ -63,6 +63,10 @@ if (typeof window !== 'undefined') {
               ],
               tileSize: 512,
               maxzoom: 14
+            },
+            'mapbox-streets': {
+              type: 'vector',
+              url: 'mapbox://mapbox.mapbox-streets-v8'
             }
           }
         : {})
@@ -70,7 +74,39 @@ if (typeof window !== 'undefined') {
     layers: [
       { id: 'nasa', type: 'raster', source: 'nasa' },
       ...(MAPBOX_TOKEN
-      ? [{ id: 'satellite', type: 'raster', source: 'satellite' }]
+      ? [
+          { id: 'satellite', type: 'raster', source: 'satellite' },
+          {
+            id: 'country-label',
+            type: 'symbol',
+            source: 'mapbox-streets',
+            'source-layer': 'country_label',
+            layout: {
+              'text-field': ['get', 'name_en'],
+              'text-size': 14
+            },
+            paint: {
+              'text-color': '#000',
+              'text-halo-color': '#fff',
+              'text-halo-width': 1
+            }
+          },
+          {
+            id: 'place-label',
+            type: 'symbol',
+            source: 'mapbox-streets',
+            'source-layer': 'place_label',
+            layout: {
+              'text-field': ['get', 'name_en'],
+              'text-size': 12
+            },
+            paint: {
+              'text-color': '#333',
+              'text-halo-color': '#fff',
+              'text-halo-width': 1
+            }
+          }
+        ]
         : [])
     ]
   };
@@ -144,11 +180,15 @@ if (typeof window !== 'undefined') {
       alert('Satellite layer unavailable');
       map.setLayoutProperty('nasa', 'visibility', 'visible');
     }
+    if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
+    if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
   }
 
   function showNASA() {
     if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
     map.setLayoutProperty('nasa', 'visibility', 'visible');
+    if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
+    if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
   }
 
   // --- Estado ---
