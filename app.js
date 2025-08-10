@@ -35,6 +35,14 @@ if (typeof window !== 'undefined') {
 
   // --- Mapa ---
   const MAPBOX_TOKEN = window.MAPBOX_TOKEN || '';
+  // Additional Mapbox styles for experimentation
+  const EXTRA_MAPBOX_STYLES = [
+    'mapbox://styles/mapbox/streets-v12',
+    'mapbox://styles/mapbox/outdoors-v12',
+    'mapbox://styles/mapbox/light-v11',
+    'mapbox://styles/mapbox/dark-v11',
+    'mapbox://styles/mapbox/satellite-streets-v12'
+  ];
   const style = {
     version: 8,
     // si quieres etiquetas, añade glyphs públicos
@@ -43,19 +51,20 @@ if (typeof window !== 'undefined') {
       nasa: {
         type: 'raster',
         tiles: [
-          'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpg'
-        ],
+          'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/VIIRS_SNPP_CorrectedReflectance_TrueColor/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg'
         tileSize: 256,
-        attribution: 'Imagery © NASA Blue Marble'
+        maxzoom: 9,
+        attribution: 'Imagery © NASA'
       },
       ...(MAPBOX_TOKEN
         ? {
             satellite: {
               type: 'raster',
               tiles: [
-                `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`
+                `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/512/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`
               ],
-              tileSize: 256,
+              tileSize: 512,
+              maxzoom: 19,
               attribution: '© Mapbox, © Maxar/DigitalGlobe'
             },
             'mb-dem': {
@@ -102,6 +111,36 @@ if (typeof window !== 'undefined') {
               'text-field': ['get', 'name_en'],
               'text-size': 12
             },
+                       paint: {
+              'text-color': '#000',
+              'text-halo-color': '#fff',
+              'text-halo-width': 1
+            }
+          },
+          {
+            id: 'state-label',
+            type: 'symbol',
+            source: 'mapbox-streets',
+            'source-layer': 'state_label',
+            layout: {
+              'text-field': ['get', 'name_en'],
+              'text-size': 12
+            },
+            paint: {
+              'text-color': '#222',
+              'text-halo-color': '#fff',
+              'text-halo-width': 1
+            }
+          },
+          {
+            id: 'place-label',
+            type: 'symbol',
+            source: 'mapbox-streets',
+            'source-layer': 'place_label',
+            layout: {
+              'text-field': ['get', 'name_en'],
+              'text-size': 12
+            },
             paint: {
               'text-color': '#333',
               'text-halo-color': '#fff',
@@ -122,7 +161,9 @@ if (typeof window !== 'undefined') {
     bearing: 0,
     antialias: true
   });
-
+  let labelsVisible = true;
+  let terrainVisible = false;
+  
   map.on('load', () => {
     if (MAPBOX_TOKEN) {
       map.setTerrain({ source: 'mb-dem' });
@@ -154,7 +195,7 @@ if (typeof window !== 'undefined') {
           'line-opacity': 0.5
         }
       });
-      hideTerrain();
+      map.setTerrain(null);
     }
     map.addLayer({
       id: 'sky',
@@ -164,7 +205,7 @@ if (typeof window !== 'undefined') {
         'sky-atmosphere-sun-intensity': 15
       }
     });
-    showNASA();
+    showSatellite();
 
     map.once('idle', () => {
       map.on('click', handleMapClick);
@@ -178,36 +219,72 @@ if (typeof window !== 'undefined') {
       trackUserLocation: true
     })
   );
-
-    function hideTerrain() {
-    if (map.getLayer('hillshade')) map.setLayoutProperty('hillshade', 'visibility', 'none');
-    if (map.getLayer('contours-line')) map.setLayoutProperty('contours-line', 'visibility', 'none');
+  class CompassControl {
+    onAdd(map) {
+      this._map = map;
+      this._container = document.createElement('div');
+      this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group compass-ctrl';
+      this._arrow = document.createElement('div');
+      this._arrow.className = 'compass-arrow';
+      this._container.appendChild(this._arrow);
+      this._update = () => {
+        const b = this._map.getBearing();
+        this._arrow.style.transform = `rotate(${-b}deg)`;
+      };
+      this._map.on('rotate', this._update);
+      this._update();
+      return this._container;
+    }
+    onRemove() {
+      this._map.off('rotate', this._update);
+      this._container.remove();
+      this._map = undefined;
+    }
+  }
+  map.addControl(new CompassControl());
+  function updateLabelVisibility() {
+    const vis = labelsVisible ? 'visible' : 'none';
+    ['country-label', 'state-label', 'place-label'].forEach(id => {
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis);
+    });
   }
 
-  function showTerrain() {
-    if (map.getLayer('hillshade')) map.setLayoutProperty('hillshade', 'visibility', 'visible');
-    if (map.getLayer('contours-line')) map.setLayoutProperty('contours-line', 'visibility', 'visible');
+  function toggleLabels() {
+    labelsVisible = !labelsVisible;
+    updateLabelVisibility();
+  }
+  
+  function updateTerrainVisibility() {
+    if (!MAPBOX_TOKEN) return;
+    if (terrainVisible) {
+      map.setTerrain({ source: 'mb-dem' });
+      if (map.getLayer('hillshade')) map.setLayoutProperty('hillshade', 'visibility', 'visible');
+      if (map.getLayer('contours-line')) map.setLayoutProperty('contours-line', 'visibility', 'visible');
+    } else {
+      map.setTerrain(null);
+      if (map.getLayer('hillshade')) map.setLayoutProperty('hillshade', 'visibility', 'none');
+      if (map.getLayer('contours-line')) map.setLayoutProperty('contours-line', 'visibility', 'none');
+    }
+  }
+
+  function toggleTerrain() {
+    terrainVisible = !terrainVisible;
+    updateTerrainVisibility();
   }
 
   function showSatellite() {
-    if (map.getLayer('satellite')) {
-    hideTerrain();
+    if (MAPBOX_TOKEN && map.getLayer('satellite')) {
       map.setLayoutProperty('satellite', 'visibility', 'visible');
       map.setLayoutProperty('nasa', 'visibility', 'none');
     } else {
-      alert('Satellite layer unavailable');
       map.setLayoutProperty('nasa', 'visibility', 'visible');
+      if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
     }
     if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
     if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
   }
-
-  function showNASA() {
-    hideTerrain();
-    if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
-    map.setLayoutProperty('nasa', 'visibility', 'visible');
-    if (map.getLayer('country-label')) map.setLayoutProperty('country-label', 'visibility', 'visible');
-    if (map.getLayer('place-label')) map.setLayoutProperty('place-label', 'visibility', 'visible');
+    updateLabelVisibility();
+    updateTerrainVisibility();
   }
 
   function handleMapClick(e) {
@@ -227,9 +304,11 @@ if (typeof window !== 'undefined') {
       if (pl) place += pl.properties.name_en;
       if (co) place += (place ? ', ' : '') + co.properties.name_en;
     }
-    const html = `<div><b>${place || 'Unknown location'}</b><br><b>Elevation:</b> ${
-      elev !== null ? `${elev} m` : 'N/A'
-    }</div>`;
+    const parts = [];
+    if (place) parts.push(`<b>${place}</b>`);
+    if (elev !== null && elev !== 0) parts.push(`<b>Elevation:</b> ${elev} m`);
+    if (!parts.length) return;
+    const html = `<div>${parts.join('<br>')}</div>`;
     new maplibregl.Popup().setLngLat(lngLat).setHTML(html).addTo(map);
   }
 
@@ -250,11 +329,11 @@ if (typeof window !== 'undefined') {
   $('#btnInfo').onclick = () => $('#glossary').classList.toggle('hidden');
   const btnSat = $('#btnSat');
   btnSat.onclick = showSatellite;
-  if (!MAPBOX_TOKEN) btnSat.classList.add('hidden');
-  $('#btnNasa').onclick = showNASA;
   const btnTerrain = $('#btnTerrain');
-  btnTerrain.onclick = showTerrain;
+  btnTerrain.onclick = toggleTerrain;
   if (!MAPBOX_TOKEN) btnTerrain.classList.add('hidden');
+  const btnLabels = $('#btnLabels');
+  btnLabels.onclick = toggleLabels;
   $('#clearFilters').onclick = () => {
     for (const k of Object.keys(state.filters)) state.filters[k].clear();
     renderFilters();
