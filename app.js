@@ -131,9 +131,92 @@ if (typeof window !== 'undefined') {
   function bootLegendList() {
     const ul = document.getElementById('legend-botas');
     if (!ul) return;
-@@ -150,67 +217,76 @@ function renderFilters() {
+    ul.innerHTML = '';
+    for (const [k, color] of Object.entries(BOOT_COLORS)) {
+      const li = document.createElement('li');
+      li.innerHTML = `<span style="display:inline-block;width:10px;height:10px;background:${color};border-radius:2px;margin-right:6px;"></span>${k}`;
+      ul.appendChild(li);
+    }
   }
 
+  function chip(label, group, key) {
+    const el = document.createElement('button');
+    el.className = 'chip';
+    el.textContent = label;
+    if (state.filters[group].has(key)) el.classList.add('active');
+    el.onclick = () => {
+      if (state.filters[group].has(key)) state.filters[group].delete(key);
+      else state.filters[group].add(key);
+      el.classList.toggle('active');
+      renderMarkers();
+    };
+    return el;
+  }
+
+  function renderFilters() {
+    const fc = document.getElementById('filter-continente'),
+      fd = document.getElementById('filter-dificultad'),
+      fb = document.getElementById('filter-botas'),
+      ft = document.getElementById('filter-tipo');
+    if (!fc || !fd || !fb || !ft) return;
+    fc.innerHTML = fd.innerHTML = fb.innerHTML = ft.innerHTML = '';
+    [...state.continents].sort().forEach(c => fc.appendChild(chip(c, 'continente', c)));
+    [...state.difficulties].sort().forEach(d => fd.appendChild(chip(d, 'dificultad', d)));
+    [...state.boots].forEach(b => fb.appendChild(chip(b, 'botas', b)));
+    [...state.tipos].sort().forEach(t => ft.appendChild(chip(t, 'tipo', t)));
+  }
+
+  function withinFilters(d) {
+    const F = state.filters;
+    const cont = F.continente.size === 0 || F.continente.has(d.continente);
+    const dif = F.dificultad.size === 0 || F.dificultad.has(normalizeDiff(d.dificultad));
+    const tipo = F.tipo.size === 0 || F.tipo.has(d.tipo);
+    const botas =
+      F.botas.size === 0 || (Array.isArray(d.botas) && d.botas.some(b => F.botas.has(b)));
+    return cont && dif && tipo && botas;
+  }
+
+  function markerColor(d) {
+    const pr = [
+      'Scarpa Ribelle Lite HD',
+      'La Sportiva Aequilibrium ST GTX',
+      'Scarpa Zodiac Tech LT GTX',
+      'Bestard Teix Lady GTX',
+      'La Sportiva Nepal Cube GTX',
+      'Nepal (doble bota técnica de alta montaña)',
+      'Botas triple capa (8000 m+)',
+      'Cualquiera',
+      'Depende',
+      'Otras ligeras (para trekking no técnico)'
+    ];
+    for (const p of pr)
+      if (Array.isArray(d.botas) && d.botas.includes(p)) return BOOT_COLORS[p] || '#22c55e';
+    return '#22c55e';
+  }
+
+  function popupHtml(d) {
+    const url = d.link || d.google_search || null;
+    const title = url
+      ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="font-weight:700;font-size:15px;margin-bottom:4px;color:#3b82f6;text-decoration:underline;">${d.nombre} (${d.pais})</a>`
+      : `<div style="font-weight:700;font-size:15px;margin-bottom:4px">${d.nombre} (${d.pais})</div>`;
+
+    const bootsBadges = (d.botas || []).map(b => `<span class="badge">${b}</span>`).join(' ');
+
+    return `<div style="min-width:260px;max-width:360px">
+      ${title}
+      <div><b>Continente:</b> ${d.continente} · <b>Tipo:</b> ${d.tipo}</div>
+      <div><b>Altitud:</b> ${d.altitud_m} m · <b>Dificultad:</b> ${d.dificultad}</div>
+      <div style="margin-top:4px"><b>Meses:</b> ${d.meses} · <b>Temp aprox:</b> ${d.temp_aprox}</div>
+      <div style="margin-top:6px"><b>Botas:</b><br>${bootsBadges}</div>
+      <div style="margin-top:6px"><b>Scrambling/Escalada:</b> ${d.scramble?.si ? 'Sí' : 'No'}; Grado: ${d.scramble?.grado || '-'}; Arnés: ${d.scramble?.arnes ? 'Sí' : 'No'}</div>
+      <div><b>Equipo:</b> ${(d.equipo || []).join(', ') || '—'}</div>
+      <div><b>Vivac:</b> ${d.vivac} · <b>Camping gas:</b> ${d.gas}</div>
+      <div><b>Permisos:</b> ${d.permisos} · <b>Guía:</b> ${d.guia}</div>
+      <div><b>Coste estancia:</b> ${d.coste_estancia}</div>
+      <div style="margin-top:6px"><b>Reseña:</b> ${d.resena}</div>
+    </div>`;
+  }
+  
   // --- Data ---
   async function loadData() {
     try {
@@ -148,11 +231,11 @@ if (typeof window !== 'undefined') {
         state.tipos.add(d.tipo);
       });
 
-          renderFilters();
+      renderFilters();
       renderMarkers();
       bootLegendList();
     } catch (err) {
-            console.error('❌ Error cargando datos:', err);
+      console.error('❌ Error cargando datos:', err);
     }
   }
 
@@ -161,25 +244,26 @@ if (typeof window !== 'undefined') {
     state.markers = [];
   }
 
+    function addMarker(d) {
+    const el = document.createElement('div');
+    el.style.width = '12px';
+    el.style.height = '12px';
+    el.style.backgroundColor = markerColor(d);
+    el.style.borderRadius = '50%';
+    el.style.border = '2px solid #fff';
+    return new maplibregl.Marker({ element: el })
+      .setLngLat([d.coords[1], d.coords[0]])
+      .setPopup(new maplibregl.Popup().setHTML(popupHtml(d)));
+  }
+  
   function renderMarkers() {
     clearMarkers();
     const filtered = state.data.filter(withinFilters);
     const bounds = new maplibregl.LngLatBounds();
     filtered.forEach(d => {
-      const col = markerColor(d);
-      const el = document.createElement('div');
-      el.style.width = '12px';
-      el.style.height = '12px';
-      el.style.backgroundColor = col;
-      el.style.borderRadius = '50%';
-      el.style.border = '2px solid #fff';
-      const ll = [d.coords[1], d.coords[0]];
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat(ll)
-        .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(popupHtml(d)))
-        .addTo(map);
+      const marker = addMarker(d).addTo(map);
       state.markers.push(marker);
-      bounds.extend(ll);
+      bounds.extend([d.coords[1], d.coords[0]]);
     });
     if (filtered.length) {
       map.fitBounds(bounds, { padding: 40 });
@@ -208,3 +292,17 @@ if (typeof window !== 'undefined') {
               nw.postMessage({ type: 'SKIP_WAITING' });
             }
           });
+        });
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      } catch (err) {
+        console.error('❌ Error registrando SW:', err);
+      }
+    });
+  }
+}
