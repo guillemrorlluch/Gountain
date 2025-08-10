@@ -138,32 +138,25 @@ function renderMarkers() {
 
 loadData();
 
-// app.js
+// ---- Service Worker (final de app.js) ----
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?v=6');
-  });
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      console.log('✅ SW registrado:', reg.scope);
 
-  // (opcional) recarga automática cuando cambie el SW
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    window.location.reload();
-  });
-}
-      // Buscar updates cuando vuelves a la pestaña
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') reg.update();
-      });
+      // Si ya hay uno nuevo "waiting", actívalo ya
+      if (reg.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
 
-      // Si ya hay uno nuevo esperando, actívalo ya
-      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-
-      // Cuando se detecta uno nuevo, pídele que active ya
+      // Cuando detecte actualización, fuerza que el nuevo tome el control
       reg.addEventListener('updatefound', () => {
-        const newSW = reg.installing;
-        if (!newSW) return;
-        newSW.addEventListener('statechange', () => {
-          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-            newSW.postMessage({ type: 'SKIP_WAITING' });
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            nw.postMessage({ type: 'SKIP_WAITING' });
           }
         });
       });
