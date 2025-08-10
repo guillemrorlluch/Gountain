@@ -3,14 +3,17 @@ const VERSION = 'v9';
 const STATIC_CACHE = `static-${VERSION}`;
 const DATA_CACHE   = `data-${VERSION}`;
 
+// Extrae solo el número para usarlo en los parámetros de caché
+const VER_PARAM = VERSION.replace(/^v/, '');
+
 const STATIC_ASSETS = [
-  '/',                 // raíz
-  '/index.html',       // HTML principal
-  '/styles.css?v=9',   // con query para bustear caché
-  '/app.js?v=9',
-  '/manifest.json?v=9',
-  '/assets/icons/GountainTime-192.png?v=9',
-  '/assets/icons/GountainTime-512.png?v=9'
+   '/',                                // raíz
+  '/index.html',                      // HTML principal
+  `/styles.css?v=${VER_PARAM}`,       // con query para bustear caché
+  `/app.js?v=${VER_PARAM}`,
+  `/manifest.json?v=${VER_PARAM}`,
+  '/assets/icons/GountainTime-192.png',
+  '/assets/icons/GountainTime-512.png'
 ];
 
 self.addEventListener('install', (event) => {
