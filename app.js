@@ -137,8 +137,13 @@ if (typeof window !== 'undefined') {
   );
 
   function showSatellite() {
-    if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'visible');
-    map.setLayoutProperty('nasa', 'visibility', 'none');
+    if (map.getLayer('satellite')) {
+      map.setLayoutProperty('satellite', 'visibility', 'visible');
+      map.setLayoutProperty('nasa', 'visibility', 'none');
+    } else {
+      alert('Satellite layer unavailable');
+      map.setLayoutProperty('nasa', 'visibility', 'visible');
+    }
   }
 
   function showNASA() {
@@ -161,7 +166,9 @@ if (typeof window !== 'undefined') {
   const $ = (sel) => document.querySelector(sel);
   $('#btnMenu').onclick = () => $('#sidebar').classList.toggle('hidden');
   $('#btnInfo').onclick = () => $('#glossary').classList.toggle('hidden');
-  $('#btnSat').onclick = showSatellite;
+  const btnSat = $('#btnSat');
+  btnSat.onclick = showSatellite;
+  if (!MAPBOX_TOKEN) btnSat.classList.add('hidden');
   $('#btnNasa').onclick = showNASA;
   $('#clearFilters').onclick = () => {
     for (const k of Object.keys(state.filters)) state.filters[k].clear();
