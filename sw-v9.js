@@ -1,5 +1,5 @@
-// sw.js — v8
-const VERSION = 'v8';
+// sw.js — v9
+const VERSION = 'v9';
 const STATIC_CACHE = `static-${VERSION}`;
 const DATA_CACHE   = `data-${VERSION}`;
 
