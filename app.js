@@ -1,4 +1,4 @@
-// app.js — v9
+e// app.js — v9
 
 // Normaliza etiquetas de dificultad a buckets
 function normalizeDiff(diff) {
@@ -80,8 +80,22 @@ function withinFilters(d, F) {
   return cont && dif && tipo && botas && season && altMin && altMax;
 }
 
+function computeBounds(list) {
+  if (!Array.isArray(list) || list.length === 0) return null;
+  let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
+  for (const d of list) {
+    const lat = d.coords[0];
+    const lng = d.coords[1];
+    if (lng < west) west = lng;
+    if (lng > east) east = lng;
+    if (lat < south) south = lat;
+    if (lat > north) north = lat;
+  }
+  return { west, south, east, north };
+}
+
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { normalizeDiff, markerColor, withinFilters, BOOT_COLORS };
+  module.exports = { normalizeDiff, markerColor, withinFilters, BOOT_COLORS, monthsToSeasons, computeBounds };
 }
 
 if (typeof window !== 'undefined') {
@@ -546,10 +560,25 @@ if (typeof window !== 'undefined') {
   }
   
   // --- Data ---
+  async function fetchDestinos() {
+    try {
+      const res = await fetch('https://example.com/api/destinos', { cache: 'no-store' });
+      if (res.ok) return await res.json();
+    } catch (_) {}
+    const res = await fetch(DATA_URL, { cache: 'no-store' });
+    return await res.json();
+  }
+
+  function validateDestinos(list) {
+    return list.filter(d =>
+      d && typeof d.id === 'string' && Array.isArray(d.coords) && d.coords.length === 2 && typeof d.altitud_m === 'number'
+    );
+  }
+
   async function loadData() {
     try {
-      const res = await fetch(DATA_URL, { cache: 'no-store' });
-      const data = await res.json();
+      const raw = await fetchDestinos();
+      const data = validateDestinos(raw);
 
       state.data = data;
       data.forEach(d => {
@@ -567,6 +596,11 @@ if (typeof window !== 'undefined') {
       bootLegendList();
     } catch (err) {
       console.error('❌ Error cargando datos:', err);
+      if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+        navigator.serviceWorker.ready.then(reg => {
+          if (reg.sync) reg.sync.register('sync-destinos');
+        });
+      }
     }
   }
 
@@ -649,9 +683,9 @@ if (typeof window !== 'undefined') {
       map.on('mouseleave', 'clusters', () => { map.getCanvas().style.cursor = ''; });
     }
 
-    if (filtered.length) {
-      const bounds = new maplibregl.LngLatBounds();
-      filtered.forEach(d => bounds.extend([d.coords[1], d.coords[0]]));
+    const b = computeBounds(filtered);
+    if (b) {
+      const bounds = new maplibregl.LngLatBounds([b.west, b.south], [b.east, b.north]);
       map.fitBounds(bounds, { padding: 40 });
     }
   }
