@@ -10,3 +10,7 @@ test('maps month range to seasons', () => {
 test('returns empty array on invalid input', () => {
   assert.deepEqual(monthsToSeasons(''), []);
 });
+
+test('supports hyphen-separated ranges', () => {
+  assert.deepEqual(monthsToSeasons('Jun-Aug'), ['Verano']);
+});
