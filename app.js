@@ -7,7 +7,7 @@ function normalizeDiff(diff) {
   if (diff.startsWith('AD')) return 'AD';             // ojo: startsWith bien escrito
   if (diff.startsWith('PD')) return 'PD';
   if (diff.startsWith('F')) return 'F';
-  return diff.includes('Trek') ? 'Trek' : 'Trek';
+  return diff.includes('Trek') ? 'Trek' : diff;
 }
 
 // Paleta para botas
