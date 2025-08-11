@@ -40,6 +40,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
+  const assetKey = url.pathname + url.search;
 
   if (url.pathname.startsWith('/data/')) {
     event.respondWith(
@@ -59,7 +60,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (STATIC_ASSETS.includes(url.pathname)) {
+  if (STATIC_ASSETS.includes(assetKey)) {
     event.respondWith(
       caches.match(request).then(cached => cached || fetch(request))
     );
