@@ -41,6 +41,8 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
   const assetKey = url.pathname + url.search;
+   
+  if (request.method !== 'GET' || url.origin !== location.origin) return;
 
   if (url.pathname.startsWith('/data/')) {
     event.respondWith(
