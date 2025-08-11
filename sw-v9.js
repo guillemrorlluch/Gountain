@@ -35,3 +35,53 @@ self.addEventListener('activate', (event) => {
   );
   self.clients.claim();
 });
+
+// Stale-while-revalidate for data requests
+self.addEventListener('fetch', event => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  if (url.pathname.startsWith('/data/')) {
+    event.respondWith(
+      caches.open(DATA_CACHE).then(async cache => {
+        const cached = await cache.match(request);
+        const fetchPromise = fetch(request).then(res => {
+          if (res.ok) cache.put(request, res.clone());
+          return res;
+        }).catch(() => cached);
+        if (cached) {
+          event.waitUntil(fetchPromise);
+          return cached;
+        }
+        return fetchPromise;
+      })
+    );
+    return;
+  }
+
+  if (STATIC_ASSETS.includes(url.pathname)) {
+    event.respondWith(
+      caches.match(request).then(cached => cached || fetch(request))
+    );
+  }
+});
+
+self.addEventListener('message', evt => {
+  if (evt.data && evt.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  } else if (evt.data && evt.data.type === 'SYNC_DATA') {
+    if (self.registration.sync) {
+      self.registration.sync.register('sync-destinos');
+    }
+  }
+});
+
+self.addEventListener('sync', event => {
+  if (event.tag === 'sync-destinos') {
+    event.waitUntil(
+      fetch('/data/destinos.json')
+        .then(res => caches.open(DATA_CACHE).then(cache => cache.put('/data/destinos.json', res)))
+        .catch(err => console.error('Sync failed', err))
+    );
+  }
+});
