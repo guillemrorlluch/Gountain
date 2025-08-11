@@ -3,9 +3,9 @@
 // Normaliza etiquetas de dificultad a buckets
 function normalizeDiff(diff) {
   if (!diff) return 'Trek';
-  if (diff.startsWith('D')) return 'D';
-  if (diff.startsWith('AD')) return 'AD';             // ojo: startsWith bien escrito
+  if (diff.startsWith('AD')) return 'AD';
   if (diff.startsWith('PD')) return 'PD';
+  if (diff.startsWith('D')) return 'D';
   if (diff.startsWith('F')) return 'F';
   return diff.includes('Trek') ? 'Trek' : diff;
 }
