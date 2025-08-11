@@ -1,7 +1,7 @@
-import fs from 'fs';
+const fs = require('fs');
 
 // Lee versión de config.js
-const { VERSION } = await import(`./config.js?${Date.now()}`);
+const { VERSION } = require('./config.js');
 
 // Incluye el service worker con su nombre versionado
 const filesToUpdate = ['app.js', 'index.html', 'manifest.json', 'styles.css', `sw-${VERSION}.js`];
