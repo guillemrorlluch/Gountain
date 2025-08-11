@@ -46,7 +46,7 @@ function monthsToSeasons(meses) {
   const map = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
   if (!meses) return [];
   if (meses.toLowerCase().includes('todo')) return ['Invierno','Primavera','Verano','Otoño'];
-  const parts = meses.split('–');
+  const parts = meses.split(/[–-]/).map(p => p.trim());
   if (parts.length < 2) return [];
   const start = map[parts[0].slice(0,3)];
   const end = map[parts[1].slice(0,3)];
@@ -450,16 +450,21 @@ if (typeof window !== 'undefined') {
   
   // --- Helpers UI ---
   const $ = (sel) => document.querySelector(sel);
-  $('#btnMenu').onclick = () => $('#sidebar').classList.toggle('hidden');
-  $('#btnInfo').onclick = () => $('#glossary').classList.toggle('hidden');
+  const btnMenu = $('#btnMenu');
+  if (btnMenu) btnMenu.onclick = () => $('#sidebar').classList.toggle('hidden');
+  const btnInfo = $('#btnInfo');
+  if (btnInfo) btnInfo.onclick = () => $('#glossary').classList.toggle('hidden');
   const btnSat = $('#btnSat');
-  btnSat.onclick = toggleSatellite;
+  if (btnSat) btnSat.onclick = toggleSatellite;
   const btnTerrain = $('#btnTerrain');
-  btnTerrain.onclick = toggleTerrain;
-  if (!MAPBOX_TOKEN) btnTerrain.classList.add('hidden');
+  if (btnTerrain) {
+    btnTerrain.onclick = toggleTerrain;
+    if (!MAPBOX_TOKEN) btnTerrain.classList.add('hidden');
+  }
   const btnLabels = $('#btnLabels');
-  btnLabels.onclick = toggleLabels;
-  $('#clearFilters').onclick = () => {
+  if (btnLabels) btnLabels.onclick = toggleLabels;
+  const btnClearFilters = $('#clearFilters');
+  if (btnClearFilters) btnClearFilters.onclick = () => {
     for (const k of ['continente','dificultad','botas','tipo','season']) state.filters[k].clear();
     state.filters.altitude.min = state.filters.altitude.max = null;
     const mi = document.getElementById('alt-min'), ma = document.getElementById('alt-max');
@@ -538,35 +543,47 @@ if (typeof window !== 'undefined') {
   const markerColorLocal = (d) => markerColor(d);
   const withinFiltersLocal = (d) => withinFilters(d, state.filters);
   
-  function popupHtml(d) {
-    const url = d.link || d.google_search || null;
-    const title = url
-      ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="font-weight:700;font-size:15px;margin-bottom:4px;color:#3b82f6;text-decoration:underline;">${d.nombre} (${d.pais})</a>`
-      : `<div style="font-weight:700;font-size:15px;margin-bottom:4px">${d.nombre} (${d.pais})</div>`;
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
 
-    const bootsBadges = (d.botas || []).map(b => `<span class="badge">${b}</span>`).join(' ');
+  function safeUrl(url) {
+    return /^https?:\/\//i.test(url) ? url : null;
+  }
+
+  function popupHtml(d) {
+    const url = safeUrl(d.link || d.google_search || '');
+    const name = escapeHtml(d.nombre);
+    const country = escapeHtml(d.pais);
+    const title = url
+      ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="font-weight:700;font-size:15px;margin-bottom:4px;color:#3b82f6;text-decoration:underline;">${name} (${country})</a>`
+      : `<div style="font-weight:700;font-size:15px;margin-bottom:4px">${name} (${country})</div>`;
+    
+    const bootsBadges = (d.botas || []).map(b => `<span class="badge">${escapeHtml(b)}</span>`).join(' ');
+    const scramble = d.scramble || {};
 
     return `<div style="min-width:260px;max-width:360px">
       ${title}
-      <div><b>Continente:</b> ${d.continente} · <b>Tipo:</b> ${d.tipo}</div>
-      <div><b>Altitud:</b> ${d.altitud_m} m · <b>Dificultad:</b> ${d.dificultad}</div>
-      <div style="margin-top:4px"><b>Meses:</b> ${d.meses} · <b>Temp aprox:</b> ${d.temp_aprox}</div>
+      <div><b>Continente:</b> ${escapeHtml(d.continente)} · <b>Tipo:</b> ${escapeHtml(d.tipo)}</div>
+      <div><b>Altitud:</b> ${escapeHtml(d.altitud_m)} m · <b>Dificultad:</b> ${escapeHtml(d.dificultad)}</div>
+      <div style="margin-top:4px"><b>Meses:</b> ${escapeHtml(d.meses)} · <b>Temp aprox:</b> ${escapeHtml(d.temp_aprox)}</div>
       <div style="margin-top:6px"><b>Botas:</b><br>${bootsBadges}</div>
-      <div style="margin-top:6px"><b>Scrambling/Escalada:</b> ${d.scramble?.si ? 'Sí' : 'No'}; Grado: ${d.scramble?.grado || '-'}; Arnés: ${d.scramble?.arnes ? 'Sí' : 'No'}</div>
-      <div><b>Equipo:</b> ${(d.equipo || []).join(', ') || '—'}</div>
-      <div><b>Vivac:</b> ${d.vivac} · <b>Camping gas:</b> ${d.gas}</div>
-      <div><b>Permisos:</b> ${d.permisos} · <b>Guía:</b> ${d.guia}</div>
-      <div><b>Coste estancia:</b> ${d.coste_estancia}</div>
-      <div style="margin-top:6px"><b>Reseña:</b> ${d.resena}</div>
+      <div style="margin-top:6px"><b>Scrambling/Escalada:</b> ${scramble.si ? 'Sí' : 'No'}; Grado: ${escapeHtml(scramble.grado || '-')}; Arnés: ${scramble.arnes ? 'Sí' : 'No'}</div>
+      <div><b>Equipo:</b> ${(d.equipo || []).map(escapeHtml).join(', ') || '—'}</div>
+      <div><b>Vivac:</b> ${escapeHtml(d.vivac)} · <b>Camping gas:</b> ${escapeHtml(d.gas)}</div>
+      <div><b>Permisos:</b> ${escapeHtml(d.permisos)} · <b>Guía:</b> ${escapeHtml(d.guia)}</div>
+      <div><b>Coste estancia:</b> ${escapeHtml(d.coste_estancia)}</div>
+      <div style="margin-top:6px"><b>Reseña:</b> ${escapeHtml(d.resena)}</div>
     </div>`;
   }
   
   // --- Data ---
   async function fetchDestinos() {
-    try {
-      const res = await fetch('https://example.com/api/destinos', { cache: 'no-store' });
-      if (res.ok) return await res.json();
-    } catch (_) {}
     const res = await fetch(DATA_URL, { cache: 'no-store' });
     return await res.json();
   }
