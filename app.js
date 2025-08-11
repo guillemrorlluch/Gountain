@@ -144,11 +144,13 @@ if (typeof window !== 'undefined') {
   let terrainVisible = false;
   let satelliteEnabled = false;
   
-  map.on('error', (e) => {
-    console.error('Map load error', e.error);
-    if (e && e.sourceId) {
-      showError(`Error al cargar ${e.sourceId}. Reintentando...`);
-      if (e.sourceId === 'satellite') {
+  // Use a descriptive parameter name to avoid leaking a global "e" and make
+  // the error handler clearer.
+  map.on('error', (evt) => {
+    console.error('Map load error', evt.error);
+    if (evt && evt.sourceId) {
+      showError(`Error al cargar ${evt.sourceId}. Reintentando...`);
+      if (evt.sourceId === 'satellite') {
         if (map.getLayer('nasa-bluemarble')) map.setLayoutProperty('nasa-bluemarble', 'visibility', 'visible');
         if (map.getLayer('nasa-viirs')) map.setLayoutProperty('nasa-viirs', 'visibility', 'visible');
         if (map.getLayer('satellite')) map.setLayoutProperty('satellite', 'visibility', 'none');
@@ -664,8 +666,10 @@ if (typeof window !== 'undefined') {
         }
       });
 
-      map.on('click', 'clusters', e => {
-        const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+      // Clarify event variables to avoid accidental reliance on an implicit global
+      // "e" when handlers are executed.
+      map.on('click', 'clusters', evt => {
+        const features = map.queryRenderedFeatures(evt.point, { layers: ['clusters'] });
         const clusterId = features[0].properties.cluster_id;
         map.getSource('destinations').getClusterExpansionZoom(clusterId, (err, zoom) => {
           if (err) return;
@@ -673,9 +677,9 @@ if (typeof window !== 'undefined') {
         });
       });
 
-      map.on('click', 'unclustered-point', e => {
-        const coordinates = e.features[0].geometry.coordinates.slice();
-        const html = e.features[0].properties.popup;
+      map.on('click', 'unclustered-point', evt => {
+        const coordinates = evt.features[0].geometry.coordinates.slice();
+        const html = evt.features[0].properties.popup;
         new maplibregl.Popup().setLngLat(coordinates).setHTML(html).addTo(map);
       });
 
