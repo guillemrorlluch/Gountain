@@ -1,4 +1,4 @@
-e// app.js — v9
+// app.js — v9
 
 // Normaliza etiquetas de dificultad a buckets
 function normalizeDiff(diff) {
