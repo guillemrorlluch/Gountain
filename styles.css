@@ -4,6 +4,7 @@
   --text: #f8fafc;
   --muted: #cbd5e1;
   --accent: #22c55e;
+  --focus: #3b82f6;
 }
 * { box-sizing: border-box; }
 html, body, #app, #map { height: 100%; margin: 0; }
@@ -14,7 +15,7 @@ body { background: var(--bg); color: var(--text); font-family: ui-sans-serif, sy
   border-bottom: 1px solid #1f2937;
 }
 .topbar h1 { font-size: 16px; margin: 0; font-weight: 700; letter-spacing: .3px; }
-.topbar button { background: #1f2937; color: var(--text); border: 1px solid #374151; border-radius: 10px; padding: 6px 10px; cursor: pointer; }
+.topbar button { background: #1f2937; color: var(--text); border: 1px solid #374151; border-radius: 10px; padding: 6px 10px; cursor: pointer; min-width:44px; min-height:44px; }
 #map { position: fixed; inset: 52px 0 0 0; }
 #map-error {
   position: fixed;
@@ -42,7 +43,7 @@ details { background:#0b1326; border:1px solid #1f2a44; border-radius:10px; padd
 summary { cursor: pointer; color:var(--muted); font-weight:700; }
 .chips { display:flex; flex-wrap: wrap; gap:8px; margin-top:8px; }
 
-.chip { 
+.chip {
   border:1px solid #64748b;
   border-radius:999px;
   padding:6px 12px;
@@ -52,12 +53,18 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
   font-size:13px;
   user-select:none;
   transition: background .2s, color .2s, border-color .2s, transform .05s;
+  min-height:36px;
+  min-width:44px;
 }
 .chip:hover { background: rgba(148, 163, 184, 0.35); }
 .chip:active { transform: translateY(1px); }
 .chip.active { background:#16a34a; color:#ffffff; border-color:#16a34a; }
 
-.btn { width: 100%; padding:10px 12px; border-radius:10px; border:1px solid #334155; background:#0b1326; color:#e5e7eb; cursor:pointer; margin-top:8px; }
+.btn { width: 100%; padding:10px 12px; border-radius:10px; border:1px solid #334155; background:#0b1326; color:#e5e7eb; cursor:pointer; margin-top:8px; min-height:44px; }
+
+.input { width:80px; padding:6px; border-radius:8px; border:1px solid #334155; background:#0b1326; color:#e5e7eb; }
+
+.altitude-inputs { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 
 
 .maplibregl-map { background:#0b1220; }
@@ -77,6 +84,7 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 @media (max-width: 600px) {
   .maplibregl-popup-content,
   .leaflet-popup-content-wrapper { max-width:300px; }
+  .panel { width:100%; }
 }
 
 .marker {
@@ -87,6 +95,14 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 }
 
 .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #334155; margin-right:6px; }
+
+.topbar button:focus-visible,
+.chip:focus-visible,
+.btn:focus-visible,
+.input:focus-visible {
+  outline:2px solid var(--focus);
+  outline-offset:2px;
+}
 
 .compass-ctrl {
   width:34px;
