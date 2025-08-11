@@ -87,13 +87,6 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
   .panel { width:100%; }
 }
 
-.marker {
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  border:2px solid #fff;
-}
-
 .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #334155; margin-right:6px; }
 
 .topbar button:focus-visible,
