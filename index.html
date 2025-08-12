@@ -16,7 +16,6 @@
 
   <!-- CSS -->
   <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
-  <link href="https://unpkg.com/@maplibre/maplibre-gl-geocoder@1.4.0/dist/maplibre-gl-geocoder.css" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css?v=9">
 
   <!-- Favicons -->
@@ -42,9 +41,9 @@
   <header class="topbar">
     <button id="btnMenu" aria-label="Abrir filtros">☰</button>
     <h1>It's Gountain</h1>
-    <button id="btnSat" aria-label="Vista satélite">🛰️</button>
-    <button id="btnTerrain" aria-label="Mostrar relieve">⛰️</button>
-    <button id="btnLabels" aria-label="Mostrar/ocultar etiquetas">🗺️</button>
+    <button id="btnMode" aria-label="Cambiar modo">🗺️</button>
+    <button id="btn3d" aria-label="Alternar 3D">⛰️</button>
+    <button id="btnContours" aria-label="Curvas de nivel">〰️</button>
     <button id="btnInfo" aria-label="Abrir glosario">ℹ️</button>
   </header>
 
@@ -104,7 +103,7 @@
         <details><summary>Leyenda de botas</summary>
           <ul id="legend-botas"></ul>
         </details>
-      </div>
+        </div>
     </aside>
 
     <div id="map"></div>
@@ -112,14 +111,7 @@
   </main>
 
   <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
-  <script src="https://unpkg.com/@maplibre/maplibre-gl-geocoder@1.4.0/dist/maplibre-gl-geocoder.min.js"></script>
-  
-  <script>
-    // inject your Mapbox/MapTiler tokens here
-    window.MAPBOX_TOKEN = '';
-    window.MAPTILER_KEY = '';
-  </script>
-
+  <script type="module" src="/map.js?v=9"></script>
   <script src="/app.js?v=9"></script>
   </body>
   </html>
