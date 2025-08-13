@@ -5,8 +5,6 @@ maplibregl.addProtocol('pmtiles', protocol.tile);
 const PMTILES_URL = 'https://r2-public.protomaps.com/protomaps-basemap.pmtiles';
 protocol.add(new pmtiles.PMTiles(PMTILES_URL));
 
-const EXAGGERATION = 1.4;
-
 const style = {
   version: 8,
   glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
@@ -125,46 +123,3 @@ const map = new maplibregl.Map({
   bearing: 0,
   antialias: true
 });
-
-function setMode({ name, is3D }) {
-  const mode = (name || 'standard').toLowerCase();
-  const threeD = Boolean(is3D);
-
-  localStorage.setItem('map-mode', mode);
-  localStorage.setItem('map-3d', threeD ? '1' : '0');
-
-  const showTopo = mode === 'standard';
-  const showSatellite = mode !== 'standard';
-  const showLabels = mode !== 'satellite';
-
-  map.setLayoutProperty('topo-layer', 'visibility', showTopo ? 'visible' : 'none');
-  map.setLayoutProperty('satellite-layer', 'visibility', showSatellite ? 'visible' : 'none');
-  map.setLayoutProperty('pm-admin', 'visibility', showLabels ? 'visible' : 'none');
-  map.setLayoutProperty('pm-labels', 'visibility', showLabels ? 'visible' : 'none');
-
-  if (mode === 'standard') {
-    map.setLayoutProperty('hillshade-layer', 'visibility', 'visible');
-    map.setPaintProperty('hillshade-layer', 'raster-opacity', 0.25);
-  } else if (mode === 'satellite') {
-    map.setLayoutProperty('hillshade-layer', threeD ? 'none' : 'visible');
-    map.setPaintProperty('hillshade-layer', 'raster-opacity', 0.2);
-  } else if (mode === 'hybrid') {
-    map.setLayoutProperty('hillshade-layer', threeD ? 'none' : 'visible');
-    map.setPaintProperty('hillshade-layer', 'raster-opacity', 0.12);
-  }
-
-  if (threeD) {
-    map.setTerrain({ source: 'dem', exaggeration: EXAGGERATION });
-    map.setPitch(60);
-  } else {
-    map.setTerrain(null);
-    map.setPitch(0);
-  }
-}
-
-const savedMode = localStorage.getItem('map-mode') || 'standard';
-const saved3D = localStorage.getItem('map-3d') === '1';
-map.on('load', () => setMode({ name: savedMode, is3D: saved3D }));
-
-window.map = map;
-window.setMode = setMode;
