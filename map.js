@@ -123,3 +123,84 @@ const map = new maplibregl.Map({
   bearing: 0,
   antialias: true
 });
+
+map.on('load', () => {
+  const MODE_KEY = 'map-mode';
+  const THREE_D_KEY = 'map-3d';
+  const CONTOURS_KEY = 'map-contours';
+
+  let currentMode = localStorage.getItem(MODE_KEY) || 'topo';
+  let is3D = localStorage.getItem(THREE_D_KEY) === 'true';
+  let showContours = localStorage.getItem(CONTOURS_KEY) === 'true';
+
+  function setMode(mode) {
+    map.setLayoutProperty('satellite-layer', 'visibility', mode === 'satellite' ? 'visible' : 'none');
+    map.setLayoutProperty('topo-layer', 'visibility', mode === 'topo' ? 'visible' : 'none');
+    currentMode = mode;
+    try { localStorage.setItem(MODE_KEY, mode); } catch {}
+  }
+
+  function set3D(enabled) {
+    if (enabled) {
+      map.setTerrain({ source: 'dem', exaggeration: 1.5 });
+      map.setLayoutProperty('hillshade-layer', 'visibility', 'visible');
+      map.setPitch(45);
+    } else {
+      map.setTerrain(null);
+      map.setLayoutProperty('hillshade-layer', 'visibility', 'none');
+      map.setPitch(0);
+    }
+    is3D = enabled;
+    try { localStorage.setItem(THREE_D_KEY, String(enabled)); } catch {}
+  }
+
+  function setContours(visible) {
+    map.setLayoutProperty('contours-layer', 'visibility', visible ? 'visible' : 'none');
+    showContours = visible;
+    try { localStorage.setItem(CONTOURS_KEY, String(visible)); } catch {}
+  }
+
+  setMode(currentMode);
+  set3D(is3D);
+  setContours(showContours);
+
+  const btnMode = document.getElementById('btnMode');
+  const btn3d = document.getElementById('btn3d');
+  const btnContours = document.getElementById('btnContours');
+
+  if (btnMode) {
+    btnMode.addEventListener('click', () => {
+      setMode(currentMode === 'topo' ? 'satellite' : 'topo');
+    });
+  }
+
+  if (btn3d) {
+    btn3d.addEventListener('click', () => {
+      set3D(!is3D);
+    });
+  }
+
+  if (btnContours) {
+    btnContours.addEventListener('click', () => {
+      setContours(!showContours);
+    });
+  }
+
+  const topbar = document.querySelector('.topbar');
+  let debugVisible = false;
+
+  function setDebug(v) {
+    map.setLayoutProperty('pm-admin', 'visibility', v ? 'visible' : 'none');
+    map.setLayoutProperty('pm-labels', 'visibility', v ? 'visible' : 'none');
+    debugVisible = v;
+  }
+
+  if (topbar) {
+    const btnDebug = document.createElement('button');
+    btnDebug.id = 'btnDebug';
+    btnDebug.textContent = '🐞';
+    btnDebug.setAttribute('aria-label', 'Debug overlay');
+    topbar.appendChild(btnDebug);
+    btnDebug.addEventListener('click', () => setDebug(!debugVisible));
+  }
+});
