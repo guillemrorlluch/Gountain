@@ -1,10 +1,8 @@
 // map.js
-import { PMTiles, Protocol } from 'https://unpkg.com/pmtiles@3.0.2/dist/index.js?module';
-
-const protocol = new Protocol();
+const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
 const pmtilesUrl = 'https://protomaps.github.io/pmtiles/planet.pmtiles';
-protocol.add(new PMTiles(pmtilesUrl));
+protocol.add(new pmtiles.PMTiles(pmtilesUrl));
 
 const style = {
   version: 8,
