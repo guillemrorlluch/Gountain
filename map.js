@@ -123,5 +123,3 @@ const map = new maplibregl.Map({
   bearing: 0,
   antialias: true
 });
-
-window.map = map;
