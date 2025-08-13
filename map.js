@@ -1,67 +1,117 @@
-// map.js
+// map.js - tokenless MapLibre sources and layers
+
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
-const pmtilesUrl = 'https://protomaps.github.io/pmtiles/planet.pmtiles';
-protocol.add(new pmtiles.PMTiles(pmtilesUrl));
+const PMTILES_URL = 'https://r2-public.protomaps.com/protomaps-basemap.pmtiles';
+protocol.add(new pmtiles.PMTiles(PMTILES_URL));
+
+const EXAGGERATION = 1.4;
 
 const style = {
   version: 8,
   glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
   sources: {
-    'terrain-dem': {
+    dem: {
       type: 'raster-dem',
-      tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+      tiles: [
+        'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
+      ],
       tileSize: 256,
       maxzoom: 15,
       encoding: 'terrarium'
     },
-    'esri-imagery': {
+    topo: {
       type: 'raster',
-      tiles: ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      tiles: [
+        'https://{a,b,c}.tile.opentopomap.org/{z}/{x}/{y}.png'
+      ],
       tileSize: 256,
-      attribution: '© Esri'
+      maxzoom: 17,
+      attribution:
+        'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
     },
-    'opentopo': {
+    satellite: {
       type: 'raster',
-      tiles: ['https://tile.opentopomap.org/{z}/{x}/{y}.png'],
+      tiles: [
+        'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+      ],
       tileSize: 256,
-      attribution: '© OpenTopoMap'
+      maxzoom: 19,
+      attribution:
+        'Imagery © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
     },
-    'hillshade': {
+    hillshade: {
       type: 'raster',
-      tiles: ['https://services.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
+      tiles: [
+        'https://services.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'
+      ],
       tileSize: 256,
-      attribution: '© Esri'
+      maxzoom: 19
     },
-    'protomaps': {
+    protomaps: {
       type: 'vector',
-      url: 'pmtiles://' + pmtilesUrl
+      url: 'pmtiles://' + PMTILES_URL
     },
-    'contours': {
-      type: 'vector',
-      tiles: ['https://demotiles.maplibre.org/contours/{z}/{x}/{y}.pbf'],
-      maxzoom: 14
+    contours: {
+      type: 'raster',
+      tiles: [
+        'https://tiles.opentopomap.org/contours/{z}/{x}/{y}.png'
+      ],
+      tileSize: 256,
+      maxzoom: 15
     }
   },
   layers: [
-    { id: 'hillshade', type: 'raster', source: 'hillshade', layout: { visibility: 'visible' } },
-    { id: 'opentopo', type: 'raster', source: 'opentopo', layout: { visibility: 'visible' } },
-    { id: 'satellite', type: 'raster', source: 'esri-imagery', layout: { visibility: 'none' } },
     {
-      id: 'pm-label',
+      id: 'satellite-layer',
+      type: 'raster',
+      source: 'satellite',
+      layout: { visibility: 'none' }
+    },
+    {
+      id: 'topo-layer',
+      type: 'raster',
+      source: 'topo',
+      layout: { visibility: 'none' }
+    },
+    {
+      id: 'hillshade-layer',
+      type: 'raster',
+      source: 'hillshade',
+      layout: { visibility: 'none' },
+      paint: { 'raster-opacity': 0.25 }
+    },
+    {
+      id: 'pm-admin',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'admin',
+      layout: { visibility: 'none' },
+      paint: { 'line-color': '#555', 'line-width': 1 }
+    },
+    {
+      id: 'pm-labels',
       type: 'symbol',
       source: 'protomaps',
       'source-layer': 'place',
-      layout: { 'text-field': ['get', 'name'], 'text-size': 12 },
-      paint: { 'text-color': '#222', 'text-halo-color': '#fff', 'text-halo-width': 1 }
+      layout: {
+        visibility: 'none',
+        'text-field': ['get', 'name'],
+        'text-size': 12,
+        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular']
+      },
+      paint: {
+        'text-color': '#222',
+        'text-halo-color': '#fff',
+        'text-halo-width': 1
+      }
     },
     {
-      id: 'contours-line',
-      type: 'line',
+      id: 'contours-layer',
+      type: 'raster',
       source: 'contours',
-      'source-layer': 'contours',
       layout: { visibility: 'none' },
-      paint: { 'line-color': '#877b59', 'line-width': 1, 'line-opacity': 0.5 }
+      paint: { 'raster-opacity': 0.3 }
     }
   ]
 };
@@ -69,104 +119,52 @@ const style = {
 const map = new maplibregl.Map({
   container: 'map',
   style,
-  center: [10, 28],
-  zoom: 3,
+  center: [0, 0],
+  zoom: 2,
   pitch: 0,
   bearing: 0,
   antialias: true
 });
 
-window.map = map;
+function setMode({ name, is3D }) {
+  const mode = (name || 'standard').toLowerCase();
+  const threeD = Boolean(is3D);
 
-const MODES = ['standard', 'satellite', 'hybrid'];
-let mode = localStorage.getItem('mode') || 'standard';
-let is3D = localStorage.getItem('is3d') === 'true';
-let contours = false;
+  localStorage.setItem('map-mode', mode);
+  localStorage.setItem('map-3d', threeD ? '1' : '0');
 
-function applyMode() {
-  if (!map.getStyle()) return;
-  const satVis = mode === 'satellite' || mode === 'hybrid' ? 'visible' : 'none';
-  const topoVis = mode === 'standard' ? 'visible' : 'none';
-  map.setLayoutProperty('satellite', 'visibility', satVis);
-  map.setLayoutProperty('opentopo', 'visibility', topoVis);
-  map.setLayoutProperty('pm-label', 'visibility', mode === 'standard' || mode === 'hybrid' ? 'visible' : 'none');
-  localStorage.setItem('mode', mode);
-  const btn = document.getElementById('btnMode');
-  if (btn) {
-    btn.textContent = mode === 'satellite' ? '🛰️' : mode === 'hybrid' ? '🛰️🗺️' : '🗺️';
+  const showTopo = mode === 'standard';
+  const showSatellite = mode !== 'standard';
+  const showLabels = mode !== 'satellite';
+
+  map.setLayoutProperty('topo-layer', 'visibility', showTopo ? 'visible' : 'none');
+  map.setLayoutProperty('satellite-layer', 'visibility', showSatellite ? 'visible' : 'none');
+  map.setLayoutProperty('pm-admin', 'visibility', showLabels ? 'visible' : 'none');
+  map.setLayoutProperty('pm-labels', 'visibility', showLabels ? 'visible' : 'none');
+
+  if (mode === 'standard') {
+    map.setLayoutProperty('hillshade-layer', 'visibility', 'visible');
+    map.setPaintProperty('hillshade-layer', 'raster-opacity', 0.25);
+  } else if (mode === 'satellite') {
+    map.setLayoutProperty('hillshade-layer', threeD ? 'none' : 'visible');
+    map.setPaintProperty('hillshade-layer', 'raster-opacity', 0.2);
+  } else if (mode === 'hybrid') {
+    map.setLayoutProperty('hillshade-layer', threeD ? 'none' : 'visible');
+    map.setPaintProperty('hillshade-layer', 'raster-opacity', 0.12);
   }
-}
 
-function cycleMode() {
-  const idx = MODES.indexOf(mode);
-  mode = MODES[(idx + 1) % MODES.length];
-  applyMode();
-}
-
-function apply3D() {
-  if (is3D) {
-    map.setTerrain({ source: 'terrain-dem', exaggeration: 1.5 });
+  if (threeD) {
+    map.setTerrain({ source: 'dem', exaggeration: EXAGGERATION });
+    map.setPitch(60);
   } else {
     map.setTerrain(null);
+    map.setPitch(0);
   }
-  localStorage.setItem('is3d', is3D);
-  const btn = document.getElementById('btn3d');
-  if (btn) btn.classList.toggle('active', is3D);
 }
 
-function toggle3D() {
-  is3D = !is3D;
-  apply3D();
-}
+const savedMode = localStorage.getItem('map-mode') || 'standard';
+const saved3D = localStorage.getItem('map-3d') === '1';
+map.on('load', () => setMode({ name: savedMode, is3D: saved3D }));
 
-function toggleContours() {
-  contours = !contours;
-  if (map.getLayer('contours-line')) {
-    map.setLayoutProperty('contours-line', 'visibility', contours ? 'visible' : 'none');
-  }
-  const btn = document.getElementById('btnContours');
-  if (btn) btn.classList.toggle('active', contours);
-}
-
-document.getElementById('btnMode')?.addEventListener('click', cycleMode);
-document.getElementById('btn3d')?.addEventListener('click', toggle3D);
-document.getElementById('btnContours')?.addEventListener('click', toggleContours);
-
-map.on('load', () => {
-  applyMode();
-  apply3D();
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => map.jumpTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 8 }),
-      err => console.warn('geolocation error', err),
-      { enableHighAccuracy: true }
-    );
-  }
-});
-
-const DEV = location.search.includes('dev');
-if (DEV) {
-  const debug = document.createElement('div');
-  debug.id = 'debug-overlay';
-  Object.assign(debug.style, {
-    position: 'absolute',
-    top: '0',
-    left: '0',
-    background: 'rgba(0,0,0,0.5)',
-    color: '#fff',
-    padding: '4px',
-    fontSize: '12px',
-    zIndex: 1000
-  });
-  document.body.appendChild(debug);
-  let lastTime = performance.now();
-  function updateDebug(now) {
-    const dt = now - lastTime;
-    lastTime = now;
-    const fps = (1000 / dt).toFixed(0);
-    debug.textContent = `mode:${mode} zoom:${map.getZoom().toFixed(2)} pitch:${map.getPitch().toFixed(0)} fps:${fps}`;
-    requestAnimationFrame(updateDebug);
-  }
-  requestAnimationFrame(updateDebug);
-}
+window.map = map;
+window.setMode = setMode;
