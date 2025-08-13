@@ -13,3 +13,6 @@ en una variable global `MAPBOX_TOKEN` antes de cargar `app.js`:
 Si no se define el token, la aplicación mostrará únicamente la capa alternativa
 de [NASA BlueMarble](https://visibleearth.nasa.gov/collection/1484/blue-marble).
 También puedes sustituir las URLs de las fuentes por otro proveedor equivalente.
+
+El mapa usa [MapLibre GL](https://maplibre.org/) con fuentes abiertas como Esri, OpenTopoMap y Protomaps,
+por lo que no se requiere ningún token.
