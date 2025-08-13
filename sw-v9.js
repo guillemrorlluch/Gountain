@@ -2,6 +2,11 @@
 const VERSION = 'v9';
 const STATIC_CACHE = `static-${VERSION}`;
 const DATA_CACHE   = `data-${VERSION}`;
+const TILE_CACHE   = `tiles-${VERSION}`;
+
+// Tile cache limits
+const TILE_TTL   = 7 * 24 * 60 * 60 * 1000; // 7 días en ms
+const TILE_LIMIT = 50 * 1024 * 1024;        // ~50 MB
 
 // Extrae solo el número para usarlo en los parámetros de caché
 const VER_PARAM = VERSION.replace(/^v/, '');
@@ -13,8 +18,77 @@ const STATIC_ASSETS = [
   `/app.js?v=${VER_PARAM}`,
   `/manifest.json?v=${VER_PARAM}`,
   '/assets/GountainTime-192.png',
-  '/assets/GountainTime-512.png'
+  '/assets/GountainTime-512.png',
+  'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css',
+  'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js',
+  'https://unpkg.com/pmtiles@3.0.2/dist/index.js'
 ];
+
+const TILE_HOSTS = [
+  'services.arcgisonline.com',
+  'tile.opentopomap.org',
+  'demotiles.maplibre.org',
+  's3.amazonaws.com',
+  'protomaps.github.io'
+];
+
+function isTileRequest(url) {
+  return TILE_HOSTS.some(h => url.hostname.includes(h));
+}
+
+async function cachePutWithMeta(cache, request, response) {
+  const now = Date.now();
+  const buf = await response.clone().arrayBuffer();
+  const headers = new Headers(response.headers);
+  headers.set('sw-cache-time', String(now));
+  headers.set('sw-cache-size', String(buf.byteLength));
+  const body = new Response(buf, { status: response.status, statusText: response.statusText, headers });
+  await cache.put(request, body);
+  await enforceTileLimits(cache);
+}
+
+async function enforceTileLimits(cache) {
+  const now = Date.now();
+  const keys = await cache.keys();
+  let entries = [];
+  let total = 0;
+  for (const req of keys) {
+    const res = await cache.match(req);
+    if (!res) continue;
+    const time = parseInt(res.headers.get('sw-cache-time') || '0', 10);
+    const size = parseInt(res.headers.get('sw-cache-size') || '0', 10);
+    if (now - time > TILE_TTL) {
+      await cache.delete(req);
+      continue;
+    }
+    total += size;
+    entries.push({ request: req, time, size });
+  }
+  entries.sort((a, b) => a.time - b.time);
+  while (total > TILE_LIMIT && entries.length) {
+    const entry = entries.shift();
+    await cache.delete(entry.request);
+    total -= entry.size;
+  }
+}
+
+async function handleTileRequest(event) {
+  const { request } = event;
+  const cache = await caches.open(TILE_CACHE);
+  const cached = await cache.match(request);
+  const fetchPromise = fetch(request).then(async res => {
+    if (res.ok) {
+      await cachePutWithMeta(cache, request, res.clone());
+    }
+    return res;
+  }).catch(() => cached);
+
+  if (cached) {
+    event.waitUntil(fetchPromise);
+    return cached;
+  }
+  return fetchPromise;
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(STATIC_CACHE).then(c => c.addAll(STATIC_ASSETS)));
@@ -26,7 +100,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then(keys =>
       Promise.all(
         keys.map(key => {
-          if (key !== STATIC_CACHE && key !== DATA_CACHE) {
+          if (![STATIC_CACHE, DATA_CACHE, TILE_CACHE].includes(key)) {
             return caches.delete(key);
           }
         })
@@ -39,12 +113,11 @@ self.addEventListener('activate', (event) => {
 // Stale-while-revalidate for data requests
 self.addEventListener('fetch', event => {
   const { request } = event;
+  if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  const assetKey = url.pathname + url.search;
-   
-  if (request.method !== 'GET' || url.origin !== location.origin) return;
+  const assetKey = url.origin === location.origin ? url.pathname + url.search : url.href;
 
-  if (url.pathname.startsWith('/data/')) {
+  if (url.origin === location.origin && url.pathname.startsWith('/data/')) {
     event.respondWith(
       caches.open(DATA_CACHE).then(async cache => {
         const cached = await cache.match(request);
@@ -66,6 +139,11 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       caches.match(request).then(cached => cached || fetch(request))
     );
+    return;
+  }
+
+  if (isTileRequest(url)) {
+    event.respondWith(handleTileRequest(event));
   }
 });
 
