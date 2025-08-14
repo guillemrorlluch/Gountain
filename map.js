@@ -1,10 +1,38 @@
 // map.js - tokenless MapLibre sources and layers
 
+// --- PMTiles protocol ---
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
 const PMTILES_URL = 'https://r2-public.protomaps.com/protomaps-basemap.pmtiles';
 protocol.add(new pmtiles.PMTiles(PMTILES_URL));
 
+// --- Helpers for markers ---
+function markerColor(d) {
+  return '#22c55e';
+}
+
+function popupHtml(d) {
+  const name = d.nombre || '';
+  const country = d.pais || '';
+  const alt = d.altitud_m != null ? d.altitud_m : '?';
+  return `<strong>${name}</strong><br>${country} — ${alt} m`;
+}
+
+function computeBounds(list) {
+  if (!Array.isArray(list) || list.length === 0) return null;
+  let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
+  for (const d of list) {
+    const lat = d.coords[0];
+    const lng = d.coords[1];
+    if (lng < west) west = lng;
+    if (lng > east) east = lng;
+    if (lat < south) south = lat;
+    if (lat > north) north = lat;
+  }
+  return { west, south, east, north };
+}
+
+// --- Base style ---
 const style = {
   version: 8,
   glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
@@ -114,7 +142,8 @@ const style = {
   ]
 };
 
-const map = new maplibregl.Map({
+// --- Map instance ---
+const mlMap = new maplibregl.Map({
   container: 'map',
   style,
   center: [0, 0],
@@ -124,7 +153,102 @@ const map = new maplibregl.Map({
   antialias: true
 });
 
-map.on('load', () => {
+window.mlMap = mlMap;
+
+let destData = [];
+
+function addDestinations() {
+  const geojson = {
+    type: 'FeatureCollection',
+    features: destData.map(d => ({
+      type: 'Feature',
+      properties: { color: markerColor(d), popup: popupHtml(d) },
+      geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] }
+    }))
+  };
+
+  if (mlMap.getSource('destinations')) {
+    mlMap.getSource('destinations').setData(geojson);
+  } else {
+    mlMap.addSource('destinations', {
+      type: 'geojson',
+      data: geojson,
+      cluster: true,
+      clusterRadius: 40
+    });
+
+    mlMap.addLayer({
+      id: 'clusters',
+      type: 'circle',
+      source: 'destinations',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#1e3a8a',
+        'circle-radius': ['step', ['get', 'point_count'], 15, 10, 20, 30, 25]
+      }
+    });
+
+    mlMap.addLayer({
+      id: 'cluster-count',
+      type: 'symbol',
+      source: 'destinations',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}',
+        'text-size': 12
+      },
+      paint: { 'text-color': '#fff' }
+    });
+
+    mlMap.addLayer({
+      id: 'unclustered-point',
+      type: 'circle',
+      source: 'destinations',
+      filter: ['!', ['has', 'point_count']],
+      paint: {
+        'circle-color': ['get', 'color'],
+        'circle-radius': 6,
+        'circle-stroke-width': 1,
+        'circle-stroke-color': '#fff'
+      }
+    });
+
+    mlMap.on('click', 'clusters', e => {
+      const features = mlMap.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+      const clusterId = features[0].properties.cluster_id;
+      mlMap.getSource('destinations').getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err) return;
+        mlMap.easeTo({ center: features[0].geometry.coordinates, zoom });
+      });
+    });
+
+    mlMap.on('click', 'unclustered-point', e => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const html = e.features[0].properties.popup;
+      new maplibregl.Popup().setLngLat(coordinates).setHTML(html).addTo(mlMap);
+    });
+
+    mlMap.on('mouseenter', 'clusters', () => { mlMap.getCanvas().style.cursor = 'pointer'; });
+    mlMap.on('mouseleave', 'clusters', () => { mlMap.getCanvas().style.cursor = ''; });
+  }
+
+  const b = computeBounds(destData);
+  if (b) {
+    const bounds = new maplibregl.LngLatBounds([b.west, b.south], [b.east, b.north]);
+    mlMap.fitBounds(bounds, { padding: 40 });
+  }
+}
+
+window.MapAPI = {
+  setDestinations(data) {
+    destData = Array.isArray(data) ? data : [];
+    if (mlMap.isStyleLoaded()) addDestinations();
+    else mlMap.once('load', addDestinations);
+  }
+};
+
+// --- UI controls ---
+mlMap.on('load', () => {
   const MODE_KEY = 'map-mode';
   const THREE_D_KEY = 'map-3d';
   const CONTOURS_KEY = 'map-contours';
@@ -134,28 +258,29 @@ map.on('load', () => {
   let showContours = localStorage.getItem(CONTOURS_KEY) === 'true';
 
   function setMode(mode) {
-    map.setLayoutProperty('satellite-layer', 'visibility', mode === 'satellite' ? 'visible' : 'none');
-    map.setLayoutProperty('topo-layer', 'visibility', mode === 'topo' ? 'visible' : 'none');
+    mlMap.setLayoutProperty('satellite-layer', 'visibility', mode === 'satellite' || mode === 'hybrid' ? 'visible' : 'none');
+    mlMap.setLayoutProperty('topo-layer', 'visibility', mode === 'topo' ? 'visible' : 'none');
+    mlMap.setLayoutProperty('pm-labels', 'visibility', mode === 'hybrid' ? 'visible' : 'none');
     currentMode = mode;
     try { localStorage.setItem(MODE_KEY, mode); } catch {}
   }
 
   function set3D(enabled) {
     if (enabled) {
-      map.setTerrain({ source: 'dem', exaggeration: 1.5 });
-      map.setLayoutProperty('hillshade-layer', 'visibility', 'visible');
-      map.setPitch(45);
+      mlMap.setTerrain({ source: 'dem', exaggeration: 1.5 });
+      mlMap.setLayoutProperty('hillshade-layer', 'visibility', 'visible');
+      mlMap.setPitch(45);
     } else {
-      map.setTerrain(null);
-      map.setLayoutProperty('hillshade-layer', 'visibility', 'none');
-      map.setPitch(0);
+      mlMap.setTerrain(null);
+      mlMap.setLayoutProperty('hillshade-layer', 'visibility', 'none');
+      mlMap.setPitch(0);
     }
     is3D = enabled;
     try { localStorage.setItem(THREE_D_KEY, String(enabled)); } catch {}
   }
 
   function setContours(visible) {
-    map.setLayoutProperty('contours-layer', 'visibility', visible ? 'visible' : 'none');
+    mlMap.setLayoutProperty('contours-layer', 'visibility', visible ? 'visible' : 'none');
     showContours = visible;
     try { localStorage.setItem(CONTOURS_KEY, String(visible)); } catch {}
   }
@@ -170,7 +295,9 @@ map.on('load', () => {
 
   if (btnMode) {
     btnMode.addEventListener('click', () => {
-      setMode(currentMode === 'topo' ? 'satellite' : 'topo');
+      const modes = ['topo', 'satellite', 'hybrid'];
+      const idx = modes.indexOf(currentMode);
+      setMode(modes[(idx + 1) % modes.length]);
     });
   }
 
@@ -190,8 +317,8 @@ map.on('load', () => {
   let debugVisible = false;
 
   function setDebug(v) {
-    map.setLayoutProperty('pm-admin', 'visibility', v ? 'visible' : 'none');
-    map.setLayoutProperty('pm-labels', 'visibility', v ? 'visible' : 'none');
+    mlMap.setLayoutProperty('pm-admin', 'visibility', v ? 'visible' : 'none');
+    mlMap.setLayoutProperty('pm-labels', 'visibility', v ? 'visible' : 'none');
     debugVisible = v;
   }
 
@@ -203,4 +330,6 @@ map.on('load', () => {
     topbar.appendChild(btnDebug);
     btnDebug.addEventListener('click', () => setDebug(!debugVisible));
   }
+  
+  if (destData.length) addDestinations();
 });
