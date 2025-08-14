@@ -106,8 +106,15 @@ if (typeof window !== 'undefined') {
     try {
       const res = await fetch(DATA_URL, { cache: 'no-store' });
       const data = await res.json();
+      const sendData = () => {
+        if (window.MapAPI && typeof window.MapAPI.setDestinations === 'function') {
+          window.MapAPI.setDestinations(data);
+        }
+      };
       if (window.MapAPI && typeof window.MapAPI.setDestinations === 'function') {
-        window.MapAPI.setDestinations(data);
+        sendData();
+      } else {
+        window.addEventListener('map-ready', sendData, { once: true });
       }
     } catch (err) {
       console.error('❌ Error cargando datos:', err);
