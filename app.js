@@ -139,3 +139,6 @@ if (typeof window !== 'undefined') {
       } catch (err) {
         console.error('❌ Error registrando SW:', err);
       }
+    });
+  }
+}
