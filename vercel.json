@@ -20,7 +20,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/sw.js", "destination": "/sw-v9.js" }
+    { "source": "/sw.js", "destination": "/sw-v10.js" }
   ],
   "cleanUrls": true,
   "trailingSlash": false
