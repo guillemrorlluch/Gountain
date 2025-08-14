@@ -1,4 +1,4 @@
-// app.js — v9
+// app.js — v10
 
 // Normaliza etiquetas de dificultad a buckets
 function normalizeDiff(diff) {
@@ -43,13 +43,13 @@ function markerColor(d, bootColors = BOOT_COLORS) {
 }
 
 function monthsToSeasons(meses) {
-  const map = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
+  const monthMap = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
   if (!meses) return [];
   if (meses.toLowerCase().includes('todo')) return ['Invierno','Primavera','Verano','Otoño'];
   const parts = meses.split(/[–-]/).map(p => p.trim());
   if (parts.length < 2) return [];
-  const start = map[parts[0].slice(0,3)];
-  const end = map[parts[1].slice(0,3)];
+  const start = monthMap[parts[0].slice(0,3)];
+  const end = monthMap[parts[1].slice(0,3)];
   if (!start || !end) return [];
   const months = [];
   let m = start;
@@ -99,12 +99,10 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 if (typeof window !== 'undefined') {
-  const DATA_VER = '9';
-  const DATA_URL = `/data/destinos.json?v=${DATA_VER}`;
   
   async function loadData() {
     try {
-      const res = await fetch(DATA_URL, { cache: 'no-store' });
+      const res = await fetch('/data/destinos.json', { cache: 'no-store' });
       const data = await res.json();
       const sendData = () => {
         if (window.MapAPI && typeof window.MapAPI.setDestinations === 'function') {
