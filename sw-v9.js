@@ -21,7 +21,7 @@ const STATIC_ASSETS = [
   '/assets/GountainTime-512.png',
   'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css',
   'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js',
-  'https://unpkg.com/pmtiles@3.0.2/dist/index.js'
+  'https://unpkg.com/pmtiles@3.0.2/dist/index.umd.js'
 ];
 
 const TILE_HOSTS = [
