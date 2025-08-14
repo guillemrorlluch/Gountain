@@ -243,7 +243,6 @@ window.MapAPI = {
   setDestinations(data) {
     destData = Array.isArray(data) ? data : [];
     if (mlMap.isStyleLoaded()) addDestinations();
-    else mlMap.once('load', addDestinations);
   }
 };
 
@@ -332,4 +331,5 @@ mlMap.on('load', () => {
   }
   
   if (destData.length) addDestinations();
+  window.dispatchEvent(new Event('map-ready'));
 });
