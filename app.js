@@ -125,7 +125,7 @@ if (typeof window !== 'undefined') {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
-        const reg = await navigator.serviceWorker.register('/sw-v9.js');
+        const reg = await navigator.serviceWorker.register('/sw-v10.js');
         console.log('✅ SW registrado:', reg.scope);
 
         if (reg.waiting) {
