@@ -1,63 +1,80 @@
-import { getMapboxToken } from './config.js';
+import { getMapboxToken, getBuildId } from './config.js';
 
 /* global mapboxgl */
-(async () => {
-  const token = await getMapboxToken();
-  if (!token) { 
-    console.error('Missing Mapbox token'); 
-    alert('Map cannot load (token missing).'); 
-    return; 
+let map;
+const BUILD_ID = getBuildId();
+const healthEl = document.getElementById('map-health');
+
+function setHealth(text) {
+  if (healthEl) healthEl.textContent = text;
+}
+
+async function bootstrap() {
+  setHealth('Fetching token...');
+  const token = await getMapboxToken().catch(() => '');
+  if (!token) {
+    setHealth('No token');
+    alert('Map cannot load (token missing).');
+    return;
   }
+  if (typeof mapboxgl === 'undefined') {
+    setHealth('No token');
+    alert('Mapbox GL JS failed to load.');
+    return;
+  }
+  setHealth('Token OK');
   mapboxgl.accessToken = token;
 
-  const map = new mapboxgl.Map({
+  map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',
     center: [0, 0],
     zoom: 2
   });
 
-  // ... tu lógica (capas, clústeres, popups, filtros) ...
-})();
+  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  setupLocate();
 
-    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-    (function setupLocate(){
-      const btn = document.getElementById('btnLocate');
-      if (!btn || !('geolocation' in navigator)) return;
-      let userMarker=null;
-      const onClick = () => {
-        navigator.geolocation.getCurrentPosition(
-          (pos)=>{ const {longitude:lng, latitude:lat}=pos.coords;
-            userMarker = userMarker || new mapboxgl.Marker({color:'#111'}).addTo(map);
-            userMarker.setLngLat([lng,lat]);
-            map.easeTo({center:[lng,lat], zoom:Math.max(map.getZoom(),11)});
-          },
-          ()=>alert('Location not available. Allow permissions (HTTPS required).'),
-          { enableHighAccuracy:true, timeout:10000 }
-        );
-      };
-      btn.addEventListener('click', onClick, { passive:true });
-    })();
-
-    map.on('load', () => {
-      loadDestinos();
-    });
-  } catch (err) {
-    console.error('Error bootstrapping map:', err);
-    alert('There was a problem starting the map.');
-  }
+  map.on('load', () => {
+    loadDestinos();
+  });
 }
 
 bootstrap();
 
+function setupLocate() {
+  const btn = document.getElementById('btnLocate');
+  if (!btn || !('geolocation' in navigator)) return;
+  let userMarker = null;
+  const onClick = () => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { longitude: lng, latitude: lat } = pos.coords;
+        userMarker = userMarker || new mapboxgl.Marker({ color: '#111' }).addTo(map);
+        userMarker.setLngLat([lng, lat]);
+        map.easeTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 11) });
+      },
+      () => alert('Location not available. Allow permissions (HTTPS required).'),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+  btn.addEventListener('click', onClick, { passive: true });
+}
 
 const state = window.__FILTERS__ = window.__FILTERS__ || {};
-state.continents = state.continents || new Set();
+state.continent = state.continent || '';
 let allDestinations = [];
 
+const continentSelect = document.getElementById('continent-select');
+if (continentSelect) {
+  continentSelect.addEventListener('change', () => {
+    state.continent = continentSelect.value;
+    applyFilters();
+  }, { passive: true });
+}
+
 function asPill(t){ return `<span class="pill">${t}</span>`; }
-function field(label,val){ if(val==null) return ''; const v=String(val).trim(); if(!v) return ''; return `<div><strong>${label}:</strong> ${v}</div>`; }
+function field(label,val){ if(val==null) return ''; const v=String(val).trim(); if(!v) return ''; return `<div><strong>${label}</strong> ${v}</div>`; }
 
 function normalizePhotos(d){
   const c = [d.fotos, d.photos, d.images, d.photo];
@@ -242,22 +259,9 @@ function updateMapWith(list){
   map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
 }
 
-function bindContinentChips(){
-  const wrap = document.querySelector('[data-filter="continent"]');
-  if (!wrap) return;
-  wrap.querySelectorAll('.chip').forEach(btn=>{
-    btn.addEventListener('click', () => {
-      const v = btn.getAttribute('data-v');
-      const on = btn.classList.toggle('active');
-      on ? state.continents.add(v) : state.continents.delete(v);
-      applyFilters();
-    }, { passive: true });
-  });
-}
-
 function passContinent(d){
-  if (!state.continents.size) return true;
-  return state.continents.has(d.continente);
+  if (!state.continent) return true;
+  return d.continente === state.continent;
 }
 
 function applyFilters(){
@@ -277,5 +281,3 @@ async function loadDestinos(){
     console.error('Error loading destinos:', err);
   }
 }
-
-bindContinentChips();
