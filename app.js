@@ -1,5 +1,5 @@
 // app.js — v10
-import { BUILD_ID } from './config.js';
+import { getBuildId } from './config.js';
 
 // Normaliza etiquetas de dificultad a buckets
 export function normalizeDiff(diff) {
@@ -107,7 +107,7 @@ if (typeof window !== 'undefined') {
   // ---- Service Worker ----
   if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
-        const reg = await navigator.serviceWorker.register(`/sw-v10.js?v=${BUILD_ID}`);
+        const reg = await navigator.serviceWorker.register(`/sw-v10.js?v=${getBuildId()}`);
 
         // If there’s a waiting SW, tell it to activate; do NOT await a reply.
         if (reg.waiting) {
