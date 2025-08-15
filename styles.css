@@ -81,8 +81,15 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 .mapboxgl-popup-tip,
 .leaflet-popup-tip { background:#0b1326; }
 
-.mapboxgl-popup-close-button{ background:rgba(255,255,255,.92); color:#111; border-radius:6px; font-weight:700; box-shadow:0 0 0 1px rgba(0,0,0,.08); }
-
+/* High-contrast close button */
+.mapboxgl-popup-close-button {
+  background-color: rgba(255,255,255,0.92);
+  color: #111;
+  border-radius: 6px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
+}
 @media (max-width: 600px) {
   .mapboxgl-popup-content,
   .leaflet-popup-content-wrapper { max-width:300px; }
@@ -113,7 +120,14 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 @media (max-width:420px){ .popup .grid{ grid-template-columns:1fr; } }
 .popup .section{ margin:10px 0; }
 .pills{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.pill{ padding:4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.06); font-size:12px; }
+.pill{
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.06);
+  display:inline-block;
+  font-size:12px;
+}
 .links{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
 a.btn-link{ padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.25); text-decoration:none; font-weight:600; }
 
