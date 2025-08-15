@@ -1,26 +1,24 @@
-import { getMapboxToken, getBuildId } from './config.js';
+import { getMapboxToken } from './config.js';
 
 /* global mapboxgl */
+(async () => {
+  const token = await getMapboxToken();
+  if (!token) { 
+    console.error('Missing Mapbox token'); 
+    alert('Map cannot load (token missing).'); 
+    return; 
+  }
+  mapboxgl.accessToken = token;
 
-const BUILD_ID = getBuildId();
-let map;
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: [0, 0],
+    zoom: 2
+  });
 
-async function bootstrap() {
-  try {
-    const token = await getMapboxToken();
-    if (!token) {
-      console.error('Missing Mapbox token (check Vercel env NEXT_PUBLIC_MAPBOX_TOKEN or /api/env).');
-      alert('Map cannot load (token missing). Please try again later.');
-      return;
-    }
-    mapboxgl.accessToken = token;
-
-    map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v12',
-      center: [0, 0],
-      zoom: 2
-    });
+  // ... tu lógica (capas, clústeres, popups, filtros) ...
+})();
 
     map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
