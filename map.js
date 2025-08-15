@@ -16,24 +16,80 @@ const map = new mapboxgl.Map({
 
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 
-const state = { continents: new Set() };
-let allDestinos = [];
+(function setupLocate(){
+  const btn = document.getElementById('btnLocate');
+  if (!btn || !('geolocation' in navigator)) return;
+  let userMarker=null;
+  const onClick = () => {
+    navigator.geolocation.getCurrentPosition(
+      (pos)=>{ const {longitude:lng, latitude:lat}=pos.coords;
+        userMarker = userMarker || new mapboxgl.Marker({color:'#111'}).addTo(map);
+        userMarker.setLngLat([lng,lat]);
+        map.easeTo({center:[lng,lat], zoom:Math.max(map.getZoom(),11)});
+      },
+      ()=>alert('Location not available. Allow permissions (HTTPS required).'),
+      { enableHighAccuracy:true, timeout:10000 }
+    );
+  };
+  btn.addEventListener('click', onClick, { passive:true });
+})();
+
+const state = window.__FILTERS__ = window.__FILTERS__ || {};
+state.continents = state.continents || new Set();
+let allDestinations = [];
+
+function asPill(t){ return `<span class="pill">${t}</span>`; }
+function field(label,val){ if(val==null) return ''; const v=String(val).trim(); if(!v) return ''; return `<div><strong>${label}:</strong> ${v}</div>`; }
 
 function normalizePhotos(d){
-  const cands = [d.fotos, d.photos, d.images, d.photo];
-  const arr = cands.flatMap(x => Array.isArray(x) ? x : (x ? [x] : []))
-                   .filter(u => typeof u === 'string' && u.trim().length > 0);
-  return Array.from(new Set(arr));
+  const c = [d.fotos, d.photos, d.images, d.photo];
+  const a = c.flatMap(x => Array.isArray(x) ? x : (x ? [x] : [])).filter(u => typeof u === 'string' && u.trim());
+  return Array.from(new Set(a));
 }
-
 function photosHtml(d){
   const ph = normalizePhotos(d);
   if (!ph.length) return '';
-  return `
-    <div class="gallery" role="region" aria-label="Fotos del destino">
-      ${ph.map(u => `<img loading="lazy" src="${u}" alt="${d.nombre || 'foto'}" />`).join('')}
+  return `<div class="gallery" role="region" aria-label="Fotos del destino">
+    ${ph.map(u => `<img loading="lazy" src="${u}" alt="${d.nombre || 'foto'}" />`).join('')}
+  </div>`;
+}
+
+function popupHtml(d){
+  const boots = Array.isArray(d.botas) ? d.botas.map(asPill).join('') : '';
+  const links = [
+    ['Google', d.link || d.google_search],
+    ['AllTrails', d.alltrails],
+    ['Wikiloc', d.wikiloc],
+    ['Wikipedia', d.wikipedia]
+  ].filter(([,u]) => u && String(u).trim());
+  const linksHtml = links.length ? `<div class="links">${links.map(([L,U])=>`<a class="btn-link" href="${U}" target="_blank" rel="noopener">${L}</a>`).join('')}</div>` : '';
+
+  return `<div class="popup">
+    <h3>${d.nombre||''}${d.pais ? ` (${d.pais})` : ''}</h3>
+    <div class="grid">
+      ${field('Continente', d.continente)}
+      ${field('Tipo', d.tipo)}
+      ${field('Altitud', d.altitud_m ? `${d.altitud_m} m` : '')}
+      ${field('Dificultad', d.dificultad)}
+      ${field('Meses', d.meses)}
+      ${field('Temp aprox', d.temp_aprox)}
     </div>
-  `;
+    ${boots ? `<div class="section"><strong>Botas:</strong><div class="pills">${boots}</div></div>` : ''}
+    <div class="section">
+      ${field('Scrambling/Escalada', d.scrambling)}
+      ${field('Grado', d.grado)}
+      ${field('Arnés', d.arnes)}
+      ${field('Equipo', d.equipo || '—')}
+      ${field('Vivac', d.vivac)}
+      ${field('Camping gas', d.camping_gas)}
+      ${field('Permisos', d.permisos)}
+      ${field('Guía', d.guia)}
+      ${field('Coste estancia', d.coste_estancia)}
+    </div>
+    ${field('Reseña', d.resena ? `“${d.resena}”` : '')}
+    ${linksHtml}
+    ${photosHtml(d)}
+  </div>`;
 }
 
 const BOOT_COLORS = {
@@ -67,36 +123,19 @@ function markerColor(d, bootColors = BOOT_COLORS) {
   return '#22c55e';
 }
 
-function popupHtml(d) {
-  const name = d.nombre || '';
-  const country = d.pais || '';
-  const alt = (d.altitud_m != null) ? `${d.altitud_m} m` : '';
-  const boots = Array.isArray(d.botas) ? d.botas.map(b => `<span class="boot">${b}</span>`).join(' ') : '';
-
-  const price = (d.coste_estancia != null && String(d.coste_estancia).trim() !== '')
-    ? `<div><strong>Estimated cost:</strong> ${d.coste_estancia}</div>` : '';
-
-  const guide = (d.guia != null && String(d.guia).trim() !== '')
-    ? `<div><strong>Guide needed:</strong> ${d.guia}</div>` : '';
-
-  const review = (d.resena != null && String(d.resena).trim() !== '')
-    ? `<div><em>“${d.resena}”</em></div>` : '';
-
-  const links = [];
-  const g = d.link || d.google_search;
-  if (g) links.push(`<a href="${g}" target="_blank" rel="noopener">Google</a>`);
-  if (d.alltrails) links.push(`<a href="${d.alltrails}" target="_blank" rel="noopener">AllTrails</a>`);
-  if (d.wikiloc) links.push(`<a href="${d.wikiloc}" target="_blank" rel="noopener">Wikiloc</a>`);
-  if (d.wikipedia) links.push(`<a href="${d.wikipedia}" target="_blank" rel="noopener">Wikipedia</a>`);
-  const linksHtml = links.length ? `<div class="links">${links.map(l => `<div>${l}</div>`).join('')}</div>` : '';
-
-  return `
-  <div class="popup">
-    <strong>${name}</strong><br>${country} — ${alt}<br>${boots}
-    ${price}${guide}${review}
-    ${linksHtml}
-    ${photosHtml(d)}
-  </div>`;
+const MAP_CONT = new Map([
+  ['asia','Asia'], ['áfrica','África'], ['africa','África'],
+  ['north america','América del Norte'], ['norteamérica','América del Norte'],
+  ['south america','América del Sur'], ['sudamérica','América del Sur'],
+  ['antarctica','Antártida'], ['antartida','Antártida'],
+  ['europe','Europa'],
+  ['oceania','Oceanía'], ['oceanía','Oceanía']
+]);
+function normalizeContinent(d){
+  if (!d.continente) return d;
+  const k = String(d.continente).trim().toLowerCase();
+  d.continente = MAP_CONT.get(k) || d.continente;
+  return d;
 }
 
 function buildGeo(list){
@@ -186,13 +225,15 @@ function updateMapWith(list){
 }
 
 function bindContinentChips(){
-  document.querySelectorAll('#filter-continente .chip').forEach(btn => {
+  const wrap = document.querySelector('[data-filter="continent"]');
+  if (!wrap) return;
+  wrap.querySelectorAll('.chip').forEach(btn=>{
     btn.addEventListener('click', () => {
       const v = btn.getAttribute('data-v');
       const on = btn.classList.toggle('active');
       on ? state.continents.add(v) : state.continents.delete(v);
       applyFilters();
-    });
+    }, { passive: true });
   });
 }
 
@@ -202,7 +243,9 @@ function passContinent(d){
 }
 
 function applyFilters(){
-  const visible = allDestinos.filter(d => passContinent(d));
+  const visible = allDestinations.filter(d =>
+    passContinent(d)
+  );
   updateMapWith(visible);
 }
 
@@ -210,7 +253,7 @@ async function loadDestinos(){
   try {
     const res = await fetch(`/data/destinos.json?v=${BUILD_ID}`);
     const data = await res.json();
-    allDestinos = data;
+    allDestinations = data.map(normalizeContinent);
     applyFilters();
   } catch(err){
     console.error('Error loading destinos:', err);
