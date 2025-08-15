@@ -1,6 +1,6 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { markerColor, BOOT_COLORS } = require('../app.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { markerColor, BOOT_COLORS } from '../app.js';
 
 test('returns specific color for known boot', () => {
   const d = { botas: ['Scarpa Ribelle Lite HD'] };

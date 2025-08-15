@@ -1,6 +1,6 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { normalizeDiff } = require('../app.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { normalizeDiff } from '../app.js';
 
 test('normalizeDiff buckets', () => {
   assert.equal(normalizeDiff('AD'), 'AD');

@@ -1,6 +1,6 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { withinFilters } = require('../app.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { withinFilters } from '../app.js';
 
 function emptyFilters() {
   return {

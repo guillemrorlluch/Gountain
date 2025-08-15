@@ -120,3 +120,14 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
   border-bottom:14px solid #f8fafc;
   transform-origin:50% 80%;
 }
+
+/* Popup gallery */
+.gallery{
+  display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:2px;
+  scroll-snap-type: x mandatory;
+}
+.gallery img{
+  height:120px; width:auto; border-radius:8px; object-fit:cover; flex:0 0 auto;
+  scroll-snap-align:start; box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+@media (max-width:420px){ .gallery img{ height:90px; } }

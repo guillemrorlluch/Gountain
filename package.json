@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Mapa interactivo de rutas y picos con filtros y recomendaciones de botas, accesible como PWA.",
   "main": "app.js",
-  "type": "commonjs",
+  "type": "module",
   "directories": {
     "test": "tests"
   },

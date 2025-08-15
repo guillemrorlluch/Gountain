@@ -51,7 +51,15 @@
         <h2>Filtros</h2>
         <details open>
           <summary>Continente</summary>
-          <div id="filter-continente" class="chips"></div>
+          <div id="filter-continente" class="chips">
+            <button class="chip" data-v="Asia">Asia</button>
+            <button class="chip" data-v="África">África</button>
+            <button class="chip" data-v="América del Norte">América del Norte</button>
+            <button class="chip" data-v="América del Sur">América del Sur</button>
+            <button class="chip" data-v="Antártida">Antártida</button>
+            <button class="chip" data-v="Europa">Europa</button>
+            <button class="chip" data-v="Oceanía">Oceanía</button>
+          </div>
         </details>
         <details>
           <summary>Dificultad</summary>
@@ -108,9 +116,7 @@
     <div id="map-error" class="hidden" role="alert"></div>
   </main>
 
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
-  <script src="/config.js"></script>
-  <script src="/map.js?v=1" defer></script>
-  <script src="/app.js?v=10" defer></script>
+  <script type="module" src="/map.js?v=1"></script>
+  <script type="module" src="/app.js?v=10"></script>
   </body>
   </html>

@@ -1,6 +1,6 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { computeBounds } = require('../app.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { computeBounds } from '../app.js';
 
 test('computes bounding box from coordinates', () => {
   const data = [
