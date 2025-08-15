@@ -67,8 +67,8 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 .altitude-inputs { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 
 
-.maplibregl-map { background:#0b1220; }
-.maplibregl-popup-content,
+.mapboxgl-map { background:#0b1220; }
+.mapboxgl-popup-content,
 .leaflet-popup-content-wrapper {
   background:#0b1326;
   color:#e5e7eb;
@@ -78,11 +78,11 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
   max-height:80vh;
   overflow-y:auto;
 }
-.maplibregl-popup-tip,
+.mapboxgl-popup-tip,
 .leaflet-popup-tip { background:#0b1326; }
 
 @media (max-width: 600px) {
-  .maplibregl-popup-content,
+  .mapboxgl-popup-content,
   .leaflet-popup-content-wrapper { max-width:300px; }
   .panel { width:100%; }
 }

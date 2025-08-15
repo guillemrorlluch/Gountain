@@ -19,17 +19,12 @@ const STATIC_ASSETS = [
   `/manifest.json?v=${VER_PARAM}`,
   '/assets/GountainTime-192.png',
   '/assets/GountainTime-512.png',
-  'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css',
-  'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js',
-  'https://unpkg.com/pmtiles@3.0.2/dist/index.umd.js'
+  'https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css',
+  'https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js',
 ];
 
 const TILE_HOSTS = [
-  'services.arcgisonline.com',
-  'tile.opentopomap.org',
-  'demotiles.maplibre.org',
-  's3.amazonaws.com',
-  'protomaps.github.io'
+  'api.mapbox.com'
 ];
 
 function isTileRequest(url) {

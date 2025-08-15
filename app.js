@@ -99,28 +99,6 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 if (typeof window !== 'undefined') {
-  
-  async function loadData() {
-    try {
-      const res = await fetch('/data/destinos.json', { cache: 'no-store' });
-      const data = await res.json();
-      const sendData = () => {
-        if (window.MapAPI && typeof window.MapAPI.setDestinations === 'function') {
-          window.MapAPI.setDestinations(data);
-        }
-      };
-      if (window.MapAPI && typeof window.MapAPI.setDestinations === 'function') {
-        sendData();
-      } else {
-        window.addEventListener('map-ready', sendData, { once: true });
-      }
-    } catch (err) {
-      console.error('❌ Error cargando datos:', err);
-    }
-  }
-
-  loadData();
-
   // ---- Service Worker ----
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
