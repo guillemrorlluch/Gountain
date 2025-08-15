@@ -1,12 +1,8 @@
 <!doctype html>
 <html lang="es">
-  
+
 <head>
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
-<script type="module" src="/map.js?v=build"></script>
-
-
+  <meta charset="utf-8" />
   <title>It's Gountain</title>
 
   <!-- PWA / Manifest -->
@@ -16,11 +12,11 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Mapbox GL JS (CDN) -->
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
+  <!-- Mapbox GL JS (CDN) -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
 
-    <link rel="stylesheet" href="/styles.css?v=10">
+  <link rel="stylesheet" href="/styles.css?v=10">
 
   <!-- Favicons -->
   <link rel="icon" href="/assets/GountainTime-192.png?v=10" type="image/png" sizes="192x192">
@@ -38,14 +34,23 @@
   <meta name="twitter:title" content="It's Gountain">
   <meta name="twitter:description" content="Explora y descubre más de 40 picos impresionantes en esta webapp interactiva.">
   <meta name="twitter:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=10">
-
 </head>
 
 <body>
   <header class="topbar">
-    <button id="btnMenu" aria-label="Open filters">☰</button>
+    <button id="btnMenu" aria-label="Open filters">Filtros</button>
     <h1>It's Gountain</h1>
-    <button id="btnLocate" aria-label="Show my location">📍</button>
+    <select id="continent-select" aria-label="Filtrar continente">
+      <option value="">Todos los continentes</option>
+      <option value="Asia">Asia</option>
+      <option value="África">África</option>
+      <option value="América del Norte">América del Norte</option>
+      <option value="América del Sur">América del Sur</option>
+      <option value="Antártida">Antártida</option>
+      <option value="Europa">Europa</option>
+      <option value="Oceanía">Oceanía</option>
+    </select>
+    <button id="btnLocate" aria-label="Show my location">Ubicación</button>
     <button id="btnInfo" aria-label="Open glossary">ℹ️</button>
   </header>
 
@@ -53,18 +58,6 @@
     <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
       <div class="panel-section">
         <h2>Filtros</h2>
-        <details open>
-          <summary>Continente</summary>
-          <div id="filter-continente" class="chips" data-filter="continent">
-            <button class="chip" data-v="Asia">Asia</button>
-            <button class="chip" data-v="África">África</button>
-            <button class="chip" data-v="América del Norte">América del Norte</button>
-            <button class="chip" data-v="América del Sur">América del Sur</button>
-            <button class="chip" data-v="Antártida">Antártida</button>
-            <button class="chip" data-v="Europa">Europa</button>
-            <button class="chip" data-v="Oceanía">Oceanía</button>
-          </div>
-        </details>
         <details>
           <summary>Dificultad</summary>
           <div id="filter-dificultad" class="chips"></div>
@@ -113,14 +106,15 @@
         <details><summary>Leyenda de botas</summary>
           <ul id="legend-botas"></ul>
         </details>
-        </div>
+      </div>
     </aside>
 
     <div id="map"></div>
+    <div id="map-health" class="map-health">Fetching token...</div>
     <div id="map-error" class="hidden" role="alert"></div>
   </main>
 
   <script type="module" src="/map.js?v=10"></script>
   <script type="module" src="/app.js?v=10"></script>
-  </body>
-  </html>
+</body>
+</html>
