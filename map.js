@@ -4,16 +4,16 @@ import { MAPBOX_TOKEN, BUILD_ID } from './config.js';
 /* global mapboxgl */
 
 if (!MAPBOX_TOKEN) {
-  alert('Map cannot load: missing or invalid Mapbox token.');
-  throw new Error('Missing MAPBOX_TOKEN');
+  console.error('Missing Mapbox token. Set NEXT_PUBLIC_MAPBOX_TOKEN in .env.local or Vercel.');
+} else {
+  mapboxgl.accessToken = MAPBOX_TOKEN;
 }
-mapboxgl.accessToken = MAPBOX_TOKEN;
 
 const map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/mapbox/outdoors-v12',
-  center: [20, 10],
-  zoom: 2.4
+  style: 'mapbox://styles/mapbox/streets-v12',
+  center: [0, 0],
+  zoom: 2
 });
 
 map.addControl(new mapboxgl.NavigationControl(), 'top-right');
