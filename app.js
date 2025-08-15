@@ -99,6 +99,14 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 if (typeof window !== 'undefined') {
+  const btnInfo = document.getElementById('btnInfo');
+  const glossary = document.getElementById('glossary');
+  if (btnInfo && glossary) {
+    btnInfo.addEventListener('click', () => {
+      glossary.classList.toggle('hidden');
+    });
+  }
+
   // ---- Service Worker ----
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
