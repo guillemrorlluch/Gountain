@@ -1,10 +1,10 @@
 // config.js
-if (typeof window !== 'undefined') {
-  window.MAPBOX_TOKEN = 'pk.eyJ1IjoiZ3VpbGxlcm1vcmxsdWNoIiwiYSI6ImNtZWQzNDZ0cjA0YnQybXM1ZGwyd2t1c2QifQ.Utr765WPrIAc_oPl3T_uGw';
-}
+export const BUILD_ID =
+  process.env.NEXT_PUBLIC_BUILD_ID ||
+  (typeof window !== 'undefined' && window.__BUILD_ID__) ||
+  String(Date.now());
 
-if (typeof module !== 'undefined') {
-  module.exports = {
-    VERSION: 'v10'
-  };
-}
+export const MAPBOX_TOKEN =
+  process.env.NEXT_PUBLIC_MAPBOX_TOKEN ||
+  (typeof window !== 'undefined' && window.__MAPBOX_TOKEN__) ||
+  '';

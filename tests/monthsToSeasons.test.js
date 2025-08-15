@@ -1,6 +1,6 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const { monthsToSeasons } = require('../app.js');
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { monthsToSeasons } from '../app.js';
 
 test('maps month range to seasons', () => {
   assert.deepEqual(monthsToSeasons('Jun–Aug'), ['Verano']);

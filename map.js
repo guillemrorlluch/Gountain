@@ -1,352 +1,224 @@
-// map.js - Mapbox GL JS implementation
-(function() {
-  const token = window.MAPBOX_TOKEN;
-  const errorEl = document.getElementById('map-error');
-  if (!token) {
-    showError('Mapbox token missing/invalid.');
+import mapboxgl from 'mapbox-gl';
+import { MAPBOX_TOKEN, BUILD_ID } from './config.js';
+
+if (!MAPBOX_TOKEN) {
+  alert('Map cannot load: missing or invalid Mapbox token.');
+  throw new Error('Missing MAPBOX_TOKEN');
+}
+mapboxgl.accessToken = MAPBOX_TOKEN;
+
+const map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/mapbox/outdoors-v12',
+  center: [20, 10],
+  zoom: 2.4
+});
+
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+const state = { continents: new Set() };
+let allDestinos = [];
+
+function normalizePhotos(d){
+  const cands = [d.fotos, d.photos, d.images, d.photo];
+  const arr = cands.flatMap(x => Array.isArray(x) ? x : (x ? [x] : []))
+                   .filter(u => typeof u === 'string' && u.trim().length > 0);
+  return Array.from(new Set(arr));
+}
+
+function photosHtml(d){
+  const ph = normalizePhotos(d);
+  if (!ph.length) return '';
+  return `
+    <div class="gallery" role="region" aria-label="Fotos del destino">
+      ${ph.map(u => `<img loading="lazy" src="${u}" alt="${d.nombre || 'foto'}" />`).join('')}
+    </div>
+  `;
+}
+
+const BOOT_COLORS = {
+  "Cualquiera": "#22c55e",
+  "Depende": "#f59e0b",
+  "Bestard Teix Lady GTX": "#3498db",
+  "Scarpa Ribelle Lite HD": "#e74c3c",
+  "Scarpa Zodiac Tech LT GTX": "#7f8c8d",
+  "La Sportiva Aequilibrium ST GTX": "#9b59b6",
+  "La Sportiva Nepal Cube GTX": "#ef4444",
+  "Nepal (doble bota técnica de alta montaña)": "#dc2626",
+  "Botas triple capa (8000 m+)": "#d97706",
+  "Otras ligeras (para trekking no técnico)": "#14b8a6"
+};
+
+function markerColor(d, bootColors = BOOT_COLORS) {
+  const pr = [
+    'Scarpa Ribelle Lite HD',
+    'La Sportiva Aequilibrium ST GTX',
+    'Scarpa Zodiac Tech LT GTX',
+    'Bestard Teix Lady GTX',
+    'La Sportiva Nepal Cube GTX',
+    'Nepal (doble bota técnica de alta montaña)',
+    'Botas triple capa (8000 m+)',
+    'Cualquiera',
+    'Depende',
+    'Otras ligeras (para trekking no técnico)'
+  ];
+  for (const p of pr)
+    if (Array.isArray(d.botas) && d.botas.includes(p)) return bootColors[p] || '#22c55e';
+  return '#22c55e';
+}
+
+function popupHtml(d) {
+  const name = d.nombre || '';
+  const country = d.pais || '';
+  const alt = (d.altitud_m != null) ? `${d.altitud_m} m` : '';
+  const boots = Array.isArray(d.botas) ? d.botas.map(b => `<span class="boot">${b}</span>`).join(' ') : '';
+
+  const price = (d.coste_estancia != null && String(d.coste_estancia).trim() !== '')
+    ? `<div><strong>Estimated cost:</strong> ${d.coste_estancia}</div>` : '';
+
+  const guide = (d.guia != null && String(d.guia).trim() !== '')
+    ? `<div><strong>Guide needed:</strong> ${d.guia}</div>` : '';
+
+  const review = (d.resena != null && String(d.resena).trim() !== '')
+    ? `<div><em>“${d.resena}”</em></div>` : '';
+
+  const links = [];
+  const g = d.link || d.google_search;
+  if (g) links.push(`<a href="${g}" target="_blank" rel="noopener">Google</a>`);
+  if (d.alltrails) links.push(`<a href="${d.alltrails}" target="_blank" rel="noopener">AllTrails</a>`);
+  if (d.wikiloc) links.push(`<a href="${d.wikiloc}" target="_blank" rel="noopener">Wikiloc</a>`);
+  if (d.wikipedia) links.push(`<a href="${d.wikipedia}" target="_blank" rel="noopener">Wikipedia</a>`);
+  const linksHtml = links.length ? `<div class="links">${links.map(l => `<div>${l}</div>`).join('')}</div>` : '';
+
+  return `
+  <div class="popup">
+    <strong>${name}</strong><br>${country} — ${alt}<br>${boots}
+    ${price}${guide}${review}
+    ${linksHtml}
+    ${photosHtml(d)}
+  </div>`;
+}
+
+function buildGeo(list){
+  return {
+    type: 'FeatureCollection',
+    features: list.map(d => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
+      properties: { ...d, color: markerColor(d), html: popupHtml(d) }
+    }))
+  };
+}
+
+function updateMapWith(list){
+  const geo = buildGeo(list);
+  const src = map.getSource('destinos');
+  if (src) {
+    src.setData(geo);
     return;
   }
-  mapboxgl.accessToken = token;
+  map.addSource('destinos', { type: 'geojson', data: geo, cluster: true, clusterRadius: 50, clusterMaxZoom: 9 });
 
-  const MODE_KEY = 'mapMode';
-  const THREE_D_KEY = 'map3D';
-  let currentMode = 'standard';
-  let is3D = false;
-  try {
-    currentMode = localStorage.getItem(MODE_KEY) || 'standard';
-    is3D = localStorage.getItem(THREE_D_KEY) === 'true';
-  } catch {}
-
-  function styleFor(mode) {
-    switch (mode) {
-      case 'satellite':
-        return 'mapbox://styles/mapbox/satellite-v9';
-      case 'hybrid':
-        return 'mapbox://styles/mapbox/satellite-streets-v12';
-      default:
-        return 'mapbox://styles/mapbox/outdoors-v12';
+  map.addLayer({
+    id: 'clusters',
+    type: 'circle',
+    source: 'destinos',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': '#2b6cb0',
+      'circle-radius': [
+        'step', ['get', 'point_count'],
+        18, 10, 22, 50, 28, 100, 34, 500, 40
+      ],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#fff'
     }
-  }
-
-  const map = new mapboxgl.Map({
-    container: 'map',
-    style: styleFor(currentMode),
-    center: [20, 10],
-    zoom: 2.4,
-    pitch: is3D ? 60 : 0
   });
 
-  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-  // ----- Data loading -----
-  const BOOT_COLORS = {
-    "Cualquiera": "#22c55e",
-    "Depende": "#f59e0b",
-    "Bestard Teix Lady GTX": "#3498db",
-    "Scarpa Ribelle Lite HD": "#e74c3c",
-    "Scarpa Zodiac Tech LT GTX": "#7f8c8d",
-    "La Sportiva Aequilibrium ST GTX": "#9b59b6",
-    "La Sportiva Nepal Cube GTX": "#ef4444",
-    "Nepal (doble bota técnica de alta montaña)": "#dc2626",
-    "Botas triple capa (8000 m+)": "#d97706",
-    "Otras ligeras (para trekking no técnico)": "#14b8a6"
-  };
-
-  function markerColor(d, bootColors = BOOT_COLORS) {
-    const pr = [
-      'Scarpa Ribelle Lite HD',
-      'La Sportiva Aequilibrium ST GTX',
-      'Scarpa Zodiac Tech LT GTX',
-      'Bestard Teix Lady GTX',
-      'La Sportiva Nepal Cube GTX',
-      'Nepal (doble bota técnica de alta montaña)',
-      'Botas triple capa (8000 m+)',
-      'Cualquiera',
-      'Depende',
-      'Otras ligeras (para trekking no técnico)'
-    ];
-    for (const p of pr)
-      if (Array.isArray(d.botas) && d.botas.includes(p)) return bootColors[p] || '#22c55e';
-    return '#22c55e';
-  }
-
-  function popupHtml(d) {
-    const name = d.nombre || '';
-    const country = d.pais || '';
-    const alt = (d.altitud_m != null) ? `${d.altitud_m} m` : '';
-    const boots = Array.isArray(d.botas) ? d.botas.map(b => `<span class="boot">${b}</span>`).join(' ') : '';
-
-    const price = (d.coste_estancia != null && String(d.coste_estancia).trim() !== '') 
-      ? `<div><strong>Estimated cost:</strong> ${d.coste_estancia}</div>` : '';
-
-    const guide = (d.guia != null && String(d.guia).trim() !== '') 
-      ? `<div><strong>Guide needed:</strong> ${d.guia}</div>` : '';
-
-    const review = (d.resena != null && String(d.resena).trim() !== '')
-      ? `<div><em>“${d.resena}”</em></div>` : '';
-
-    const link = d.link || d.google_search || '';
-    const linkHtml = link ? `<div style="margin-top:6px"><a href="${link}" target="_blank" rel="noopener">Open in Google</a></div>` : '';
-
-    return `
-    <strong>${name}</strong><br>${country} — ${alt}<br>${boots}
-    ${price}${guide}${review}${linkHtml}
-  `;
-  }
-
-  let destGeoJSON = null;
-  let clickAdded = false;
-
-  async function loadDestinos() {
-    try {
-      const res = await fetch('/data/destinos.json');
-      const data = await res.json();
-      destGeoJSON = {
-        type: 'FeatureCollection',
-        features: data.map(d => ({
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
-          properties: { ...d, color: markerColor(d), html: popupHtml(d) }
-        }))
-      };
-      if (map.isStyleLoaded()) addDestinosLayer();
-    } catch (err) {
-      console.error('Error loading destinos:', err);
-    }
-  }
-
-  function addDestinosLayer() {
-    if (!destGeoJSON || map.getSource('destinos')) return;
-
-    map.addSource('destinos', {
-      type: 'geojson',
-      data: destGeoJSON,
-      cluster: true,
-      clusterRadius: 50,
-      clusterMaxZoom: 9
-    });
-
-    // Clusters (large circles with count)
-    map.addLayer({
-      id: 'clusters',
-      type: 'circle',
-      source: 'destinos',
-      filter: ['has', 'point_count'],
-      paint: {
-        'circle-color': '#2b6cb0',
-        'circle-radius': [
-          'step', ['get', 'point_count'],
-          18, 10, 22, 50, 28, 100, 34, 500, 40
-        ],
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#fff'
-      }
-    });
-
-    map.addLayer({
-      id: 'cluster-count',
-      type: 'symbol',
-      source: 'destinos',
-      filter: ['has', 'point_count'],
-      layout: {
-        'text-field': ['get', 'point_count_abbreviated'],
-        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-        'text-size': 14
-      },
-      paint: { 'text-color': '#ffffff' }
-    });
-
-    // Unclustered points (styled by markerColor)
-    map.addLayer({
-      id: 'unclustered-point',
-      type: 'circle',
-      source: 'destinos',
-      filter: ['!', ['has', 'point_count']],
-      paint: {
-        'circle-radius': 6,
-        'circle-color': ['get', 'color'],
-        'circle-stroke-width': 1,
-        'circle-stroke-color': '#fff'
-      }
-    });
-
-    // Popup on click (unclustered points)
-    if (!clickAdded) {
-      map.on('click', 'unclustered-point', (e) => {
-        const f = e.features && e.features[0];
-        if (!f) return;
-        const coords = f.geometry.coordinates.slice();
-        const html = f.properties.html || '';
-        new mapboxgl.Popup({ closeOnMove: true })
-          .setLngLat(coords)
-          .setHTML(html)
-          .addTo(map);
-      });
-      clickAdded = true;
-    }
-
-    // Zoom into clusters
-    map.on('click', 'clusters', (e) => {
-      const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-      const clusterId = features[0].properties.cluster_id;
-      map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
-        if (err) return;
-        map.easeTo({ center: features[0].geometry.coordinates, zoom });
-      });
-    });
-
-    map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
-    map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
-  }
-
-  function addTerrainSource() {
-    if (!map.getSource('mapbox-dem')) {
-      map.addSource('mapbox-dem', {
-        type: 'raster-dem',
-        url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-        tileSize: 512,
-        maxzoom: 14
-      });
-    }
-  }
-
-  function enable3D() {
-    addTerrainSource();
-    map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.3 });
-    if (!map.getLayer('sky')) {
-      map.addLayer({
-        id: 'sky',
-        type: 'sky',
-        paint: {
-          'sky-type': 'atmosphere',
-          'sky-atmosphere-sun': [0.0, 0.0],
-          'sky-atmosphere-sun-intensity': 15
-        }
-      });
-    }
-    map.setPitch(60);
-  }
-
-  function disable3D() {
-    map.setTerrain(null);
-    if (map.getLayer('sky')) map.removeLayer('sky');
-    map.setPitch(0);
-  }
-
-  function setMode(mode) {
-    if (mode === currentMode) return;
-    currentMode = mode;
-    try { localStorage.setItem(MODE_KEY, mode); } catch {}
-    map.setStyle(styleFor(mode));
-  }
-
-  function set3D(enabled) {
-    is3D = enabled;
-    try { localStorage.setItem(THREE_D_KEY, String(enabled)); } catch {}
-    if (enabled) enable3D(); else disable3D();
-    updateButtons();
-  }
-
-  function updateButtons() {
-    modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === currentMode));
-    btn3D.classList.toggle('active', is3D);
-  }
-
-  // ----- UI -----
-  const panel = document.createElement('div');
-  panel.style.position = 'absolute';
-  panel.style.top = '10px';
-  panel.style.left = '10px';
-  panel.style.display = 'flex';
-  panel.style.gap = '4px';
-  panel.style.background = '#1f2937';
-  panel.style.padding = '4px';
-  panel.style.borderRadius = '6px';
-  panel.style.zIndex = '1';
-
-  const modes = [
-    { id: 'standard', label: 'Standard' },
-    { id: 'satellite', label: 'Satellite' },
-    { id: 'hybrid', label: 'Hybrid' }
-  ];
-  const modeButtons = modes.map(m => {
-    const b = document.createElement('button');
-    b.textContent = m.label;
-    b.dataset.mode = m.id;
-    b.style.background = '#374151';
-    b.style.color = '#fff';
-    b.style.border = 'none';
-    b.style.padding = '4px 6px';
-    b.style.cursor = 'pointer';
-    b.style.borderRadius = '4px';
-    b.addEventListener('click', () => setMode(m.id));
-    panel.appendChild(b);
-    return b;
+  map.addLayer({
+    id: 'cluster-count',
+    type: 'symbol',
+    source: 'destinos',
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': ['get', 'point_count_abbreviated'],
+      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+      'text-size': 14
+    },
+    paint: { 'text-color': '#ffffff' }
   });
 
-  const btn3D = document.createElement('button');
-  btn3D.textContent = '3D';
-  btn3D.style.background = '#374151';
-  btn3D.style.color = '#fff';
-  btn3D.style.border = 'none';
-  btn3D.style.padding = '4px 6px';
-  btn3D.style.cursor = 'pointer';
-  btn3D.style.borderRadius = '4px';
-  btn3D.addEventListener('click', () => set3D(!is3D));
-  panel.appendChild(btn3D);
-
-  map.getContainer().appendChild(panel);
-
-  function showError(msg) {
-    if (errorEl) {
-      errorEl.textContent = msg;
-      errorEl.classList.remove('hidden');
+  map.addLayer({
+    id: 'unclustered-point',
+    type: 'circle',
+    source: 'destinos',
+    filter: ['!', ['has', 'point_count']],
+    paint: {
+      'circle-radius': 6,
+      'circle-color': ['get', 'color'],
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#fff'
     }
-  }
-
-  map.on('style.load', () => {
-    addTerrainSource();
-    if (is3D) enable3D();
-    else disable3D();
-    addDestinosLayer();
-    updateButtons();
   });
 
-  loadDestinos();
+  map.on('click', 'unclustered-point', (e) => {
+    const f = e.features && e.features[0];
+    if (!f) return;
+    const coords = f.geometry.coordinates.slice();
+    const html = f.properties.html || '';
+    new mapboxgl.Popup({ closeOnMove: true })
+      .setLngLat(coords)
+      .setHTML(html)
+      .addTo(map);
+  });
 
-  (function setupLocate() {
-    const btn = document.getElementById('btnLocate');
-    if (!btn || !('geolocation' in navigator)) return;
+  map.on('click', 'clusters', (e) => {
+    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+    const clusterId = features[0].properties.cluster_id;
+    map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
+      if (err) return;
+      map.easeTo({ center: features[0].geometry.coordinates, zoom });
+    });
+  });
 
-    let userMarker = null;
+  map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+  map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+}
 
+function bindContinentChips(){
+  document.querySelectorAll('#filter-continente .chip').forEach(btn => {
     btn.addEventListener('click', () => {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lng = pos.coords.longitude;
-          const lat = pos.coords.latitude;
-          if (!userMarker) {
-            userMarker = new mapboxgl.Marker({ color: '#111' })
-              .setLngLat([lng, lat])
-              .addTo(map);
-          } else {
-            userMarker.setLngLat([lng, lat]);
-          }
-          map.easeTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 11) });
-        },
-        (err) => {
-          console.warn('Geolocation error:', err);
-          alert('Could not access your location. Please allow location permissions (HTTPS required).');
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-      );
+      const v = btn.getAttribute('data-v');
+      const on = btn.classList.toggle('active');
+      on ? state.continents.add(v) : state.continents.delete(v);
+      applyFilters();
     });
-  })();
-
-  map.on('error', e => {
-    const err = e && e.error;
-    if (err && err.status === 401) {
-      showError('Mapbox token missing/invalid.');
-    }
   });
-})();
+}
+
+function passContinent(d){
+  if (!state.continents.size) return true;
+  return state.continents.has(d.continente);
+}
+
+function applyFilters(){
+  const visible = allDestinos.filter(d => passContinent(d));
+  updateMapWith(visible);
+}
+
+async function loadDestinos(){
+  try {
+    const res = await fetch(`/data/destinos.json?v=${BUILD_ID}`);
+    const data = await res.json();
+    allDestinos = data;
+    applyFilters();
+  } catch(err){
+    console.error('Error loading destinos:', err);
+  }
+}
+
+map.on('load', () => {
+  loadDestinos();
+});
+
+bindContinentChips();

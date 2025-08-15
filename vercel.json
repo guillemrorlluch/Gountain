@@ -1,27 +1,8 @@
 {
   "headers": [
-    {
-      "source": "/sw-(.*)\\.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store" }
-      ]
-    },
-    {
-      "source": "/sw.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store" }
-      ]
-    },
-    {
-      "source": "/data/(.*)\\.json",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache" }
-      ]
-    }
-  ],
-  "rewrites": [
-    { "source": "/sw.js", "destination": "/sw-v10.js" }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+    { "source": "/", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
+    { "source": "/(.*).html", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
+    { "source": "/_next/static/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
+    { "source": "/data/(.*).json", "headers": [{ "key": "Cache-Control", "value": "public, max-age=60, stale-while-revalidate=300" }] }
+  ]
 }

@@ -1,7 +1,8 @@
 // app.js — v10
+import { BUILD_ID } from './config.js';
 
 // Normaliza etiquetas de dificultad a buckets
-function normalizeDiff(diff) {
+export function normalizeDiff(diff) {
   if (!diff) return 'Trek';
   if (diff.startsWith('AD')) return 'AD';
   if (diff.startsWith('PD')) return 'PD';
@@ -11,7 +12,7 @@ function normalizeDiff(diff) {
 }
 
 // Paleta para botas
-const BOOT_COLORS = {
+export const BOOT_COLORS = {
   "Cualquiera": "#22c55e",
   "Depende": "#f59e0b",
   "Bestard Teix Lady GTX": "#3498db",
@@ -24,7 +25,7 @@ const BOOT_COLORS = {
   "Otras ligeras (para trekking no técnico)": "#14b8a6"
 };
 
-function markerColor(d, bootColors = BOOT_COLORS) {
+export function markerColor(d, bootColors = BOOT_COLORS) {
   const pr = [
     'Scarpa Ribelle Lite HD',
     'La Sportiva Aequilibrium ST GTX',
@@ -42,7 +43,7 @@ function markerColor(d, bootColors = BOOT_COLORS) {
   return '#22c55e';
 }
 
-function monthsToSeasons(meses) {
+export function monthsToSeasons(meses) {
   const monthMap = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
   if (!meses) return [];
   if (meses.toLowerCase().includes('todo')) return ['Invierno','Primavera','Verano','Otoño'];
@@ -68,7 +69,7 @@ function monthsToSeasons(meses) {
   return [...seasons];
 }
 
-function withinFilters(d, F) {
+export function withinFilters(d, F) {
   const cont = F.continente.size === 0 || F.continente.has(d.continente);
   const dif = F.dificultad.size === 0 || F.dificultad.has(normalizeDiff(d.dificultad));
   const tipo = F.tipo.size === 0 || F.tipo.has(d.tipo);
@@ -80,7 +81,7 @@ function withinFilters(d, F) {
   return cont && dif && tipo && botas && season && altMin && altMax;
 }
 
-function computeBounds(list) {
+export function computeBounds(list) {
   if (!Array.isArray(list) || list.length === 0) return null;
   let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
   for (const d of list) {
@@ -92,10 +93,6 @@ function computeBounds(list) {
     if (lat > north) north = lat;
   }
   return { west, south, east, north };
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { normalizeDiff, markerColor, withinFilters, BOOT_COLORS, monthsToSeasons, computeBounds };
 }
 
 if (typeof window !== 'undefined') {
@@ -110,26 +107,27 @@ if (typeof window !== 'undefined') {
   // ---- Service Worker ----
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
-      try {
-   const reg = await navigator.serviceWorker.register('/sw-v10.js?v=2025-08-15-1');
-        console.log('✅ SW registrado:', reg.scope);
-
-        if (reg.waiting) {
-          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-        }
-
-        reg.addEventListener('updatefound', () => {
-          const nw = reg.installing;
-          if (!nw) return;
-          nw.addEventListener('statechange', () => {
-            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-              nw.postMessage({ type: 'SKIP_WAITING' });
-            }
-          });
+      const reg = await navigator.serviceWorker.register(`/sw-v10.js?v=${BUILD_ID}`);
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
         });
-      } catch (err) {
-        console.error('❌ Error registrando SW:', err);
-      }
+      });
+      navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
     });
   }
 }
+
+export default {
+  normalizeDiff,
+  markerColor,
+  withinFilters,
+  BOOT_COLORS,
+  monthsToSeasons,
+  computeBounds
+};
