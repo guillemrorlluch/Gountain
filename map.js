@@ -1,5 +1,7 @@
-import mapboxgl from 'mapbox-gl';
 import { MAPBOX_TOKEN, BUILD_ID } from './config.js';
+
+// Use the global provided by the CDN
+/* global mapboxgl */
 
 if (!MAPBOX_TOKEN) {
   alert('Map cannot load: missing or invalid Mapbox token.');

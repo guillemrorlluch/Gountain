@@ -106,20 +106,26 @@ if (typeof window !== 'undefined') {
 
   // ---- Service Worker ----
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      const reg = await navigator.serviceWorker.register(`/sw-v10.js?v=${BUILD_ID}`);
-      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        if (!nw) return;
-        nw.addEventListener('statechange', () => {
-          if (nw.state === 'installed' && reg.waiting) {
-            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-          }
+      window.addEventListener('load', async () => {
+        const reg = await navigator.serviceWorker.register(`/sw-v10.js?v=${BUILD_ID}`);
+
+        // If there’s a waiting SW, tell it to activate; do NOT await a reply.
+        if (reg.waiting) {
+          try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
+        }
+
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && reg.waiting) {
+              try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
+            }
+          });
         });
+
+        navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
       });
-      navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
-    });
   }
 }
 
