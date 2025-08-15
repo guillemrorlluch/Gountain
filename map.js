@@ -1,40 +1,58 @@
-import { MAPBOX_TOKEN, BUILD_ID } from './config.js';
+import { getMapboxToken, getBuildId } from './config.js';
 
-// Use the global provided by the CDN
 /* global mapboxgl */
 
-if (!MAPBOX_TOKEN) {
-  console.error('Missing Mapbox token. Set NEXT_PUBLIC_MAPBOX_TOKEN in .env.local or Vercel.');
-} else {
-  mapboxgl.accessToken = MAPBOX_TOKEN;
+const BUILD_ID = getBuildId();
+let map;
+
+async function bootstrap() {
+  try {
+    const token = await getMapboxToken();
+    if (!token) {
+      console.error('Missing Mapbox token (check Vercel env NEXT_PUBLIC_MAPBOX_TOKEN or /api/env).');
+      alert('Map cannot load (token missing). Please try again later.');
+      return;
+    }
+    mapboxgl.accessToken = token;
+
+    map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: [0, 0],
+      zoom: 2
+    });
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    (function setupLocate(){
+      const btn = document.getElementById('btnLocate');
+      if (!btn || !('geolocation' in navigator)) return;
+      let userMarker=null;
+      const onClick = () => {
+        navigator.geolocation.getCurrentPosition(
+          (pos)=>{ const {longitude:lng, latitude:lat}=pos.coords;
+            userMarker = userMarker || new mapboxgl.Marker({color:'#111'}).addTo(map);
+            userMarker.setLngLat([lng,lat]);
+            map.easeTo({center:[lng,lat], zoom:Math.max(map.getZoom(),11)});
+          },
+          ()=>alert('Location not available. Allow permissions (HTTPS required).'),
+          { enableHighAccuracy:true, timeout:10000 }
+        );
+      };
+      btn.addEventListener('click', onClick, { passive:true });
+    })();
+
+    map.on('load', () => {
+      loadDestinos();
+    });
+  } catch (err) {
+    console.error('Error bootstrapping map:', err);
+    alert('There was a problem starting the map.');
+  }
 }
 
-const map = new mapboxgl.Map({
-  container: 'map',
-  style: 'mapbox://styles/mapbox/streets-v12',
-  center: [0, 0],
-  zoom: 2
-});
+bootstrap();
 
-map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-
-(function setupLocate(){
-  const btn = document.getElementById('btnLocate');
-  if (!btn || !('geolocation' in navigator)) return;
-  let userMarker=null;
-  const onClick = () => {
-    navigator.geolocation.getCurrentPosition(
-      (pos)=>{ const {longitude:lng, latitude:lat}=pos.coords;
-        userMarker = userMarker || new mapboxgl.Marker({color:'#111'}).addTo(map);
-        userMarker.setLngLat([lng,lat]);
-        map.easeTo({center:[lng,lat], zoom:Math.max(map.getZoom(),11)});
-      },
-      ()=>alert('Location not available. Allow permissions (HTTPS required).'),
-      { enableHighAccuracy:true, timeout:10000 }
-    );
-  };
-  btn.addEventListener('click', onClick, { passive:true });
-})();
 
 const state = window.__FILTERS__ = window.__FILTERS__ || {};
 state.continents = state.continents || new Set();
@@ -261,9 +279,5 @@ async function loadDestinos(){
     console.error('Error loading destinos:', err);
   }
 }
-
-map.on('load', () => {
-  loadDestinos();
-});
 
 bindContinentChips();
