@@ -4,6 +4,12 @@ const STATIC_CACHE = `static-${VERSION}`;
 const DATA_CACHE   = `data-${VERSION}`;
 const TILE_CACHE   = `tiles-${VERSION}`;
 
+// ─── toggles ───────────────────────────────────────────────────────────────────
+const BYPASS_CACHE = false; // set true to debug with network-only mode (like sw-v9)
+const TILE_HOSTS = ['api.mapbox.com']; // external tile hosts to bypass caching
+function isTileHost(url) { try { return TILE_HOSTS.some(h => new URL(url).hostname.includes(h)); } catch { return false; } }
+// ───────────────────────────────────────────────────────────────────────────────
+
 // Tile cache limits
 const TILE_TTL   = 7 * 24 * 60 * 60 * 1000; // 7 días en ms
 const TILE_LIMIT = 50 * 1024 * 1024;        // ~50 MB
@@ -22,14 +28,6 @@ const STATIC_ASSETS = [
   'https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css',
   'https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js',
 ];
-
-const TILE_HOSTS = [
-  'api.mapbox.com'
-];
-
-function isTileRequest(url) {
-  return TILE_HOSTS.some(h => url.hostname.includes(h));
-}
 
 async function cachePutWithMeta(cache, request, response) {
   const now = Date.now();
@@ -108,8 +106,20 @@ self.addEventListener('activate', (event) => {
 // Stale-while-revalidate for data requests
 self.addEventListener('fetch', event => {
   const { request } = event;
-  if (request.method !== 'GET') return;
   const url = new URL(request.url);
+
+  // 0) Full bypass mode (like sw-v9) for debugging
+  if (BYPASS_CACHE) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
+  // 1) Never cache non-GET requests or external tile requests
+  if (request.method !== 'GET' || (url.origin !== location.origin && isTileHost(url))) {
+    event.respondWith(fetch(request));
+    return;
+  }
+
   const assetKey = url.origin === location.origin ? url.pathname + url.search : url.href;
 
   if (url.origin === location.origin && url.pathname.startsWith('/data/')) {
@@ -137,7 +147,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  if (isTileRequest(url)) {
+  if (isTileHost(url)) {
     event.respondWith(handleTileRequest(event));
   }
 });
