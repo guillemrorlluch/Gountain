@@ -103,7 +103,7 @@ if (typeof window !== 'undefined') {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
-        const reg = await navigator.serviceWorker.register('/sw-v10.js');
+   const reg = await navigator.serviceWorker.register('/sw-v10.js?v=2025-08-15-1');
         console.log('✅ SW registrado:', reg.scope);
 
         if (reg.waiting) {
