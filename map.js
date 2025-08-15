@@ -73,11 +73,25 @@
   function popupHtml(d) {
     const name = d.nombre || '';
     const country = d.pais || '';
-    const alt = d.altitud_m != null ? d.altitud_m + ' m' : '';
-    const boots = Array.isArray(d.botas)
-      ? d.botas.map(b => `<span class="boot">${b}</span>`).join(' ')
-      : '';
-    return `<strong>${name}</strong><br>${country} — ${alt}<br>${boots}`;
+    const alt = (d.altitud_m != null) ? `${d.altitud_m} m` : '';
+    const boots = Array.isArray(d.botas) ? d.botas.map(b => `<span class="boot">${b}</span>`).join(' ') : '';
+
+    const price = (d.coste_estancia != null && String(d.coste_estancia).trim() !== '') 
+      ? `<div><strong>Estimated cost:</strong> ${d.coste_estancia}</div>` : '';
+
+    const guide = (d.guia != null && String(d.guia).trim() !== '') 
+      ? `<div><strong>Guide needed:</strong> ${d.guia}</div>` : '';
+
+    const review = (d.resena != null && String(d.resena).trim() !== '')
+      ? `<div><em>“${d.resena}”</em></div>` : '';
+
+    const link = d.link || d.google_search || '';
+    const linkHtml = link ? `<div style="margin-top:6px"><a href="${link}" target="_blank" rel="noopener">Open in Google</a></div>` : '';
+
+    return `
+    <strong>${name}</strong><br>${country} — ${alt}<br>${boots}
+    ${price}${guide}${review}${linkHtml}
+  `;
   }
 
   let destGeoJSON = null;
@@ -103,11 +117,51 @@
 
   function addDestinosLayer() {
     if (!destGeoJSON || map.getSource('destinos')) return;
-    map.addSource('destinos', { type: 'geojson', data: destGeoJSON });
+
+    map.addSource('destinos', {
+      type: 'geojson',
+      data: destGeoJSON,
+      cluster: true,
+      clusterRadius: 50,
+      clusterMaxZoom: 9
+    });
+
+    // Clusters (large circles with count)
     map.addLayer({
-      id: 'destinos',
+      id: 'clusters',
       type: 'circle',
       source: 'destinos',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#2b6cb0',
+        'circle-radius': [
+          'step', ['get', 'point_count'],
+          18, 10, 22, 50, 28, 100, 34, 500, 40
+        ],
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#fff'
+      }
+    });
+
+    map.addLayer({
+      id: 'cluster-count',
+      type: 'symbol',
+      source: 'destinos',
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': ['get', 'point_count_abbreviated'],
+        'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+        'text-size': 14
+      },
+      paint: { 'text-color': '#ffffff' }
+    });
+
+    // Unclustered points (styled by markerColor)
+    map.addLayer({
+      id: 'unclustered-point',
+      type: 'circle',
+      source: 'destinos',
+      filter: ['!', ['has', 'point_count']],
       paint: {
         'circle-radius': 6,
         'circle-color': ['get', 'color'],
@@ -115,13 +169,34 @@
         'circle-stroke-color': '#fff'
       }
     });
+
+    // Popup on click (unclustered points)
     if (!clickAdded) {
-      map.on('click', 'destinos', e => {
-        const f = e.features[0];
-        new mapboxgl.Popup().setLngLat(f.geometry.coordinates).setHTML(f.properties.html).addTo(map);
+      map.on('click', 'unclustered-point', (e) => {
+        const f = e.features && e.features[0];
+        if (!f) return;
+        const coords = f.geometry.coordinates.slice();
+        const html = f.properties.html || '';
+        new mapboxgl.Popup({ closeOnMove: true })
+          .setLngLat(coords)
+          .setHTML(html)
+          .addTo(map);
       });
       clickAdded = true;
     }
+
+    // Zoom into clusters
+    map.on('click', 'clusters', (e) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+      const clusterId = features[0].properties.cluster_id;
+      map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err) return;
+        map.easeTo({ center: features[0].geometry.coordinates, zoom });
+      });
+    });
+
+    map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
   }
 
   function addTerrainSource() {
@@ -238,6 +313,35 @@
   });
 
   loadDestinos();
+
+  (function setupLocate() {
+    const btn = document.getElementById('btnLocate');
+    if (!btn || !('geolocation' in navigator)) return;
+
+    let userMarker = null;
+
+    btn.addEventListener('click', () => {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lng = pos.coords.longitude;
+          const lat = pos.coords.latitude;
+          if (!userMarker) {
+            userMarker = new mapboxgl.Marker({ color: '#111' })
+              .setLngLat([lng, lat])
+              .addTo(map);
+          } else {
+            userMarker.setLngLat([lng, lat]);
+          }
+          map.easeTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 11) });
+        },
+        (err) => {
+          console.warn('Geolocation error:', err);
+          alert('Could not access your location. Please allow location permissions (HTTPS required).');
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  })();
 
   map.on('error', e => {
     const err = e && e.error;
