@@ -24,7 +24,11 @@ export async function getMapboxToken() {
 
 export function getBuildId() {
   if (typeof window !== 'undefined' && window.__BUILD_ID__) return window.__BUILD_ID__;
-  const id = String(Date.now());
+  let id = '1';
+  try {
+    const url = new URL(import.meta.url);
+    id = url.searchParams.get('v') || id;
+  } catch {}
   if (typeof window !== 'undefined') window.__BUILD_ID__ = id;
   return id;
 }
