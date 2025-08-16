@@ -9,7 +9,11 @@ function setHealth(text) {
   if (healthEl) healthEl.textContent = text;
 }
 
-async function bootstrap() {
+let __MAPBOX_MOUNTED__ = false;
+
+async function initMapOnce(){
+  if (__MAPBOX_MOUNTED__) return;
+  __MAPBOX_MOUNTED__ = true;
   setHealth('Fetching token...');
   const token = await getMapboxToken().catch(() => '');
   if (!token) {
@@ -40,7 +44,7 @@ async function bootstrap() {
   });
 }
 
-bootstrap();
+document.addEventListener('DOMContentLoaded', initMapOnce);
 
 function setupLocate() {
   const btn = document.getElementById('btnLocate');
