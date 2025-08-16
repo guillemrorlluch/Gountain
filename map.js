@@ -2,7 +2,6 @@ import { getMapboxToken, getBuildId } from './config.js';
 
 /* global mapboxgl */
 let map;
-const BUILD_ID = getBuildId();
 const healthEl = document.getElementById('map-health');
 
 function setHealth(text) {
@@ -277,7 +276,7 @@ function applyFilters(){
 
 async function loadDestinos(){
   try {
-    const res = await fetch(`/data/destinos.json?v=${BUILD_ID}`);
+    const res = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
     const data = await res.json();
     allDestinations = data.map(normalizeContinent);
     applyFilters();
