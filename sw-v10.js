@@ -22,6 +22,21 @@ self.addEventListener('fetch', (event) => {
       event.respondWith(fetch(req));
       return;
     }
+    if (req.destination === 'style' || req.destination === 'script' || req.url.endsWith('.css') || req.url.endsWith('.js')) {
+      event.respondWith((async () => {
+        try {
+          const res = await fetch(req);
+          try { (await caches.open('v10')).put(req, res.clone()); } catch {}
+          return res;
+        } catch {
+          const cache = await caches.open('v10');
+          const cached = await cache.match(req);
+          if (cached) return cached;
+          throw new Error('Network and cache both failed');
+        }
+      })());
+      return;
+    }
     event.respondWith(fetch(req).catch(() => caches.match(req)));
   } catch {
     event.respondWith(fetch(req));
