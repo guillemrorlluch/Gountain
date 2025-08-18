@@ -16,23 +16,6 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
 
-  <link id="maincss" rel="stylesheet" href="/styles.css" />
-  <script src="/env-check.js" defer></script>
-  <script type="module">
-    import { getBuildId } from './config.js';
-    const v = getBuildId();
-    const css = document.getElementById('maincss');
-    if (css) css.href = `/styles.css?v=${v}`;
-    const m = document.createElement('script');
-    m.type = 'module';
-    m.src = `/map.js?v=${v}`;
-    document.head.appendChild(m);
-    const a = document.createElement('script');
-    a.type = 'module';
-    a.src = `/app.js?v=${v}`;
-    document.head.appendChild(a);
-  </script>
-
   <!-- Favicons -->
   <link rel="icon" href="/assets/GountainTime-192.png?v=10" type="image/png" sizes="192x192">
   <link rel="icon" href="/assets/GountainTime-512.png?v=10" type="image/png" sizes="512x512">
@@ -130,4 +113,3 @@
   </main>
 
   </body>
-</html>
