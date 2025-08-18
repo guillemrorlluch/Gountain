@@ -13,28 +13,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Mapbox GL JS (CDN) -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
-
-    <link id="maincss" rel="stylesheet" href="/styles.css">
-    <script type="module">
-      import { getBuildId } from './config.js';
-      const v = getBuildId();
-      const css = document.getElementById('maincss');
-      if (css) css.href = `/styles.css?v=${v}`;
-      const m = document.createElement('script');
-      m.type = 'module';
-      m.src = `/map.js?v=${v}`;
-      document.head.appendChild(m);
-      const a = document.createElement('script');
-      a.type = 'module';
-      a.src = `/app.js?v=${v}`;
-      document.head.appendChild(a);
-      const e = document.createElement('script');
-      e.type = 'module';
-      e.src = `/env-check.js?v=${v}`;
-      document.head.appendChild(e);
-    </script>
 
   <!-- Favicons -->
   <link rel="icon" href="/assets/GountainTime-192.png?v=10" type="image/png" sizes="192x192">
@@ -133,4 +113,3 @@
   </main>
 
   </body>
-  </html>
