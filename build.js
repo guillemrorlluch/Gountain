@@ -28,7 +28,7 @@ function copyDir(srcDir, destDir) {
     const d = path.join(destDir, entry);
     const stat = fs.statSync(s);
     if (stat.isDirectory()) copyDir(s, d);
-    else copy(s, d);
+    else (s, d);
   }
 }
 
@@ -59,6 +59,5 @@ copyDir(path.join(ROOT, "public"), OUT);
 
 copy(path.join(ROOT, "styles.css"), path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"), path.join(OUT, "index.html"));
-copy(path.join(ROOT, "manifest.json"), path.join(OUT, "manifest.json"));
 
 console.log("✅ Build Completed in /vercel/output");
