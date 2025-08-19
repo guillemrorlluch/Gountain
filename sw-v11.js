@@ -1,52 +1,33 @@
-// sw-v11.js
 const CACHE_NAME = 'gountain-cache-v11';
+const OFFLINE_URLS = ['/', '/index.html', '/styles.css', '/dist/app.bundle.js', '/assets/GountainTime-192.png', '/assets/GountainTime-512.png'];
 
-const OFFLINE_URLS = [
-  '/', 
-  '/index.html',
-  '/styles.css',
-  '/dist/app.bundle.js',
-  '/assets/GountainTime-192.png',
-  '/assets/GountainTime-512.png'
-];
-
-// Install
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(OFFLINE_URLS)));
   self.skipWaiting();
 });
 
-// Activate
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
     await Promise.all(keys.map((k) => k !== CACHE_NAME && caches.delete(k)));
-
-    // remove any cached manifest
     const c = await caches.open(CACHE_NAME);
     const reqs = await c.keys();
-    await Promise.all(reqs
-      .filter((r) => new URL(r.url).pathname === '/manifest.json')
-      .map((r) => c.delete(r)));
+    await Promise.all(reqs.filter((r) => new URL(r.url).pathname === '/manifest.json').map((r) => c.delete(r)));
   })());
   self.clients.claim();
 });
 
-// Bypass helper
 const isBypassed = (url) => {
-  if (url.origin !== self.location.origin) return true;          // externals (Mapbox/CDNs)
-  if (url.pathname === '/manifest.json') return true;            // manifest
-  if (url.pathname.startsWith('/assets/')) return true;          // static assets
-  if (url.pathname.startsWith('/_vercel')) return true;          // vercel internals
-  if (url.pathname.includes('vercel-insights')) return true;     // vercel insights
+  if (url.origin !== self.location.origin) return true;      // externals (Mapbox/CDNs)
+  if (url.pathname === '/manifest.json') return true;        // manifest
+  if (url.pathname.startsWith('/_vercel')) return true;      // vercel internals
+  if (url.pathname.includes('vercel-insights')) return true; // vercel insights
   return false;
 };
 
-// Fetch
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Hard bypass: do not cache, always go to network
   if (isBypassed(url)) {
     event.respondWith(fetch(event.request, { cache: 'no-store' }).catch(() => {
       if (event.request.mode === 'navigate') return caches.match('/index.html');
@@ -55,11 +36,9 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first with background fill
   event.respondWith((async () => {
     const cached = await caches.match(event.request);
     if (cached) return cached;
-
     try {
       const res = await fetch(event.request);
       if (res && res.ok) {
@@ -77,3 +56,4 @@ self.addEventListener('fetch', (event) => {
     }
   })());
 });
+

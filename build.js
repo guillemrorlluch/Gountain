@@ -59,7 +59,7 @@ try {
   const cfg = `// generated at build time
 export const MAPBOX_TOKEN = ${JSON.stringify(token)};
 export const BUILD_ID = ${JSON.stringify(buildId)};
-export const getBuildId = () => BUILD_ID;`;
+export function getBuildId(){ return BUILD_ID; }`;
 
   fs.writeFileSync(path.join(distDir, "config.js"), cfg, "utf8");
   console.log("Wrote dist/config.js");
@@ -68,13 +68,14 @@ export const getBuildId = () => BUILD_ID;`;
 }
 
 // copy site to Vercel static output
-copy(path.join(ROOT, "index.html"),   path.join(OUT, "index.html"));
-copy(path.join(ROOT, "styles.css"),   path.join(OUT, "styles.css"));
-copy(path.join(ROOT, "manifest.json"),path.join(OUT, "manifest.json"));
-
 copyDir(path.join(ROOT, "assets"), path.join(OUT, "assets"));
 copyDir(path.join(ROOT, "data"),   path.join(OUT, "data"));
 copyDir(path.join(ROOT, "dist"),   path.join(OUT, "dist"));
 copyDir(path.join(ROOT, "public"), OUT);
+
+copy(path.join(ROOT, "map.js"),    path.join(OUT, "map.js"));
+copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
+copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
+copy(path.join(ROOT, "sw-v11.js"), path.join(OUT, "sw-v11.js"));
 
 console.log("✅ Build Completed in /vercel/output");

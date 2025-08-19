@@ -1,4 +1,4 @@
-import { MAPBOX_TOKEN, getBuildId } from './config.js';
+import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */
 let map;
