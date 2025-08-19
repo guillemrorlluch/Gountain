@@ -36,6 +36,7 @@ self.addEventListener('activate', (event) => {
 const isBypassed = (url) => {
   if (url.origin !== self.location.origin) return true;          // externals (Mapbox/CDNs)
   if (url.pathname === '/manifest.json') return true;            // manifest
+  if (url.pathname.startsWith('/assets/')) return true;          // static assets
   if (url.pathname.startsWith('/_vercel')) return true;          // vercel internals
   if (url.pathname.includes('vercel-insights')) return true;     // vercel insights
   return false;
