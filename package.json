@@ -1,17 +1,8 @@
 {
   "name": "itsgountaintime",
   "version": "1.0.0",
-  "description": "Mapa interactivo de rutas y picos con filtros y recomendaciones de botas, accesible como PWA.",
-  "main": "app.js",
   "type": "module",
-  "directories": {
-    "test": "tests"
-  },
   "scripts": {
-    "test": "node --test",
     "build": "node build.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  }
 }
