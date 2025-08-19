@@ -1,4 +1,4 @@
-import { getMapboxToken, getBuildId } from './config.js';
+import { MAPBOX_TOKEN, getBuildId } from './config.js';
 
 /* global mapboxgl */
 let map;
@@ -13,8 +13,7 @@ let __MAPBOX_MOUNTED__ = false;
 async function initMapOnce(){
   if (__MAPBOX_MOUNTED__) return;
   __MAPBOX_MOUNTED__ = true;
-  setHealth('Fetching token...');
-  const token = await getMapboxToken().catch(() => '');
+  const token = MAPBOX_TOKEN;
   if (!token) {
     setHealth('No token');
     alert('Map cannot load (token missing).');

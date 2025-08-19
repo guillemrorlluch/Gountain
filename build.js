@@ -51,14 +51,13 @@ try {
   console.warn("Skip bundle step:", e?.message);
 }
 
-// === Genera dist/config.js con el token público ===
+// === Generate dist/config.js for the bundle ===
 try {
   const distDir = path.join(ROOT, "dist");
   ensureDir(distDir);
 
-  // lee el token desde variables de entorno de Vercel (Preview/Production)
   const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
-  const buildId = "v10"; // súbelo cuando cambies assets
+  const buildId = "v11";
 
   const cfg = `// generated at build time
 export const MAPBOX_TOKEN = ${JSON.stringify(token)};
@@ -79,5 +78,6 @@ copyDir(path.join(ROOT, "public"), OUT);
 
 copy(path.join(ROOT, "styles.css"), path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"), path.join(OUT, "index.html"));
+copy(path.join(ROOT, "sw-v11.js"), path.join(OUT, "sw-v11.js"));
 
 console.log("✅ Build Completed in /vercel/output");

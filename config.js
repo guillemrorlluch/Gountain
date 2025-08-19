@@ -1,15 +1,5 @@
 // config.js
+export const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+export const BUILD_ID = 'v11';
+export function getBuildId(){ return BUILD_ID; }
 
-let CACHED_TOKEN = null;
-let TOKEN_PROMISE = null;
-
-export async function getMapboxToken() {
-  if (typeof window !== 'undefined' && window.__MAPBOX_TOKEN__) return window.__MAPBOX_TOKEN__;
-  if (CACHED_TOKEN) return CACHED_TOKEN;
-}
-
-let BUILD_ID = null;
-
-export function getBuildId() {
-  
-}

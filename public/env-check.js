@@ -1,4 +1,4 @@
-import { getMapboxToken } from '/config.js';
+import { MAPBOX_TOKEN } from './dist/config.js';
 
 const params = new URLSearchParams(location.search);
 const debugEnv = params.get('debug') === 'env';
@@ -12,7 +12,7 @@ function showBanner(msg){
 }
 
 async function init(){
-  const token = await getMapboxToken();
+  const token = MAPBOX_TOKEN;
   if (token && !debugEnv) return;
   let data = {};
   if (debugEnv) {

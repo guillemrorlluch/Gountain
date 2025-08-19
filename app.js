@@ -1,4 +1,4 @@
-// app.js — v10
+// app.js — v11
 import { getBuildId } from './config.js';
 
 // Normaliza etiquetas de dificultad a buckets
@@ -107,7 +107,7 @@ if (typeof window !== 'undefined') {
   // ---- Service Worker ----
   if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
-        const reg = await navigator.serviceWorker.register(`/sw-v10.js?v=${getBuildId()}`);
+        const reg = await navigator.serviceWorker.register(`/sw-v11.js?v=${getBuildId()}`);
 
         // If there’s a waiting SW, tell it to activate; do NOT await a reply.
         if (reg.waiting) {
