@@ -110,25 +110,22 @@
       </div>
     </aside>
 
-    <div id="map"></div>
-    <div id="map-health" class="map-health">Loading map...</div>
-    <div id="map-error" class="hidden" role="alert"></div>
+      <div id="map"></div>
+      <div id="basemap-switcher" class="map-style-switcher" aria-label="Map styles">
+        <button data-style="standard">Standard</button>
+        <button data-style="satellite">Satellite</button>
+        <button data-style="hybrid">Hybrid</button>
+        <button data-style="3d">3D</button>
+      </div>
+      <div id="map-health" class="map-health">Loading map...</div>
+      <div id="map-error" class="hidden" role="alert"></div>
   </main>
 
   <!-- Tu JS (usar el bundle que genera build.js) -->
   <script type="module" src="/dist/app.bundle.js?v=11"></script>
 
   <!-- map initializer -->
-  <script type="module" src="/map.js?v=11"></script>
-
-  <!-- (Opcional) Registrar SW estable; cuando hagas limpieza usa sw-kill.js temporalmente -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw-v11.js?v=11').catch(console.error);
-      });
-    }
-  </script>
+  <script type="module" src="/dist/map.js?v=11"></script>
 
   <noscript>Esta app necesita JavaScript para funcionar.</noscript>
 </body>

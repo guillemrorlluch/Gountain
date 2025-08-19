@@ -15,8 +15,20 @@ body { background: var(--bg); color: var(--text); font-family: ui-sans-serif, sy
   border-bottom: 1px solid #1f2937;
 }
 .topbar h1 { font-size: 16px; margin: 0; font-weight: 700; letter-spacing: .3px; }
-.topbar button { background: #1f2937; color: var(--text); border: 1px solid #374151; border-radius: 10px; padding: 6px 10px; cursor: pointer; min-width:44px; min-height:44px; }
-#map { position: fixed; inset: 52px 0 0 0; }
+  .topbar button { background: #1f2937; color: var(--text); border: 1px solid #374151; border-radius: 10px; padding: 6px 10px; cursor: pointer; min-width:44px; min-height:44px; }
+  #map { position: fixed; inset: 52px 0 0 0; }
+  .map-style-switcher{
+    position:fixed; top:14px; left:14px; z-index:1100;
+    display:flex; gap:8px; background:rgba(17,24,39,.6);
+    padding:6px; border-radius:10px; border:1px solid #1f2937;
+  }
+  .map-style-switcher button{
+    background:#1f2937; color:#fff; border:1px solid #374151;
+    padding:6px 10px; border-radius:8px; cursor:pointer; font-weight:600;
+  }
+  .map-style-switcher button.active{
+    background:#334155;
+  }
 #map-error {
   position: fixed;
   top: 60px;

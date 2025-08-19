@@ -1,59 +1,56 @@
+// sw-v11.js
 const CACHE_NAME = 'gountain-cache-v11';
-const OFFLINE_URLS = ['/', '/index.html', '/styles.css', '/dist/app.bundle.js', '/assets/GountainTime-192.png', '/assets/GountainTime-512.png'];
+const OFFLINE_URLS = [
+  '/', '/index.html', '/styles.css',
+  '/dist/app.bundle.js',
+  '/assets/GountainTime-192.png',
+  '/assets/GountainTime-512.png'
+];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(OFFLINE_URLS)));
-  self.skipWaiting();
+// Activate immediately when the page asks for it
+self.addEventListener('message', (event) => {
+  if (event?.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
+// Install: precache core
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(OFFLINE_URLS))
+  );
+  // no skipWaiting here; controlled by message
+});
+
+// Activate: cleanup old caches and take control
 self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.map((k) => k !== CACHE_NAME && caches.delete(k)));
-    const c = await caches.open(CACHE_NAME);
-    const reqs = await c.keys();
-    await Promise.all(reqs.filter((r) => new URL(r.url).pathname === '/manifest.json').map((r) => c.delete(r)));
-  })());
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
+    )
+  );
   self.clients.claim();
 });
 
-const isBypassed = (url) => {
-  if (url.origin !== self.location.origin) return true;      // externals (Mapbox/CDNs)
-  if (url.pathname === '/manifest.json') return true;        // manifest
-  if (url.pathname.startsWith('/_vercel')) return true;      // vercel internals
-  if (url.pathname.includes('vercel-insights')) return true; // vercel insights
-  return false;
-};
-
+// Fetch with bypass for manifest and assets
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  if (isBypassed(url)) {
-    event.respondWith(fetch(event.request, { cache: 'no-store' }).catch(() => {
-      if (event.request.mode === 'navigate') return caches.match('/index.html');
-      return Promise.reject();
-    }));
+  if (url.pathname === '/manifest.json' || url.pathname.startsWith('/assets/')) {
+    event.respondWith(fetch(event.request));
     return;
   }
 
-  event.respondWith((async () => {
-    const cached = await caches.match(event.request);
-    if (cached) return cached;
-    try {
-      const res = await fetch(event.request);
-      if (res && res.ok) {
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request).then((res) => {
         const clone = res.clone();
-        const cache = await caches.open(CACHE_NAME);
-        cache.put(event.request, clone);
-      }
-      return res;
-    } catch (err) {
-      if (event.request.mode === 'navigate') {
-        const offline = await caches.match('/index.html');
-        if (offline) return offline;
-      }
-      throw err;
-    }
-  })());
+        caches.open(CACHE_NAME).then((c) => c.put(event.request, clone));
+        return res;
+      }).catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.html');
+        }
+      });
+    })
+  );
 });
-

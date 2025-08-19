@@ -48,6 +48,9 @@ try {
   console.warn("Skip bundle:", e?.message);
 }
 
+// ensure map.js is available in dist for relative config import
+copy(path.join(ROOT, "map.js"), path.join(ROOT, "dist", "map.js"));
+
 // ✅ Generate /dist/config.js exactly as app.js needs
 try {
   const distDir = path.join(ROOT, "dist");
@@ -73,7 +76,6 @@ copyDir(path.join(ROOT, "data"),   path.join(OUT, "data"));
 copyDir(path.join(ROOT, "dist"),   path.join(OUT, "dist"));
 copyDir(path.join(ROOT, "public"), OUT);
 
-copy(path.join(ROOT, "map.js"),    path.join(OUT, "map.js"));
 copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
 copy(path.join(ROOT, "sw-v11.js"), path.join(OUT, "sw-v11.js"));

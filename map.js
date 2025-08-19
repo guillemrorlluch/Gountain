@@ -1,4 +1,4 @@
-import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
+import { MAPBOX_TOKEN, getBuildId } from './config.js';
 
 /* global mapboxgl */
 let map;
@@ -35,6 +35,7 @@ async function initMapOnce(){
   });
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  wireBasemapSwitcher();
   setupLocate();
 
   map.on('load', () => {
@@ -43,6 +44,52 @@ async function initMapOnce(){
 }
 
 document.addEventListener('DOMContentLoaded', initMapOnce);
+
+function wireBasemapSwitcher() {
+  const box = document.getElementById('basemap-switcher');
+  if (!box) return;
+
+  const buttons = [...box.querySelectorAll('button')];
+  const setActive = (name) => buttons.forEach(b => b.classList.toggle('active', b.dataset.style === name));
+
+  const applyStyle = (name) => {
+    if (name === 'standard') {
+      map.setStyle('mapbox://styles/mapbox/streets-v12');
+    } else if (name === 'satellite') {
+      map.setStyle('mapbox://styles/mapbox/satellite-streets-v12');
+    } else if (name === 'hybrid') {
+      map.setStyle('mapbox://styles/mapbox/outdoors-v12');
+    } else if (name === '3d') {
+      map.setStyle('mapbox://styles/mapbox/streets-v12');
+      map.once('styledata', () => {
+        if (!map.getSource('mapbox-dem')) {
+          map.addSource('mapbox-dem', {
+            type: 'raster-dem',
+            url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+            tileSize: 512,
+            maxzoom: 14
+          });
+          map.setTerrain({ source: 'mapbox-dem', exaggeration: 1.3 });
+          if (!map.getLayer('sky')) {
+            map.addLayer({
+              id: 'sky',
+              type: 'sky',
+              paint: {
+                'sky-type': 'atmosphere',
+                'sky-atmosphere-sun': [0, 0],
+                'sky-atmosphere-sun-intensity': 15
+              }
+            });
+          }
+        }
+      });
+    }
+    setActive(name);
+  };
+
+  buttons.forEach(btn => btn.addEventListener('click', () => applyStyle(btn.dataset.style)));
+  setActive('standard');
+}
 
 function setupLocate() {
   const btn = document.getElementById('btnLocate');

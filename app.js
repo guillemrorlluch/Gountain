@@ -104,29 +104,39 @@ if (typeof window !== 'undefined') {
     });
   }
 
-  // ---- Service Worker ----
-  if ('serviceWorker' in navigator) {
+    // ---- Service Worker (stable registration, one-shot reload) ----
+    if ('serviceWorker' in navigator) {
       window.addEventListener('load', async () => {
-        const reg = await navigator.serviceWorker.register(`/sw-v11.js?v=${getBuildId()}`);
+        const swUrl = '/sw-v11.js'; // version by filename, no querystring
 
-        // If there’s a waiting SW, tell it to activate; do NOT await a reply.
-        if (reg.waiting) {
-          try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
-        }
-
-        reg.addEventListener('updatefound', () => {
-          const nw = reg.installing;
-          if (!nw) return;
-          nw.addEventListener('statechange', () => {
-            if (nw.state === 'installed' && reg.waiting) {
-              try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
-            }
-          });
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
         });
 
-        navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+        try {
+          const reg = await navigator.serviceWorker.register(swUrl);
+
+          reg.addEventListener('updatefound', () => {
+            const nw = reg.installing;
+            if (!nw) return;
+            nw.addEventListener('statechange', () => {
+              if (nw.state === 'installed' && reg.waiting) {
+                try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
+              }
+            });
+          });
+
+          if (reg.waiting) {
+            try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
+          }
+        } catch (e) {
+          console.error('SW register failed', e);
+        }
       });
-  }
+    }
 }
 
 export default {
