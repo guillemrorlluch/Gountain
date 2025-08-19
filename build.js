@@ -1,14 +1,15 @@
- // build.js - único archivo, sin imports duplicados
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// build.js - versión final para Vercel
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Carpetas raíz y output
 const ROOT = __dirname;
-const OUT = '/vercel/output';
+const OUT = path.join(ROOT, "vercel", "output");
 
 // Helpers
 function ensureDir(p) {
@@ -31,29 +32,33 @@ function copyDir(srcDir, destDir) {
   }
 }
 
-// (Opcional) mini “bundle” de app.js si lo necesitas.
-// Si no lo usas, borra esta sección y no generes /dist.
+// (Opcional) mini “bundle” de app.js → genera /dist/app.bundle.js
 try {
-  const srcPath = path.join(ROOT, 'app.js');
+  const srcPath = path.join(ROOT, "app.js");
   if (fs.existsSync(srcPath)) {
-    const distDir = path.join(ROOT, 'dist');
-    const outPath = path.join(distDir, 'app.bundle.js');
-    const src = fs.readFileSync(srcPath, 'utf8');
-    const min = src.replace(/\/\/[^\n]*\n/g, '\n').replace(/\n{2,}/g, '\n').trim();
+    const distDir = path.join(ROOT, "dist");
+    const outPath = path.join(distDir, "app.bundle.js");
+    const src = fs.readFileSync(srcPath, "utf8");
+    const min = src
+      .replace(/\/\/[^\n]*\n/g, "\n")
+      .replace(/\n{2,}/g, "\n")
+      .trim();
     ensureDir(distDir);
-    fs.writeFileSync(outPath, min, 'utf8');
+    fs.writeFileSync(outPath, min, "utf8");
     console.log(`Bundled to ${outPath} (${min.length} bytes)`);
   }
 } catch (e) {
-  console.warn('Skip bundle step:', e?.message);
+  console.warn("Skip bundle step:", e?.message);
 }
 
-// Copia al output para Static/SPA
-copy(path.join(ROOT, 'styles.css'), path.join(OUT, 'styles.css'));
-copy(path.join(ROOT, 'index.html'), path.join(OUT, 'index.html'));
-copy(path.join(ROOT, 'manifest.json'), path.join(OUT, 'manifest.json'));
-copyDir(path.join(ROOT, 'assets'), path.join(OUT, 'assets'));
-copyDir(path.join(ROOT, 'data'), path.join(OUT, 'data'));
-copyDir(path.join(ROOT, 'public'), OUT);
+// Copia carpetas y archivos al output
+copyDir(path.join(ROOT, "assets"), path.join(OUT, "assets"));
+copyDir(path.join(ROOT, "data"), path.join(OUT, "data"));
+copyDir(path.join(ROOT, "dist"), path.join(OUT, "dist"));
+copyDir(path.join(ROOT, "public"), OUT);
 
-console.log('Build Completed in /vercel/output');
+copy(path.join(ROOT, "styles.css"), path.join(OUT, "styles.css"));
+copy(path.join(ROOT, "index.html"), path.join(OUT, "index.html"));
+copy(path.join(ROOT, "manifest.json"), path.join(OUT, "manifest.json"));
+
+console.log("✅ Build Completed in /vercel/output");
