@@ -16,6 +16,67 @@ body { background: var(--bg); color: var(--text); font-family: ui-sans-serif, sy
 }
 .topbar h1 { font-size: 16px; margin: 0; font-weight: 700; letter-spacing: .3px; }
 .topbar button { background: #1f2937; color: var(--text); border: 1px solid #374151; border-radius: 10px; padding: 6px 10px; cursor: pointer; min-width:44px; min-height:44px; }
+#btnMenu.hamburger { padding:0; }
+
+/* Basemap switcher container */
+.basemap-switcher {
+  position: fixed;
+  top: 64px;
+  left: 12px;
+  z-index: 1001;
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(17, 24, 39, 0.7);
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+}
+.basemap-switcher button {
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.basemap-switcher button.active { outline: 2px solid #3b82f6; }
+
+/* Hamburger */
+.hamburger {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid #374151;
+  background: #1f2937;
+  color: #fff;
+  cursor: pointer;
+  padding:0;
+}
+.hamburger .bars {
+  width: 18px;
+  height: 14px;
+  position: relative;
+}
+.hamburger .bars::before,
+.hamburger .bars::after,
+.hamburger .bars div {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+.hamburger .bars::before { top: 0; }
+.hamburger .bars::after { bottom: 0; }
+.hamburger .bars div { top: 50%; transform: translateY(-50%); }
+#btnMenu.hamburger { padding:0; }
 #map { position: fixed; inset: 52px 0 0 0; }
 #map-error {
   position: fixed;
@@ -73,10 +134,15 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
   background:#0b1326;
   color:#e5e7eb;
   border:1px solid #1f2a44;
-  width:fit-content;
-  max-width:400px;
   max-height:80vh;
   overflow-y:auto;
+}
+.mapboxgl-popup-content {
+  max-width:520px;
+  width:calc(100vw - 28px);
+}
+@media (max-width: 420px) {
+  .mapboxgl-popup-content { max-width:360px; }
 }
 .mapboxgl-popup-tip,
 .leaflet-popup-tip { background:#0b1326; }
@@ -91,8 +157,6 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
   box-shadow: 0 0 0 1px rgba(0,0,0,0.08);
 }
 @media (max-width: 600px) {
-  .mapboxgl-popup-content,
-  .leaflet-popup-content-wrapper { max-width:300px; }
   .panel { width:100%; }
 }
 
@@ -119,14 +183,19 @@ summary { cursor: pointer; color:var(--muted); font-weight:700; }
 .popup .grid{ display:grid; grid-template-columns:1fr 1fr; gap:6px 18px; margin-bottom:8px; }
 @media (max-width:420px){ .popup .grid{ grid-template-columns:1fr; } }
 .popup .section{ margin:10px 0; }
-.pills{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.pill{
-  padding:4px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.06);
-  display:inline-block;
-  font-size:12px;
+.pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.08);
+  display: inline-flex;
+  align-items: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .links{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
 a.btn-link{ padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.25); text-decoration:none; font-weight:600; }

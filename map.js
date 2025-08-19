@@ -3,12 +3,19 @@ import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 /* global mapboxgl */
 let map;
 const healthEl = document.getElementById('map-health');
-
-function setHealth(text) {
-  if (healthEl) healthEl.textContent = text;
-}
-
+function setHealth(text) { if (healthEl) healthEl.textContent = text; }
 let __MAPBOX_MOUNTED__ = false;
+
+const STYLES = {
+  standard: 'mapbox://styles/mapbox/streets-v12',
+  satellite: 'mapbox://styles/mapbox/satellite-v9',
+  hybrid: 'mapbox://styles/mapbox/satellite-streets-v12'
+};
+
+const state = window.__FILTERS__ = window.__FILTERS__ || {};
+state.continent = state.continent || '';
+let allDestinations = [];
+let listenersAttached = false;
 
 async function initMapOnce(){
   if (__MAPBOX_MOUNTED__) return;
@@ -29,50 +36,174 @@ async function initMapOnce(){
 
   map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v12',
+    style: STYLES.standard,
     center: [0, 0],
     zoom: 2
   });
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-  setupLocate();
+  map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: { enableHighAccuracy: true },
+    trackUserLocation: false,
+    showUserHeading: false
+  }), 'top-right');
 
   map.on('load', () => {
+    enableTerrainAndSky(map);
+    buildStyleSwitcher();
     loadDestinos();
+  });
+
+  map.on('style.load', () => {
+    enableTerrainAndSky(map);
   });
 }
 
 document.addEventListener('DOMContentLoaded', initMapOnce);
 
-function setupLocate() {
-  const btn = document.getElementById('btnLocate');
-  if (!btn || !('geolocation' in navigator)) return;
-  let userMarker = null;
-  const onClick = () => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { longitude: lng, latitude: lat } = pos.coords;
-        userMarker = userMarker || new mapboxgl.Marker({ color: '#111' }).addTo(map);
-        userMarker.setLngLat([lng, lat]);
-        map.easeTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 11) });
-      },
-      () => alert('Location not available. Allow permissions (HTTPS required).'),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-  btn.addEventListener('click', onClick, { passive: true });
+function enableTerrainAndSky(m) {
+  if (!m.getSource('mapbox-dem')) {
+    m.addSource('mapbox-dem', {
+      type: 'raster-dem',
+      url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+      tileSize: 512,
+      maxzoom: 14
+    });
+  }
+  m.setTerrain({ source: 'mapbox-dem', exaggeration: 1.0 });
+
+  if (!m.getLayer('sky')) {
+    m.addLayer({
+      id: 'sky',
+      type: 'sky',
+      paint: {
+        'sky-type': 'atmosphere',
+        'sky-atmosphere-sun': [0.0, 0.0],
+        'sky-atmosphere-sun-intensity': 15
+      }
+    });
+  }
 }
 
-const state = window.__FILTERS__ = window.__FILTERS__ || {};
-state.continent = state.continent || '';
-let allDestinations = [];
+function buildStyleSwitcher() {
+  const host = document.getElementById('basemap-switcher');
+  if (!host) return;
+  const buttons = [
+    ['Standard','standard'],
+    ['Satellite','satellite'],
+    ['Hybrid','hybrid'],
+    ['3D','standard']
+  ];
+  host.innerHTML = '';
+  buttons.forEach(([label,key]) => {
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.addEventListener('click', () => {
+      const newStyle = label === 'Satellite' ? STYLES.satellite
+        : label === 'Hybrid' ? STYLES.hybrid
+        : STYLES.standard;
+      map.setStyle(newStyle);
+      map.once('style.load', () => {
+        enableTerrainAndSky(map);
+        reattachSourcesAndLayers();
+      });
+      setActive(btn);
+    });
+    host.appendChild(btn);
+  });
+  function setActive(activeBtn) {
+    [...host.children].forEach(b => b.classList.toggle('active', b === activeBtn));
+  }
+  if (host.firstChild) host.firstChild.classList.add('active');
+}
 
-const continentSelect = document.getElementById('continent-select');
-if (continentSelect) {
-  continentSelect.addEventListener('change', () => {
-    state.continent = continentSelect.value;
-    applyFilters();
-  }, { passive: true });
+function reattachSourcesAndLayers() {
+  const data = buildGeo(allDestinations.filter(passContinent));
+  if (map.getSource('destinos')) {
+    map.removeLayer('cluster-count');
+    map.removeLayer('clusters');
+    map.removeLayer('unclustered-point');
+    if (map.getLayer('destino-labels')) map.removeLayer('destino-labels');
+    map.removeSource('destinos');
+  }
+  map.addSource('destinos', { type:'geojson', data, cluster:true, clusterRadius:50, clusterMaxZoom:9 });
+
+  map.addLayer({
+    id: 'clusters',
+    type: 'circle',
+    source: 'destinos',
+    filter: ['has','point_count'],
+    paint: {
+      'circle-color': '#2b6cb0',
+      'circle-radius': ['step', ['get','point_count'], 18, 10, 22, 50, 28, 100, 34, 500, 40],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#fff'
+    }
+  });
+
+  map.addLayer({
+    id: 'cluster-count',
+    type: 'symbol',
+    source: 'destinos',
+    filter: ['has','point_count'],
+    layout: { 'text-field':['get','point_count_abbreviated'], 'text-size':14 },
+    paint: { 'text-color':'#ffffff' }
+  });
+
+  map.addLayer({
+    id: 'unclustered-point',
+    type: 'circle',
+    source: 'destinos',
+    filter: ['!',['has','point_count']],
+    paint: {
+      'circle-radius': 6,
+      'circle-color': ['get','color'],
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#fff'
+    }
+  });
+
+  map.addLayer({
+    id: 'destino-labels',
+    type: 'symbol',
+    source: 'destinos',
+    filter: ['!',['has','point_count']],
+    layout: {
+      'text-field': ['get','nombre'],
+      'text-size': 12,
+      'text-offset': [0, 1.2],
+      'text-allow-overlap': true
+    },
+    paint: { 'text-color': '#e5e7eb', 'text-halo-color':'#111827', 'text-halo-width':1 }
+  });
+
+  if (!listenersAttached) {
+    map.on('click', 'unclustered-point', onUnclusteredClick);
+    map.on('click', 'clusters', onClusterClick);
+    map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+    listenersAttached = true;
+  }
+}
+
+function onUnclusteredClick(e) {
+  const f = e.features && e.features[0];
+  if (!f) return;
+  const coords = f.geometry.coordinates.slice();
+  const html = f.properties.html || '';
+  new mapboxgl.Popup({ closeOnMove: true })
+    .setLngLat(coords)
+    .setHTML(html)
+    .addTo(map);
+}
+
+function onClusterClick(e) {
+  const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+  const clusterId = features[0].properties.cluster_id;
+  map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
+    if (err) return;
+    map.easeTo({ center: features[0].geometry.coordinates, zoom });
+  });
 }
 
 function asPill(t){ return `<span class="pill">${t}</span>`; }
@@ -86,12 +217,14 @@ function normalizePhotos(d){
 function photosHtml(d){
   const ph = normalizePhotos(d);
   if (!ph.length) return '';
-  return `<div class="gallery" role="region" aria-label="Fotos del destino">
-    ${ph.map(u => `<img loading="lazy" src="${u}" alt="${d.nombre || 'foto'}" />`).join('')}
-  </div>`;
+  return `<div class="gallery" role="region" aria-label="Fotos del destino">${ph.map(u => `<img loading="lazy" src="${u}" alt="${d.nombre || 'foto'}" />`).join('')}</div>`;
 }
 
 function popupHtml(d){
+  const title = d.nombre || '';
+  const where = d.pais ? ` ${d.pais}` : '';
+  const q = encodeURIComponent(`${title}${where}`);
+  const gUrl = `https://www.google.com/search?q=${q}`;
   const boots = Array.isArray(d.botas) ? d.botas.map(asPill).join('') : '';
   const links = [
     ['Google', d.link || d.google_search],
@@ -102,7 +235,7 @@ function popupHtml(d){
   const linksHtml = links.length ? `<div class="links">${links.map(([L,U])=>`<a class="btn-link" href="${U}" target="_blank" rel="noopener">${L}</a>`).join('')}</div>` : '';
 
   return `<div class="popup">
-    <h3>${d.nombre||''}${d.pais ? ` (${d.pais})` : ''}</h3>
+    <h3><a href="${gUrl}" target="_blank" rel="noopener">${title}${d.pais ? ` (${d.pais})` : ''}</a></h3>
     <div class="grid">
       ${field('Continente', d.continente)}
       ${field('Tipo', d.tipo)}
@@ -191,74 +324,10 @@ function updateMapWith(list){
   const src = map.getSource('destinos');
   if (src) {
     src.setData(geo);
-    return;
+  } else {
+    allDestinations = list;
+    reattachSourcesAndLayers();
   }
-  map.addSource('destinos', { type: 'geojson', data: geo, cluster: true, clusterRadius: 50, clusterMaxZoom: 9 });
-
-  map.addLayer({
-    id: 'clusters',
-    type: 'circle',
-    source: 'destinos',
-    filter: ['has', 'point_count'],
-    paint: {
-      'circle-color': '#2b6cb0',
-      'circle-radius': [
-        'step', ['get', 'point_count'],
-        18, 10, 22, 50, 28, 100, 34, 500, 40
-      ],
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#fff'
-    }
-  });
-
-  map.addLayer({
-    id: 'cluster-count',
-    type: 'symbol',
-    source: 'destinos',
-    filter: ['has', 'point_count'],
-    layout: {
-      'text-field': ['get', 'point_count_abbreviated'],
-      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-      'text-size': 14
-    },
-    paint: { 'text-color': '#ffffff' }
-  });
-
-  map.addLayer({
-    id: 'unclustered-point',
-    type: 'circle',
-    source: 'destinos',
-    filter: ['!', ['has', 'point_count']],
-    paint: {
-      'circle-radius': 6,
-      'circle-color': ['get', 'color'],
-      'circle-stroke-width': 1,
-      'circle-stroke-color': '#fff'
-    }
-  });
-
-  map.on('click', 'unclustered-point', (e) => {
-    const f = e.features && e.features[0];
-    if (!f) return;
-    const coords = f.geometry.coordinates.slice();
-    const html = f.properties.html || '';
-    new mapboxgl.Popup({ closeOnMove: true })
-      .setLngLat(coords)
-      .setHTML(html)
-      .addTo(map);
-  });
-
-  map.on('click', 'clusters', (e) => {
-    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-    const clusterId = features[0].properties.cluster_id;
-    map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
-      if (err) return;
-      map.easeTo({ center: features[0].geometry.coordinates, zoom });
-    });
-  });
-
-  map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
-  map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
 }
 
 function passContinent(d){
@@ -266,11 +335,20 @@ function passContinent(d){
   return d.continente === state.continent;
 }
 
+function fitToList(list){
+  if (!list || !list.length) return;
+  const west = Math.min(...list.map(d => d.coords[1]));
+  const east = Math.max(...list.map(d => d.coords[1]));
+  const south = Math.min(...list.map(d => d.coords[0]));
+  const north = Math.max(...list.map(d => d.coords[0]));
+  if ([west,east,south,north].some(v => !isFinite(v))) return;
+  map.fitBounds([[west, south], [east, north]], { padding: 64, duration: 900, maxZoom: 7.5 });
+}
+
 function applyFilters(){
-  const visible = allDestinations.filter(d =>
-    passContinent(d)
-  );
+  const visible = allDestinations.filter(passContinent);
   updateMapWith(visible);
+  fitToList(visible);
 }
 
 async function loadDestinos(){

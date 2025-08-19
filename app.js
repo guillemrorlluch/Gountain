@@ -25,6 +25,17 @@ export const BOOT_COLORS = {
   "Otras ligeras (para trekking no técnico)": "#14b8a6"
 };
 
+function renderBootLegend(){
+  const ul = document.getElementById('legend-botas');
+  if (!ul) return;
+  ul.innerHTML = '';
+  Object.entries(BOOT_COLORS).forEach(([name, color]) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:${color};margin-right:8px;border:1px solid #334155;"></span>${name}`;
+    ul.appendChild(li);
+  });
+}
+
 export function markerColor(d, bootColors = BOOT_COLORS) {
   const pr = [
     'Scarpa Ribelle Lite HD',
@@ -104,28 +115,34 @@ if (typeof window !== 'undefined') {
     });
   }
 
-  // ---- Service Worker ----
+  const btnMenu = document.getElementById('btnMenu');
+  const sidebar = document.getElementById('sidebar');
+  if (btnMenu && sidebar) {
+    btnMenu.addEventListener('click', () => sidebar.classList.toggle('hidden'));
+  }
+
+  document.addEventListener('DOMContentLoaded', renderBootLegend);
+
+  // ---- Service Worker (v11) ----
   if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
+    window.addEventListener('load', async () => {
+      try {
         const reg = await navigator.serviceWorker.register(`/sw-v11.js?v=${getBuildId()}`);
 
-        // If there’s a waiting SW, tell it to activate; do NOT await a reply.
         if (reg.waiting) {
-          try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
+          reg.waiting.postMessage({ type: 'SKIP_WAITING', buildId: getBuildId() });
         }
 
-        reg.addEventListener('updatefound', () => {
-          const nw = reg.installing;
-          if (!nw) return;
-          nw.addEventListener('statechange', () => {
-            if (nw.state === 'installed' && reg.waiting) {
-              try { reg.waiting.postMessage({ type: 'SKIP_WAITING' }); } catch {}
-            }
-          });
+        let reloaded = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (reloaded) return;
+          reloaded = true;
+          setTimeout(() => location.reload(), 150);
         });
-
-        navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
-      });
+      } catch (e) {
+        console.warn('SW register failed', e);
+      }
+    });
   }
 }
 

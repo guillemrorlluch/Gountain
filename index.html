@@ -39,7 +39,9 @@
 
 <body>
   <header class="topbar">
-    <button id="btnMenu" aria-label="Open filters">Filtros</button>
+    <button id="btnMenu" class="hamburger" aria-label="Abrir filtros">
+      <span class="bars"><div></div></span>
+    </button>
     <h1>It's Gountain</h1>
     <select id="continent-select" aria-label="Filtrar continente">
       <option value="">Todos los continentes</option>
@@ -51,9 +53,10 @@
       <option value="Europa">Europa</option>
       <option value="Oceanía">Oceanía</option>
     </select>
-    <button id="btnLocate" aria-label="Show my location">📍</button>
     <button id="btnInfo" aria-label="Open glossary">ℹ️</button>
   </header>
+
+  <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
 
   <main id="app">
     <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
@@ -104,7 +107,7 @@
             <li><b>Scrambling</b>: Progresión con manos/pies en roca sin ser escalada deportiva</li>
           </ul>
         </details>
-        <details><summary>Leyenda de botas</summary>
+        <details id="boots-legend" open><summary>Leyenda de botas</summary>
           <ul id="legend-botas"></ul>
         </details>
       </div>
@@ -120,15 +123,6 @@
 
   <!-- map initializer -->
   <script type="module" src="/map.js?v=11"></script>
-
-  <!-- (Opcional) Registrar SW estable; cuando hagas limpieza usa sw-kill.js temporalmente -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw-v11.js?v=11').catch(console.error);
-      });
-    }
-  </script>
 
   <noscript>Esta app necesita JavaScript para funcionar.</noscript>
 </body>
