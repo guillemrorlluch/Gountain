@@ -66,3 +66,44 @@ const min = stripComments(src)
 fs.mkdirSync(distDir, { recursive: true });
 fs.writeFileSync(outPath, min, 'utf8');
 console.log(`Bundled to ${outPath} (${min.length} bytes)`);
+
+// build.js
+import fs from 'fs';
+import path from 'path';
+
+const ROOT = process.cwd();
+const OUT = '/vercel/output'; // Vercel recoge de aquí
+
+function ensureDir(p) {
+  if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+}
+function copy(src, dest) {
+  ensureDir(path.dirname(dest));
+  fs.copyFileSync(src, dest);
+}
+function copyDir(srcDir, destDir) {
+  if (!fs.existsSync(srcDir)) return;
+  ensureDir(destDir);
+  for (const entry of fs.readdirSync(srcDir)) {
+    const s = path.join(srcDir, entry);
+    const d = path.join(destDir, entry);
+    const stat = fs.statSync(s);
+    if (stat.isDirectory()) copyDir(s, d);
+    else copy(s, d);
+  }
+}
+
+// ✅ Copia HTML/CSS/JS y estáticos al output final
+copy(path.join(ROOT, 'index.html'), path.join(OUT, 'index.html'));
+copy(path.join(ROOT, 'styles.css'), path.join(OUT, 'styles.css'));
+copy(path.join(ROOT, 'manifest.json'), path.join(OUT, 'manifest.json'));
+
+// si tienes assets (iconos, imágenes…)
+copyDir(path.join(ROOT, 'assets'), path.join(OUT, 'assets'));
+
+// si sirves data estática (JSON)
+copyDir(path.join(ROOT, 'data'), path.join(OUT, 'data'));
+
+// si tienes /public con archivos (incluye el sw-kill.js temporal)
+copyDir(path.join(ROOT, 'public'), path.join(OUT, ''));
+
