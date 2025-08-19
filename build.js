@@ -28,7 +28,7 @@ function copyDir(srcDir, destDir) {
     const d = path.join(destDir, entry);
     const stat = fs.statSync(s);
     if (stat.isDirectory()) copyDir(s, d);
-    else (s, d);
+    else copy(s, d);
   }
 }
 
@@ -62,7 +62,8 @@ try {
 
   const cfg = `// generated at build time
 export const MAPBOX_TOKEN = ${JSON.stringify(token)};
-export const BUILD_ID = ${JSON.stringify(buildId)};`;
+export const BUILD_ID = ${JSON.stringify(buildId)};
+export function getBuildId(){ return BUILD_ID; }`;
 
   fs.writeFileSync(path.join(distDir, "config.js"), cfg, "utf8");
   console.log("Wrote dist/config.js");
