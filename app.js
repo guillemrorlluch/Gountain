@@ -1,5 +1,5 @@
 // app.js — v11
-import { getBuildId } from './config.js';
+import { getBuildId, MAPBOX_TOKEN } from './config.js';
 
 // Normaliza etiquetas de dificultad a buckets
 export function normalizeDiff(diff) {
