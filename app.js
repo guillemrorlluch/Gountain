@@ -106,8 +106,10 @@ if (typeof window !== 'undefined') {
 
   // ---- Service Worker ----
   if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        const reg = await navigator.serviceWorker.register(`/sw-v10.js?v=${getBuildId()}`);
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw-kill.js?v=' + Date.now());
+  });
+}
 
         // If there’s a waiting SW, tell it to activate; do NOT await a reply.
         if (reg.waiting) {
