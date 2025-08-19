@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="es">
-
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>It's Gountain</title>
 
   <!-- PWA / Manifest -->
@@ -16,7 +16,7 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
 
-  <!-- Favicons -->
+  <!-- Favicons / Touch Icons (con cache-busting) -->
   <link rel="icon" href="/assets/GountainTime-192.png?v=10" type="image/png" sizes="192x192">
   <link rel="icon" href="/assets/GountainTime-512.png?v=10" type="image/png" sizes="512x512">
   <link rel="apple-touch-icon" href="/assets/GountainTime-192.png?v=10" sizes="192x192">
@@ -32,9 +32,9 @@
   <meta name="twitter:title" content="It's Gountain">
   <meta name="twitter:description" content="Explora y descubre más de 40 picos impresionantes en esta webapp interactiva.">
   <meta name="twitter:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=10">
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="./styles.css" />
+
+  <!-- CSS con cache-busting -->
+  <link rel="stylesheet" href="/styles.css?v=10">
 </head>
 
 <body>
@@ -115,4 +115,18 @@
     <div id="map-error" class="hidden" role="alert"></div>
   </main>
 
-  </body>
+  <!-- Tu JS (usar el bundle que genera build.js) -->
+  <script type="module" src="/dist/app.bundle.js?v=10"></script>
+
+  <!-- (Opcional) Registrar SW estable; cuando hagas limpieza usa sw-kill.js temporalmente -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw-v10.js?v=10').catch(console.error);
+      });
+    }
+  </script>
+
+  <noscript>Esta app necesita JavaScript para funcionar.</noscript>
+</body>
+</html>
