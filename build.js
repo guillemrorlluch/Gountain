@@ -1,4 +1,4 @@
-// build.js - único archivo, sin imports duplicados
+ // build.js - único archivo, sin imports duplicados
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -49,8 +49,8 @@ try {
 }
 
 // Copia al output para Static/SPA
-copy(path.join(ROOT, 'index.html'), path.join(OUT, 'index.html'));
 copy(path.join(ROOT, 'styles.css'), path.join(OUT, 'styles.css'));
+copy(path.join(ROOT, 'index.html'), path.join(OUT, 'index.html'));
 copy(path.join(ROOT, 'manifest.json'), path.join(OUT, 'manifest.json'));
 copyDir(path.join(ROOT, 'assets'), path.join(OUT, 'assets'));
 copyDir(path.join(ROOT, 'data'), path.join(OUT, 'data'));
