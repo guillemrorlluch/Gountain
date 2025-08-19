@@ -1,48 +1,57 @@
-// sw-v10.js — Safari-safe, fail-open
+// sw-v10.js
+const CACHE_NAME = "gountain-cache-v10";
+const OFFLINE_URLS = [
+  "/", 
+  "/index.html",
+  "/styles.css",
+  "/dist/app.bundle.js",
+  "/assets/GountainTime-192.png",
+  "/assets/GountainTime-512.png"
+];
 
-self.addEventListener('install', () => {
-  try { self.skipWaiting(); } catch {}
+// Install: precache
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(OFFLINE_URLS))
+  );
+  self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => { try { await self.clients.claim(); } catch {} })());
+// Activate: cleanup old caches
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => key !== CACHE_NAME && caches.delete(key)))
+    )
+  );
+  self.clients.claim();
 });
 
-const TILE_HOSTS = ['api.mapbox.com', 'tiles.mapbox.com'];
-function isMapbox(u) { try { return TILE_HOSTS.some(h => new URL(u).hostname.includes(h)); } catch { return false; } }
+// Fetch handler con bypass para manifest.json y /assets/
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
 
-self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  try {
-    if (req.mode === 'navigate') {
-      event.respondWith(fetch(req));
-      return;
-    }
-    if (isMapbox(req.url)) {
-      event.respondWith(fetch(req));
-      return;
-    }
-    if (req.destination === 'style' || req.destination === 'script' || req.url.endsWith('.css') || req.url.endsWith('.js')) {
-      event.respondWith((async () => {
-        try {
-          const res = await fetch(req);
-          try { (await caches.open('v10')).put(req, res.clone()); } catch {}
-          return res;
-        } catch {
-          const cache = await caches.open('v10');
-          const cached = await cache.match(req);
-          if (cached) return cached;
-          throw new Error('Network and cache both failed');
-        }
-      })());
-      return;
-    }
-    event.respondWith(fetch(req).catch(() => caches.match(req)));
-  } catch {
-    event.respondWith(fetch(req));
+  // 🔹 Bypass: siempre pedir a red manifest.json y assets
+  if (url.pathname === "/manifest.json" || url.pathname.startsWith("/assets/")) {
+    event.respondWith(fetch(event.request));
+    return;
   }
-});
 
-self.addEventListener('message', (ev) => {
-  if (ev?.data?.type === 'SKIP_WAITING') { try { self.skipWaiting(); } catch {} }
+  // 🔹 Estrategia cache-first con fallback a red
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      if (cached) return cached;
+      return fetch(event.request)
+        .then((res) => {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+          return res;
+        })
+        .catch(() => {
+          if (event.request.mode === "navigate") {
+            return caches.match("/index.html");
+          }
+        });
+    })
+  );
 });
