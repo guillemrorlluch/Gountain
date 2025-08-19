@@ -51,6 +51,25 @@ try {
   console.warn("Skip bundle step:", e?.message);
 }
 
+// === Genera dist/config.js con el token público ===
+try {
+  const distDir = path.join(ROOT, "dist");
+  ensureDir(distDir);
+
+  // lee el token desde variables de entorno de Vercel (Preview/Production)
+  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
+  const buildId = "v10"; // súbelo cuando cambies assets
+
+  const cfg = `// generated at build time
+export const MAPBOX_TOKEN = ${JSON.stringify(token)};
+export const BUILD_ID = ${JSON.stringify(buildId)};`;
+
+  fs.writeFileSync(path.join(distDir, "config.js"), cfg, "utf8");
+  console.log("Wrote dist/config.js");
+} catch (e) {
+  console.warn("Skip dist/config.js generation:", e?.message);
+}
+
 // Copia carpetas y archivos al output
 copyDir(path.join(ROOT, "assets"), path.join(OUT, "assets"));
 copyDir(path.join(ROOT, "data"), path.join(OUT, "data"));
