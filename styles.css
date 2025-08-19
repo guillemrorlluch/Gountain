@@ -140,3 +140,31 @@ a.btn-link{ padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,2
 button:focus-visible, a:focus-visible { outline:2px solid #7aa2ff; outline-offset:2px; }
 
 .map-health{position:fixed;bottom:10px;right:10px;background:#111827d0;color:var(--text);padding:4px 8px;border-radius:6px;font-size:12px;z-index:1000;}
+
+/* Topbar: select y botones con misma altura/estética */
+.topbar select {
+  appearance: none;
+  background: #1f2937;
+  color: var(--text);
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 6px 10px;
+  min-height: 44px;
+  line-height: 1;
+}
+.topbar select:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Iconos de la topbar un pelín más legibles en iOS */
+.topbar button#btnLocate, 
+.topbar button#btnInfo {
+  font-size: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; padding: 0;
+}
+
+/* Paneles: scroll suave y mejor contraste de summaries */
+.panel { -webkit-overflow-scrolling: touch; }
+details > summary { color: #e2e8f0; }
+
+/* Chips: estado activo más visible en pantallas OLED */
+.chip.active { background: #16a34a; border-color: #16a34a; box-shadow: 0 0 0 2px rgba(22,163,74,.25) inset; }
