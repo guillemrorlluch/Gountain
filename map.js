@@ -7,7 +7,6 @@ const healthEl = document.getElementById('map-health');
 function setHealth(t){ if (healthEl) healthEl.textContent = t; }
 
 let __MAPBOX_MOUNTED__ = false;
-let listenersAttached = false;
 
 const STYLES = {
   standard: 'mapbox://styles/mapbox/streets-v12',
@@ -226,21 +225,16 @@ function reattachSourcesAndLayers() {
     .forEach(id => map.moveLayer(id, top));
 
   // Re-attach layer-bound events every time (layers are recreated after setStyle)
-  if (listenersAttached) {
-    try {
-      map.off('click', 'unclustered-point', onUnclusteredClick);
-      map.off('click', 'clusters', onClusterClick);
-      map.off('mouseenter', 'clusters', onClusterEnter);
-      map.off('mouseleave', 'clusters', onClusterLeave);
-    } catch {}
-  }
-
+  ['unclustered-point','clusters'].forEach(layer => {
+    map.off('click', layer, onUnclusteredClick);
+    map.off('mouseenter', layer, onClusterEnter);
+    map.off('mouseleave', layer, onClusterLeave);
+  });
   map.on('click', 'unclustered-point', onUnclusteredClick);
   map.on('click', 'clusters', onClusterClick);
   map.on('mouseenter', 'clusters', onClusterEnter);
   map.on('mouseleave', 'clusters', onClusterLeave);
 
-  listenersAttached = true;
 }
 
 function onClusterEnter(){ map.getCanvas().style.cursor = 'pointer'; }
