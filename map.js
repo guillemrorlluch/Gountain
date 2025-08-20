@@ -1,25 +1,32 @@
+// map.js — v12
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */
 let map;
 const healthEl = document.getElementById('map-health');
-function setHealth(text) { if (healthEl) healthEl.textContent = text; }
+function setHealth(t){ if (healthEl) healthEl.textContent = t; }
+
 let __MAPBOX_MOUNTED__ = false;
+let listenersAttached = false;
 
 const STYLES = {
   standard: 'mapbox://styles/mapbox/streets-v12',
   satellite: 'mapbox://styles/mapbox/satellite-v9',
-  hybrid: 'mapbox://styles/mapbox/satellite-streets-v12'
+  hybrid:   'mapbox://styles/mapbox/satellite-streets-v12'
 };
 
-const state = window.__FILTERS__ = window.__FILTERS__ || {};
+const state = (window.__FILTERS__ = window.__FILTERS__ || {});
 state.continent = state.continent || '';
-let allDestinations = [];
-let listenersAttached = false;
 
+let allDestinations = [];
+
+/* ---------------------------
+   BOOT / MAP INIT
+---------------------------- */
 async function initMapOnce(){
   if (__MAPBOX_MOUNTED__) return;
   __MAPBOX_MOUNTED__ = true;
+
   const token = MAPBOX_TOKEN;
   if (!token) {
     setHealth('No token');
@@ -31,6 +38,7 @@ async function initMapOnce(){
     alert('Mapbox GL JS failed to load.');
     return;
   }
+
   setHealth('Token OK');
   mapboxgl.accessToken = token;
 
@@ -61,6 +69,9 @@ async function initMapOnce(){
 
 document.addEventListener('DOMContentLoaded', initMapOnce);
 
+/* ---------------------------
+   TERRAIN + SKY
+---------------------------- */
 function enableTerrainAndSky(m) {
   if (!m.getSource('mapbox-dem')) {
     m.addSource('mapbox-dem', {
@@ -85,19 +96,25 @@ function enableTerrainAndSky(m) {
   }
 }
 
+/* ---------------------------
+   STYLE SWITCHER + 3D
+---------------------------- */
 function buildStyleSwitcher() {
   const host = document.getElementById('basemap-switcher');
   if (!host) return;
+
   const buttons = [
     ['Standard','standard'],
     ['Satellite','satellite'],
     ['Hybrid','hybrid'],
-    ['3D','standard']
+    ['3D','standard'] // 3D is a pitch/bearing toggle on the current style
   ];
+
   host.innerHTML = '';
-  buttons.forEach(([label,key]) => {
+  buttons.forEach(([label, key]) => {
     const btn = document.createElement('button');
     btn.textContent = label;
+
     btn.addEventListener('click', () => {
       if (label === '3D') {
         toggle3D();
@@ -108,12 +125,14 @@ function buildStyleSwitcher() {
       map.setStyle(newStyle);
       map.once('style.load', () => {
         enableTerrainAndSky(map);
-        reattachSourcesAndLayers();
+        reattachSourcesAndLayers(); // must recreate sources/layers/events
       });
       setActive(btn);
     });
+
     host.appendChild(btn);
   });
+
   function setActive(activeBtn) {
     [...host.children].forEach(b => b.classList.toggle('active', b === activeBtn));
   }
@@ -122,19 +141,34 @@ function buildStyleSwitcher() {
 
 function toggle3D(){
   const pitch = map.getPitch();
-  map.easeTo({ pitch: pitch === 0 ? 60 : 0, bearing: pitch === 0 ? -30 : 0, duration: 1000 });
+  map.easeTo({
+    pitch:   pitch === 0 ? 60 : 0,
+    bearing: pitch === 0 ? -30 : 0,
+    duration: 1000
+  });
 }
 
+/* ---------------------------
+   SOURCES + LAYERS (clusters, points, labels)
+---------------------------- */
 function reattachSourcesAndLayers() {
   const data = buildGeo(allDestinations.filter(passContinent));
+
   if (map.getSource('destinos')) {
-    map.removeLayer('cluster-count');
-    map.removeLayer('clusters');
-    map.removeLayer('unclustered-point');
-    if (map.getLayer('destino-labels')) map.removeLayer('destino-labels');
+    if (map.getLayer('cluster-count'))     map.removeLayer('cluster-count');
+    if (map.getLayer('clusters'))          map.removeLayer('clusters');
+    if (map.getLayer('unclustered-point')) map.removeLayer('unclustered-point');
+    if (map.getLayer('destino-labels'))    map.removeLayer('destino-labels');
     map.removeSource('destinos');
   }
-  map.addSource('destinos', { type:'geojson', data, cluster:true, clusterRadius:50, clusterMaxZoom:9 });
+
+  map.addSource('destinos', {
+    type: 'geojson',
+    data,
+    cluster: true,
+    clusterRadius: 50,
+    clusterMaxZoom: 9
+  });
 
   map.addLayer({
     id: 'clusters',
@@ -185,15 +219,30 @@ function reattachSourcesAndLayers() {
     paint: { 'text-color': '#e5e7eb', 'text-halo-color':'#111827', 'text-halo-width':1 }
   });
 
-  if (!listenersAttached) {
-    map.on('click', 'unclustered-point', onUnclusteredClick);
-    map.on('click', 'clusters', onClusterClick);
-    map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
-    map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
-    listenersAttached = true;
+  // Re-attach layer-bound events every time (layers are recreated after setStyle)
+  if (listenersAttached) {
+    try {
+      map.off('click', 'unclustered-point', onUnclusteredClick);
+      map.off('click', 'clusters', onClusterClick);
+      map.off('mouseenter', 'clusters', onClusterEnter);
+      map.off('mouseleave', 'clusters', onClusterLeave);
+    } catch {}
   }
+
+  map.on('click', 'unclustered-point', onUnclusteredClick);
+  map.on('click', 'clusters', onClusterClick);
+  map.on('mouseenter', 'clusters', onClusterEnter);
+  map.on('mouseleave', 'clusters', onClusterLeave);
+
+  listenersAttached = true;
 }
 
+function onClusterEnter(){ map.getCanvas().style.cursor = 'pointer'; }
+function onClusterLeave(){ map.getCanvas().style.cursor = ''; }
+
+/* ---------------------------
+   EVENTS (popup, clusters)
+---------------------------- */
 function onUnclusteredClick(e) {
   const f = e.features && e.features[0];
   if (!f) return;
@@ -201,22 +250,21 @@ function onUnclusteredClick(e) {
   const coords = f.geometry.coordinates.slice();
   const html = f.properties.html || '';
 
-  // Mucho padding para autopan en móvil (barra de Safari, etc.)
   const autoPanPadding = { top: 80, right: 28, bottom: 140, left: 28 };
 
   new mapboxgl.Popup({
     closeOnMove: true,
-    offset: 16,                      // despega del marcador
-    anchor: 'bottom',                // más estable visualmente
-    maxWidth: '420px',               // límite “duro”; CSS pone el responsivo
-    className: 'gountain-popup',
+    offset: 16,
+    anchor: 'bottom',
+    maxWidth: '420px',
+    className: 'gountain-popup'
   })
     .setLngLat(coords)
     .setHTML(html)
     .addTo(map);
 
-  // Fuerza autopan con padding grande
-  try { map.panInsideBounds(map.getBounds(), { padding: autoPanPadding }); } catch {}
+  // Nudge view so the popup never clips on mobile chrome/safari UI
+  try { map.panBy([0, 0], { padding: autoPanPadding }); } catch {}
 }
 
 function onClusterClick(e) {
@@ -228,36 +276,55 @@ function onClusterClick(e) {
   });
 }
 
+/* ---------------------------
+   POPUP HTML
+---------------------------- */
 function asPill(t){ return `<span class="pill">${t}</span>`; }
-function field(label,val){ if(val==null) return ''; const v=String(val).trim(); if(!v) return ''; return `<div><strong>${label}</strong> ${v}</div>`; }
+function field(label,val){
+  if (val == null) return '';
+  const v = String(val).trim();
+  if (!v) return '';
+  return `<div><strong>${label}</strong> ${v}</div>`;
+}
 
 function normalizePhotos(d){
   const c = [d.fotos, d.photos, d.images, d.photo];
-  const a = c.flatMap(x => Array.isArray(x) ? x : (x ? [x] : [])).filter(u => typeof u === 'string' && u.trim());
+  const a = c
+    .flatMap(x => Array.isArray(x) ? x : (x ? [x] : []))
+    .filter(u => typeof u === 'string' && u.trim());
   return Array.from(new Set(a));
 }
+
 function photosHtml(d){
   const ph = normalizePhotos(d);
   if (!ph.length) return '';
-  return `<div class="gallery" role="region" aria-label="Fotos del destino">${ph.map(u => `<img loading="lazy" src="${u}" alt="${d.nombre || 'foto'}" />`).join('')}</div>`;
+  return `<div class="gallery" role="region" aria-label="Fotos del destino">
+    ${ph.map(u => `<img loading="lazy" src="${u}" alt="${d.nombre || 'foto'}" />`).join('')}
+  </div>`;
 }
 
 function popupHtml(d){
   const title = d.nombre || '';
-  const where = d.pais ? ` ${d.pais}` : '';
-  const q = encodeURIComponent(`${title}${where}`);
+  const where = d.pais ? ` (${d.pais})` : '';
+  const q = encodeURIComponent(`${title}${where ? ' ' + d.pais : ''}`);
   const gUrl = `https://www.google.com/search?q=${q}`;
+
   const boots = Array.isArray(d.botas) ? d.botas.map(asPill).join('') : '';
+
   const links = [
-    ['Google', d.link || d.google_search || gUrl],
     ['AllTrails', d.alltrails],
     ['Wikiloc', d.wikiloc],
     ['Wikipedia', d.wikipedia]
   ].filter(([,u]) => u && String(u).trim());
-  const linksHtml = links.length ? `<div class="links">${links.map(([L,U])=>`<a class="btn-link" href="${U}" target="_blank" rel="noopener">${L}</a>`).join('')}</div>` : '';
+
+  const linksHtml = links.length
+    ? `<div class="links">${links.map(([L,U]) =>
+         `<a class="btn-link" href="${U}" target="_blank" rel="noopener">${L}</a>`
+       ).join('')}</div>`
+    : '';
 
   return `<div class="popup">
-    <h3><a href="${gUrl}" target="_blank" rel="noopener">${title}${d.pais ? ` (${d.pais})` : ''}</a></h3>
+    <h3><a href="${gUrl}" target="_blank" rel="noopener">${title}${where}</a></h3>
     <div class="grid">
       ${field('Continente', d.continente)}
       ${field('Tipo', d.tipo)}
@@ -268,12 +335,8 @@ function popupHtml(d){
     </div>
     ${boots ? `<div class="section"><strong>Botas:</strong><div class="pills">${boots}</div></div>` : ''}
     <div class="section">
-      ${field('Scrambling/Escalada', d.scrambling)}
-      ${field('Grado', d.grado)}
-      ${field('Arnés', d.arnes)}
       ${field('Equipo', d.equipo || '—')}
       ${field('Vivac', d.vivac)}
-      ${field('Camping gas', d.camping_gas)}
       ${field('Permisos', d.permisos)}
       ${field('Guía', d.guia)}
       ${field('Coste estancia', d.coste_estancia)}
@@ -284,6 +347,9 @@ function popupHtml(d){
   </div>`;
 }
 
+/* ---------------------------
+   COLORS + GEO
+---------------------------- */
 const BOOT_COLORS = {
   "Cualquiera": "#22c55e",
   "Depende": "#f59e0b",
@@ -323,6 +389,7 @@ const MAP_CONT = new Map([
   ['europe','Europa'],
   ['oceania','Oceanía'], ['oceanía','Oceanía']
 ]);
+
 function normalizeContinent(d){
   if (!d.continente) return d;
   const k = String(d.continente).trim().toLowerCase();
@@ -341,6 +408,9 @@ function buildGeo(list){
   };
 }
 
+/* ---------------------------
+   DATA / FILTERS / FIT
+---------------------------- */
 function updateMapWith(list){
   const geo = buildGeo(list);
   const src = map.getSource('destinos');
@@ -359,8 +429,8 @@ function passContinent(d){
 
 function fitToList(list){
   if (!list || !list.length) return;
-  const west = Math.min(...list.map(d => d.coords[1]));
-  const east = Math.max(...list.map(d => d.coords[1]));
+  const west  = Math.min(...list.map(d => d.coords[1]));
+  const east  = Math.max(...list.map(d => d.coords[1]));
   const south = Math.min(...list.map(d => d.coords[0]));
   const north = Math.max(...list.map(d => d.coords[0]));
   if ([west,east,south,north].some(v => !isFinite(v))) return;
@@ -375,7 +445,7 @@ function applyFilters(){
 
 async function loadDestinos(){
   try {
-    const res = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
+    const res  = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
     const data = await res.json();
     allDestinations = data.map(normalizeContinent);
     applyFilters();
@@ -385,7 +455,9 @@ async function loadDestinos(){
   }
 }
 
-/* ---------- Chips responsive ---------- */
+/* ---------------------------
+   CHIP BAR (responsive list of destination names)
+---------------------------- */
 function renderChips(list){
   const bar = document.getElementById('chip-bar');
   if (!bar) return;
