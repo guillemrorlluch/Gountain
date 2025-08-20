@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>It's Gountain Time</title>
 
   <!-- PWA / Manifest (SIN ?v=) -->
@@ -66,13 +66,20 @@
   <script type="module" src="/dist/app.bundle.js?v=12"></script>
   <script type="module" src="/map.js?v=12"></script>
 
-  <!-- Service Worker v12 -->
+  <!-- Service Worker v12 (con recarga segura, sin bucles) -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw-v12.js?v=12').catch(console.error);
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw-v12.js?v=12").catch(console.error);
       });
-      /* Importante: NO forzamos reload en controllerchange para evitar bucles */
+
+      let didReload = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (didReload) return;
+        didReload = true;
+        // Pequeño delay para que el nuevo SW tome control antes de recargar
+        setTimeout(() => location.reload(), 200);
+      });
     }
   </script>
 
