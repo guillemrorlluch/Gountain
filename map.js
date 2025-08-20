@@ -1,3 +1,7 @@
+import { inject } from "@vercel/analytics";
+
+inject();
+
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */
