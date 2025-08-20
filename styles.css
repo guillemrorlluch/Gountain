@@ -14,7 +14,7 @@
   --danger:#b91c1c;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0}
+html, body, #app, #map { height:100%; margin:0; } /* <- CRÍTICO */
 body{
   background:var(--bg);
   color:var(--text);
@@ -27,77 +27,74 @@ body{
    LAYOUT: TOPBAR
 ========================= */
 .topbar{
-  position:fixed;inset:0 0 auto 0;height:56px;
-  display:flex;align-items:center;gap:10px;
+  position:fixed; left:0; right:0; top:0; height:56px;
+  display:flex; align-items:center; gap:10px;
   padding:0 12px;
   background:#111827d0;
   border-bottom:1px solid var(--border);
   backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px); /* Safari */
+  -webkit-backdrop-filter:blur(8px);
   z-index:1000;
 }
 .topbar h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
 .topbar select{
   margin-left:auto;
   appearance:none;
-  background:#1f2937;
-  color:var(--text);
-  border:1px solid #374151;border-radius:10px;
-  padding:6px 10px;
-  min-height:36px;
+  background:#1f2937; color:var(--text);
+  border:1px solid #374151; border-radius:10px;
+  padding:6px 10px; min-height:36px;
 }
 .info-btn{
   margin-left:6px;
-  min-width:36px;min-height:36px;
-  border-radius:10px;border:1px solid #374151;
-  background:#1f2937;color:var(--text);cursor:pointer;
+  min-width:36px; min-height:36px;
+  border-radius:10px; border:1px solid #374151;
+  background:#1f2937; color:var(--text); cursor:pointer;
 }
 
-/* Hamburger (tres palitos) */
+/* Hamburger */
 .hamburger{
-  width:40px;height:36px;display:inline-flex;align-items:center;justify-content:center;
-  border-radius:10px;border:1px solid #374151;background:#1f2937;color:var(--text);cursor:pointer;
+  width:40px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:10px; border:1px solid #374151; background:#1f2937; color:var(--text); cursor:pointer;
 }
 .hamburger .bars, .hamburger .bars::before, .hamburger .bars::after{
-  content:"";display:block;width:18px;height:2px;background:var(--text);position:relative;border-radius:2px;
+  content:""; display:block; width:18px; height:2px; background:var(--text); position:relative; border-radius:2px;
 }
-.hamburger .bars::before{position:absolute;top:-6px}
-.hamburger .bars::after{position:absolute;top:6px}
+.hamburger .bars::before{ position:absolute; top:-6px }
+.hamburger .bars::after{ position:absolute; top:6px }
 
 /* =========================
    BASEMAP SWITCHER
-   - bajo la topbar, alineado izquierda
-   - no tapa los controles de Mapbox
 ========================= */
 .basemap-switcher{
-  position:fixed;left:12px;top:56px; /* justo bajo la topbar */
-  display:flex;gap:6px;flex-wrap:wrap;
+  position:fixed; left:12px; top:56px; /* bajo topbar */
+  display:flex; gap:6px; flex-wrap:wrap;
   padding:8px;
-  background:#111827d0;border:1px solid var(--border);border-radius:10px;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  z-index:1000;
-  max-width:calc(100vw - 24px); /* margen lateral seguro */
+  background:#111827d0; border:1px solid var(--border); border-radius:10px;
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  z-index:1001; /* por encima del mapa, debajo de los modales */
+  max-width:calc(100vw - 24px);
 }
 .basemap-switcher button{
-  border:1px solid #374151;border-radius:999px;
-  background:#1f2937;color:var(--text);
-  padding:6px 10px;font-size:13px;cursor:pointer;min-height:32px;
+  border:1px solid #374151; border-radius:999px;
+  background:#1f2937; color:var(--text);
+  padding:6px 10px; font-size:13px; cursor:pointer; min-height:32px;
 }
-.basemap-switcher button.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.basemap-switcher button.active{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent) inset;
+}
 
 /* Deja aire a los controles top-right de Mapbox */
-.mapboxgl-ctrl-top-right{ top: 56px; } /* que empiecen bajo la topbar */
-.mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top: 64px; } 
-/* ↑ los controles quedan por debajo del switcher sin solaparse */
+.mapboxgl-ctrl-top-right{ top:56px; } 
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top:64px; }
 
 /* =========================
    MAP CONTAINER
 ========================= */
 #map{
-  position:fixed;
-  top:56px; /* debajo topbar */
-  left:0;right:0;bottom:0;
-  background:#0b1220;
+  position:fixed; /* <- importante para que ocupe toda la ventana */
+  top:56px; left:0; right:0; bottom:0;
+  background:#0b1220; z-index:0;
 }
 .map-health{
   position:fixed;bottom:10px;right:10px;
@@ -110,27 +107,28 @@ body{
 }
 
 /* =========================
-   PANELS (Filtros / Glosario)
+   PANELS
 ========================= */
 .panel{
-  position:fixed;top:56px;bottom:0;width:320px;background:var(--panel);
-  border-right:1px solid var(--border);z-index:1001;overflow:auto
+  position:fixed; top:56px; bottom:0; width:320px; background:var(--panel);
+  border-right:1px solid var(--border); z-index:1001; overflow:auto;
 }
 #sidebar{left:0}
-#glossary{right:0;border-right:none;border-left:1px solid var(--border)}
+#glossary{right:0; border-right:none; border-left:1px solid var(--border)}
 .hidden{display:none}
 .panel-section{padding:12px}
-.panel-section h2{margin:8px 0 6px;font-size:14px}
+.panel-section h2{margin:8px 0 6px; font-size:14px}
 details{
-  background:#0b1326;border:1px solid #1f2a44;border-radius:10px;
-  padding:8px 10px;margin:10px 0
+  background:#0b1326; border:1px solid #1f2a44; border-radius:10px;
+  padding:8px 10px; margin:10px 0;
 }
 summary{cursor:pointer;color:var(--muted);font-weight:700}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .chip{
-  border:1px solid var(--chip-border);border-radius:999px;padding:6px 12px;
-  color:#fff;background:var(--chip);cursor:pointer;font-size:13px;user-select:none;
-  transition:background .2s,color .2s,border-color .2s,transform .05s;min-height:36px;min-width:44px
+  border:1px solid var(--chip-border); border-radius:999px; padding:6px 12px;
+  color:#fff; background:var(--chip); cursor:pointer; font-size:13px;
+  user-select:none; transition:background .2s,color .2s,border-color .2s,transform .05s;
+  min-height:36px; min-width:44px;
 }
 .chip:hover{background:#94a3b833}
 .chip:active{transform:translateY(1px)}
@@ -141,19 +139,17 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 
 /* =========================
    POPUP (destino)
-   - Close button contrast elevado
-   - Responsive content
 ========================= */
 .mapboxgl-popup-content{
-  background:#0b1326;color:#e5e7eb;border:1px solid #1f2a44;border-radius:10px;
-  width:fit-content;max-width:400px;max-height:80vh;overflow-y:auto
+  background:#0b1326; color:#e5e7eb; border:1px solid #1f2a44; border-radius:10px;
+  width:fit-content; max-width:400px; max-height:80vh; overflow-y:auto;
 }
 .mapboxgl-popup-tip{background:#0b1326}
 .mapboxgl-popup-close-button{
-  background:rgba(255,255,255,.95);color:#111;border-radius:6px;font-weight:700;line-height:1;
-  box-shadow:0 0 0 1px rgba(0,0,0,.08)
+  background:rgba(255,255,255,.95); color:#111; border-radius:6px; font-weight:700; line-height:1;
+  box-shadow:0 0 0 1px rgba(0,0,0,.08);
 }
-.popup h3{margin:0 0 8px;font-size:18px;line-height:1.3}
+.popup h3{margin:0 0 8px; font-size:18px; line-height:1.3}
 .popup h3 a{color:#fff;text-decoration:none;border-bottom:1px dashed #ffffff40}
 .popup .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin-bottom:8px}
 .popup .section{margin:10px 0}
@@ -162,19 +158,19 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 .links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 a.btn-link{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.25);text-decoration:none;font-weight:600;color:#fff}
 
-/* Galería de fotos */
+/* Galería */
 .gallery{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
 .gallery img{height:120px;width:auto;border-radius:8px;object-fit:cover;flex:0 0 auto;scroll-snap-align:start;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 
 /* =========================
-   CHIP BAR (fila de destinos) - móvil
+   CHIP BAR (móvil)
 ========================= */
 .chip-bar{
-  position:fixed;left:0;right:0;bottom:0;
-  display:flex;gap:8px;align-items:center;
-  overflow-x:auto;padding:10px 12px;
-  background:#111827d0;border-top:1px solid var(--border);
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  position:fixed; left:0; right:0; bottom:0;
+  display:flex; gap:8px; align-items:center;
+  overflow-x:auto; padding:10px 12px;
+  background:#111827d0; border-top:1px solid var(--border);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   z-index:1000;
 }
 .chip-bar .chip{white-space:nowrap}
@@ -182,33 +178,27 @@ a.btn-link{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,
 .chip-bar::-webkit-scrollbar-thumb{background:#475569;border-radius:999px}
 
 /* =========================
-   MAPBOX BASE
+   ACCESSIBILITY
 ========================= */
-.mapboxgl-map{background:#0b1220}
 .mapboxgl-ctrl button:focus-visible,
-button:focus-visible,a:focus-visible,select:focus-visible{
-  outline:2px solid #7aa2ff;outline-offset:2px
+button:focus-visible, a:focus-visible, select:focus-visible{
+  outline:2px solid #7aa2ff; outline-offset:2px;
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 800px){
-  /* switcher más compacto */
-  .basemap-switcher{left:10px;right:auto;max-width:calc(100vw - 20px)}
+@media (max-width:800px){
+  .basemap-switcher{left:10px;max-width:calc(100vw - 20px)}
 }
-@media (max-width: 600px){
+@media (max-width:600px){
   .topbar{height:52px}
   #map{top:52px}
   .basemap-switcher{top:52px}
-  .mapboxgl-ctrl-top-right{ top: 52px; }
-  .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top: 60px; }
-
-  .mapboxgl-popup-content{max-width:300px}
+  .mapboxgl-ctrl-top-right{top:52px}
+  .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{margin-top:60px}
+  .mapboxgl-popup-content{max-width:min(92vw,380px)}
   .panel{width:100%}
-
-  /* popup a ancho de pantalla cuando haga falta */
-  .mapboxgl-popup-content{max-width: min(92vw, 380px)}
 }
 @media (max-width:420px){
   .popup .grid{grid-template-columns:1fr}
