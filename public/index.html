@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>It's Gountain Time</title>
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#00a0c6" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=12" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=12" />
+
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js" defer></script>
+
+  <link rel="stylesheet" href="/styles.css?v=12" />
+</head>
+<body>
+  <header class="topbar">
+    <button id="btnMenu" class="hamburger" aria-label="Abrir filtros"><span class="bars"></span></button>
+    <h1>It's Gountain</h1>
+    <select id="continent-select" aria-label="Filtrar continente">
+      <option value="">Todos los continentes</option>
+      <option value="América del Norte">América del Norte</option>
+      <option value="América del Sur">América del Sur</option>
+      <option value="Europa">Europa</option>
+      <option value="África">África</option>
+      <option value="Asia">Asia</option>
+      <option value="Oceanía">Oceanía</option>
+      <option value="Antártida">Antártida</option>
+    </select>
+    <button id="btnInfo" class="info-btn" aria-label="Open glossary">ℹ️</button>
+  </header>
+
+  <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
+
+  <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros"></aside>
+  <aside id="glossary" class="panel hidden" aria-label="Glosario"></aside>
+
+  <div id="map"></div>
+
+  <div id="dest-chips" class="destination-chips" aria-label="Destinations"></div>
+
+  <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
+  <div id="map-error" class="hidden" role="alert"></div>
+
+  <script type="module" src="/dist/app.bundle.js?v=12"></script>
+  <script type="module" src="/map.js?v=12"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw-v12.js?v=12").catch(console.error);
+      });
+    }
+  </script>
+  <noscript>Esta app necesita JavaScript para funcionar.</noscript>
+</body>
+</html>
