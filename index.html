@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>It's Gountain Time</title>
 
-  <!-- PWA / Manifest -->
-  <link rel="manifest" href="/manifest.json?v=12" />
+  <!-- PWA / Manifest (SIN ?v=) -->
+  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#00a0c6" />
   <meta name="background-color" content="#ffffff" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -14,16 +14,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="It's Gountain" />
 
-  <!-- Icons -->
+  <!-- Icons (con cache-busting) -->
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=12" />
   <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=12" />
 
-  <!-- Mapbox GL (v2 compatible con tu código actual) -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js" defer></script>
+  <!-- Mapbox GL v2 (compatible con tu código) -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js" defer></script>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="/styles.css?v=12">
+  <!-- CSS de la app (con cache-busting) -->
+  <link rel="stylesheet" href="/styles.css?v=12" />
 </head>
 <body>
   <!-- Topbar -->
@@ -48,7 +48,7 @@
   <!-- Basemap switcher (alineado a la izquierda bajo la topbar) -->
   <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
 
-  <!-- Paneles (si los usas) -->
+  <!-- Paneles -->
   <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros"></aside>
   <aside id="glossary" class="panel hidden" aria-label="Glosario"></aside>
 
@@ -62,24 +62,17 @@
   <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
   <div id="map-error" class="hidden" role="alert"></div>
 
-  <!-- JS de tu app -->
+  <!-- JS de tu app (con cache-busting) -->
   <script type="module" src="/dist/app.bundle.js?v=12"></script>
   <script type="module" src="/map.js?v=12"></script>
 
-  <!-- Service Worker: REGISTRO DENTRO DEL BODY -->
+  <!-- Service Worker v12 -->
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw-v12.js?v=12").catch(console.error);
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw-v12.js?v=12').catch(console.error);
       });
-
-      // Guard against infinite reload loops
-      let didReload = false;
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (didReload) return;
-        didReload = true;
-        setTimeout(() => location.reload(), 200);
-      });
+      /* Importante: NO forzamos reload en controllerchange para evitar bucles */
     }
   </script>
 
