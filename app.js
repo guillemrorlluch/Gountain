@@ -1,4 +1,4 @@
-// app.js — v11
+// app.js — v12
 import { getBuildId, MAPBOX_TOKEN } from './config.js';
 
 // Normaliza etiquetas de dificultad a buckets
@@ -123,11 +123,11 @@ if (typeof window !== 'undefined') {
 
   document.addEventListener('DOMContentLoaded', renderBootLegend);
 
-  // ---- Service Worker (v11) ----
+  // ---- Service Worker (v12) ----
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
       try {
-        const reg = await navigator.serviceWorker.register(`/sw-v11.js?v=${getBuildId()}`);
+        const reg = await navigator.serviceWorker.register(`/sw-v12.js?v=${getBuildId()}`);
 
         if (reg.waiting) {
           reg.waiting.postMessage({ type: 'SKIP_WAITING', buildId: getBuildId() });

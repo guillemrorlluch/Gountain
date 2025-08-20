@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>It's Gountain Time</title>
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="manifest" href="/manifest.json?v=12">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=12">
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=12">
+  <link rel="stylesheet" href="/styles.css?v=12">
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
 </head>
@@ -22,7 +25,7 @@
   <footer>
     <div id="map-health" aria-live="polite"></div>
   </footer>
-
-  <script type="module" src="/dist/map.js"></script>
+  <script type="module" src="/dist/app.bundle.js?v=12"></script>
+  <script type="module" src="/map.js?v=12"></script>
 </body>
 </html>

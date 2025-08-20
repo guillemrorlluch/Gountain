@@ -1,4 +1,4 @@
-// build.js — Vercel SPA build (v11)
+// build.js — Vercel SPA build (v12)
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -54,7 +54,7 @@ try {
   ensureDir(distDir);
 
   const token   = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
-  const buildId = "v11";
+  const buildId = "v12";
 
   const cfg = `// generated at build time
 export const MAPBOX_TOKEN = ${JSON.stringify(token)};
@@ -76,6 +76,6 @@ copyDir(path.join(ROOT, "public"), OUT);
 copy(path.join(ROOT, "map.js"),    path.join(OUT, "map.js"));
 copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
-copy(path.join(ROOT, "sw-v11.js"), path.join(OUT, "sw-v11.js"));
+copy(path.join(ROOT, "sw-v12.js"), path.join(OUT, "sw-v12.js"));
 
 console.log("✅ Build Completed in /vercel/output");
