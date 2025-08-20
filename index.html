@@ -1,152 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>It's Gountain</title>
-
-  <!-- PWA / Manifest -->
-  <link rel="manifest" href="/manifest.json?v=11">
-  <meta name="theme-color" content="#00a0c6">
-  <meta name="background-color" content="#ffffff">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="It's Gountain">
-
-  <!-- Mapbox GL JS (CDN) -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
-
-  <!-- Favicons / Touch Icons (con cache-busting) -->
-  <link rel="icon" href="/assets/GountainTime-192.png?v=11" type="image/png" sizes="192x192">
-  <link rel="icon" href="/assets/GountainTime-512.png?v=11" type="image/png" sizes="512x512">
-  <link rel="apple-touch-icon" href="/assets/GountainTime-192.png?v=11" sizes="192x192">
-  <link rel="apple-touch-icon" href="/assets/GountainTime-512.png?v=11" sizes="512x512">
-
-  <!-- Social share -->
-  <meta property="og:title" content="It's Gountain">
-  <meta property="og:description" content="Explora y descubre más de 40 picos impresionantes en esta webapp interactiva.">
-  <meta property="og:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=11">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://its-gountain-time.vercel.app">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="It's Gountain">
-  <meta name="twitter:description" content="Explora y descubre más de 40 picos impresionantes en esta webapp interactiva.">
-  <meta name="twitter:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=11">
-
-  <!-- CSS con cache-busting -->
-  <link rel="stylesheet" href="/styles.css?v=11">
-
-  <!-- Vercel Analytics -->
-  <script>
-    (function(){
-      var s=document.createElement("script");
-      s.src="https://va.vercel-scripts.com/v1/script.js";
-      s.defer=true;
-      document.head.appendChild(s);
-    })();
-  </script>
-
-  <!-- Vercel Speed Insights -->
-  <script>
-    (function(){
-      var s=document.createElement("script");
-      s.src="https://va.vercel-scripts.com/v1/speed-insights.js";
-      s.defer=true;
-      document.head.appendChild(s);
-    })();
-  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>It's Gountain Time</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
 </head>
-
 <body>
-  <header class="topbar">
-    <button id="btnMenu" class="hamburger" aria-label="Abrir filtros">
-      <span class="bars"><div></div></span>
-    </button>
-    <h1>It's Gountain</h1>
-    <select id="continent-select" aria-label="Filtrar continente">
-      <option value="">Todos los continentes</option>
-      <option value="Asia">Asia</option>
-      <option value="África">África</option>
-      <option value="América del Norte">América del Norte</option>
-      <option value="América del Sur">América del Sur</option>
-      <option value="Antártida">Antártida</option>
-      <option value="Europa">Europa</option>
-      <option value="Oceanía">Oceanía</option>
-    </select>
-    <button id="btnInfo" aria-label="Open glossary">ℹ️</button>
+  <header class="top-bar">
+    <button id="menu-toggle" class="menu-btn" aria-label="Abrir filtros">☰</button>
+    <h1>It's Gountain Time</h1>
+    <div id="basemap-switcher" class="basemap-switcher"></div>
   </header>
 
-  <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
+  <main id="map"></main>
 
-  <main id="app">
-    <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
-      <div class="panel-section">
-        <h2>Filtros</h2>
-        <details>
-          <summary>Dificultad</summary>
-          <div id="filter-dificultad" class="chips"></div>
-        </details>
-        <details>
-          <summary>Botas</summary>
-          <div id="filter-botas" class="chips"></div>
-        </details>
-        <details>
-          <summary>Tipo</summary>
-          <div id="filter-tipo" class="chips"></div>
-        </details>
-        <details>
-          <summary>Altitud (m)</summary>
-          <div class="altitude-inputs">
-            <label for="alt-min">Min</label>
-            <input id="alt-min" class="input" type="number" aria-label="Altitud mínima">
-            <label for="alt-max">Max</label>
-            <input id="alt-max" class="input" type="number" aria-label="Altitud máxima">
-            <div id="altitude-chip" class="chips"></div>
-          </div>
-        </details>
-        <details>
-          <summary>Temporada</summary>
-          <div id="filter-season" class="chips"></div>
-        </details>
-        <button id="clearFilters" class="btn">Limpiar filtros</button>
-      </div>
-    </aside>
+  <div id="chip-bar" class="chip-bar"></div>
 
-    <aside id="glossary" class="panel hidden" aria-label="Glosario">
-      <div class="panel-section">
-        <h2>Glosario</h2>
-        <details open><summary>Siglas</summary>
-          <ul>
-            <li><b>PN</b>: Parque Nacional (normas de acampada y gas)</li>
-            <li><b>UIAA</b>: Escala internacional de dificultad</li>
-            <li><b>F</b>: Fácil</li>
-            <li><b>PD</b>: Poco Difícil</li>
-            <li><b>AD</b>: Bastante Difícil</li>
-            <li><b>D</b>: Difícil</li>
-            <li><b>Vivac</b>: Pernocta con tienda ligera (montar al atardecer, recoger al amanecer)</li>
-            <li><b>Scrambling</b>: Progresión con manos/pies en roca sin ser escalada deportiva</li>
-          </ul>
-        </details>
-        <details id="boots-legend" open><summary>Leyenda de botas</summary>
-          <ul id="legend-botas"></ul>
-        </details>
-      </div>
-    </aside>
+  <footer>
+    <div id="map-health" aria-live="polite"></div>
+  </footer>
 
-    <div id="map"></div>
-    <div id="map-health" class="map-health">Loading map...</div>
-    <div id="map-error" class="hidden" role="alert"></div>
-  </main>
-
-  <!-- Tu JS (usar el bundle que genera build.js) -->
-  <script type="module" src="/dist/app.bundle.js?v=11"></script>
-
-  <!-- map initializer -->
-  <script type="module" src="/map.js?v=11"></script>
-
-  <noscript>Esta app necesita JavaScript para funcionar.</noscript>
-
+  <script type="module" src="/dist/map.js"></script>
 </body>
 </html>
