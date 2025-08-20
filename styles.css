@@ -204,3 +204,44 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   .popup .grid{grid-template-columns:1fr}
   .gallery img{height:90px}
 }
+
+/* =========================
+   DESTINATION CHIPS (lista de destinos)
+   - Escritorio: varias filas (wrap)
+   - Móvil: una fila con scroll horizontal
+   - No tapa los controles de zoom/ubicación (dejamos margen a la derecha)
+========================= */
+
+.destination-chips{
+  position:absolute;
+  left:12px;
+  right:84px;             /* deja hueco para zoom/geolocate (top-right) */
+  bottom:12px;
+  display:flex;
+  flex-wrap:wrap;         /* wrap en desktop */
+  gap:6px;
+  align-items:center;
+  z-index:900;
+  padding:6px;
+  max-width:calc(100% - 96px);
+  pointer-events:auto;
+  box-sizing:border-box;
+}
+
+.destination-chips .chip{
+  white-space:nowrap;      /* los textos largos se eliden */
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* En móvil: una sola fila con scroll horizontal “suave” */
+@media (max-width: 768px){
+  .destination-chips{
+    right:12px;            /* mismo margen que la izquierda */
+    flex-wrap:nowrap;      /* sin wrap */
+    overflow-x:auto;       /* scroll lateral */
+    -webkit-overflow-scrolling:touch;
+  }
+  .destination-chips::-webkit-scrollbar{ display:none; }
+}
