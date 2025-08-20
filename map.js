@@ -244,6 +244,7 @@ function onClusterLeave(){ map.getCanvas().style.cursor = ''; }
    EVENTS (popup, clusters)
 ---------------------------- */
 function onUnclusteredClick(e) {
+  console.log('CLICK FEATURE', e.features?.[0]);
   const f = e.features && e.features[0];
   if (!f) return;
 
