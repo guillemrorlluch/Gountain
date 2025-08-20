@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="es">
-
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>It's Gountain</title>
 
   <!-- PWA / Manifest -->
-  <link rel="manifest" href="/manifest.json?v=10">
+  <link rel="manifest" href="/manifest.json?v=11">
   <meta name="theme-color" content="#00a0c6">
   <meta name="background-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
@@ -16,27 +16,32 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js" defer></script>
 
-  <!-- Favicons -->
-  <link rel="icon" href="/assets/GountainTime-192.png?v=10" type="image/png" sizes="192x192">
-  <link rel="icon" href="/assets/GountainTime-512.png?v=10" type="image/png" sizes="512x512">
-  <link rel="apple-touch-icon" href="/assets/GountainTime-192.png?v=10" sizes="192x192">
-  <link rel="apple-touch-icon" href="/assets/GountainTime-512.png?v=10" sizes="512x512">
+  <!-- Favicons / Touch Icons (con cache-busting) -->
+  <link rel="icon" href="/assets/GountainTime-192.png?v=11" type="image/png" sizes="192x192">
+  <link rel="icon" href="/assets/GountainTime-512.png?v=11" type="image/png" sizes="512x512">
+  <link rel="apple-touch-icon" href="/assets/GountainTime-192.png?v=11" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/GountainTime-512.png?v=11" sizes="512x512">
 
   <!-- Social share -->
   <meta property="og:title" content="It's Gountain">
   <meta property="og:description" content="Explora y descubre más de 40 picos impresionantes en esta webapp interactiva.">
-  <meta property="og:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=10">
+  <meta property="og:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=11">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://its-gountain-time.vercel.app">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="It's Gountain">
   <meta name="twitter:description" content="Explora y descubre más de 40 picos impresionantes en esta webapp interactiva.">
-  <meta name="twitter:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=10">
+  <meta name="twitter:image" content="https://its-gountain-time.vercel.app/assets/GountainTime-512.png?v=11">
+
+  <!-- CSS con cache-busting -->
+  <link rel="stylesheet" href="/styles.css?v=11">
 </head>
 
 <body>
   <header class="topbar">
-    <button id="btnMenu" aria-label="Open filters">Filtros</button>
+    <button id="btnMenu" class="hamburger" aria-label="Abrir filtros">
+      <span class="bars"><div></div></span>
+    </button>
     <h1>It's Gountain</h1>
     <select id="continent-select" aria-label="Filtrar continente">
       <option value="">Todos los continentes</option>
@@ -48,9 +53,10 @@
       <option value="Europa">Europa</option>
       <option value="Oceanía">Oceanía</option>
     </select>
-    <button id="btnLocate" aria-label="Show my location">📍</button>
     <button id="btnInfo" aria-label="Open glossary">ℹ️</button>
   </header>
+
+  <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
 
   <main id="app">
     <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
@@ -101,15 +107,23 @@
             <li><b>Scrambling</b>: Progresión con manos/pies en roca sin ser escalada deportiva</li>
           </ul>
         </details>
-        <details><summary>Leyenda de botas</summary>
+        <details id="boots-legend" open><summary>Leyenda de botas</summary>
           <ul id="legend-botas"></ul>
         </details>
       </div>
     </aside>
 
     <div id="map"></div>
-    <div id="map-health" class="map-health">Fetching token...</div>
+    <div id="map-health" class="map-health">Loading map...</div>
     <div id="map-error" class="hidden" role="alert"></div>
   </main>
 
-  </body>
+  <!-- Tu JS (usar el bundle que genera build.js) -->
+  <script type="module" src="/dist/app.bundle.js?v=11"></script>
+
+  <!-- map initializer -->
+  <script type="module" src="/map.js?v=11"></script>
+
+  <noscript>Esta app necesita JavaScript para funcionar.</noscript>
+</body>
+</html>

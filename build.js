@@ -1,68 +1,81 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// build.js — Vercel SPA build (v11)
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Recreate CommonJS __dirname in ES module scope
+// __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const srcPath = path.join(__dirname, 'app.js');
-const distDir = path.join(__dirname, 'dist');
-const outPath = path.join(distDir, 'app.bundle.js');
+// IMPORTANT: Vercel expects ABSOLUTE path "/vercel/output"
+const ROOT = __dirname;
+const OUT  = "/vercel/output";
 
-const src = fs.readFileSync(srcPath, 'utf8');
-
-// Strip inline comments while preserving URL fragments like "https://".
-// This tiny state machine skips over content inside string literals so that
-// "//" sequences within them are not mistaken for comments.
-function stripComments(code) {
-  let out = '';
-  let inSingle = false;
-  let inDouble = false;
-  let inTemplate = false;
-  for (let i = 0; i < code.length; i++) {
-    const ch = code[i];
-    const next = code[i + 1];
-
-    if (!inSingle && !inDouble && !inTemplate) {
-      if (ch === '/' && next === '/') {
-        // Skip until end of line
-        while (i < code.length && code[i] !== '\n') i++;
-        out += '\n';
-        continue;
-      }
-      if (ch === '\\' && next) {
-        out += ch + next;
-        i++;
-        continue;
-      }
-      if (ch === "'") inSingle = true;
-      else if (ch === '"') inDouble = true;
-      else if (ch === '`') inTemplate = true;
-      out += ch;
-      continue;
-    }
-
-    if (ch === '\\' && next) {
-      out += ch + next;
-      i++;
-      continue;
-    }
-    if (inSingle && ch === "'") inSingle = false;
-    else if (inDouble && ch === '"') inDouble = false;
-    else if (inTemplate && ch === '`') inTemplate = false;
-
-    out += ch;
+// helpers
+function ensureDir(p) {
+  if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+}
+function copy(src, dest) {
+  if (!fs.existsSync(src)) return;
+  ensureDir(path.dirname(dest));
+  fs.copyFileSync(src, dest);
+}
+function copyDir(srcDir, destDir) {
+  if (!fs.existsSync(srcDir)) return;
+  ensureDir(destDir);
+  for (const entry of fs.readdirSync(srcDir)) {
+    const s = path.join(srcDir, entry);
+    const d = path.join(destDir, entry);
+    const st = fs.statSync(s);
+    if (st.isDirectory()) copyDir(s, d);
+    else copy(s, d);
   }
-  return out;
 }
 
-// Very small bundler/minifier: strip comments and extra whitespace.
-const min = stripComments(src)
-  .replace(/\n+/g, '\n')
-  .replace(/\s{2,}/g, ' ')
-  .trim();
+// (optional) tiny bundle for app.js → /dist/app.bundle.js
+try {
+  const srcPath = path.join(ROOT, "app.js");
+  if (fs.existsSync(srcPath)) {
+    const distDir = path.join(ROOT, "dist");
+    const outPath = path.join(distDir, "app.bundle.js");
+    const src = fs.readFileSync(srcPath, "utf8");
+    const min = src.replace(/\/\/[^\n]*\n/g, "\n").replace(/\n{2,}/g, "\n").trim();
+    ensureDir(distDir);
+    fs.writeFileSync(outPath, min, "utf8");
+    console.log(`Bundled to ${outPath} (${min.length} bytes)`);
+  }
+} catch (e) {
+  console.warn("Skip bundle:", e?.message);
+}
 
-fs.mkdirSync(distDir, { recursive: true });
-fs.writeFileSync(outPath, min, 'utf8');
-console.log(`Bundled to ${outPath} (${min.length} bytes)`);
+// ✅ Generate /dist/config.js exactly as app.js needs
+try {
+  const distDir = path.join(ROOT, "dist");
+  ensureDir(distDir);
+
+  const token   = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
+  const buildId = "v11";
+
+  const cfg = `// generated at build time
+export const MAPBOX_TOKEN = ${JSON.stringify(token)};
+export const BUILD_ID = ${JSON.stringify(buildId)};
+export function getBuildId(){ return BUILD_ID; }`;
+
+  fs.writeFileSync(path.join(distDir, "config.js"), cfg, "utf8");
+  console.log("Wrote dist/config.js");
+} catch (e) {
+  console.warn("Skip dist/config.js:", e?.message);
+}
+
+// copy site to Vercel static output
+copyDir(path.join(ROOT, "assets"), path.join(OUT, "assets"));
+copyDir(path.join(ROOT, "data"),   path.join(OUT, "data"));
+copyDir(path.join(ROOT, "dist"),   path.join(OUT, "dist"));
+copyDir(path.join(ROOT, "public"), OUT);
+
+copy(path.join(ROOT, "map.js"),    path.join(OUT, "map.js"));
+copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
+copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
+copy(path.join(ROOT, "sw-v11.js"), path.join(OUT, "sw-v11.js"));
+
+console.log("✅ Build Completed in /vercel/output");

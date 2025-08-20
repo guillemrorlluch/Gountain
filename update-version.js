@@ -1,7 +1,7 @@
 const fs = require('fs');
 
-// Lee versión de config.js
-const { VERSION } = require('./config.js');
+// Version used for cache-busting
+const VERSION = 'v11';
 
 // Incluye el service worker con su nombre versionado
 const filesToUpdate = ['app.js', 'index.html', 'manifest.json', 'styles.css', `sw-${VERSION}.js`];
