@@ -1,255 +1,175 @@
-/* =============================
-   THEME / TOKENS
-============================= */
-:root{
-  --bg:#0b1220;
-  --panel:#0f172a;
-  --text:#f8fafc;
-  --muted:#cbd5e1;
-  --accent:#22c55e;
-  --focus:#3b82f6;
-
-  --surface:#111827;         /* topbar/switcher base */
-  --surface-2:#1f2937;       /* btn base */
-  --border:#374151;          /* btn border */
-  --border-soft:#334155;     /* inputs border */
-  --elev-outline:rgba(255,255,255,.08);
+/* =====================
+   VARIABLES
+===================== */
+:root {
+  --bg-dark: #0f172a;
+  --bg-darker: #111827;
+  --bg-overlay: rgba(17, 24, 39, 0.85);
+  --border: #334155;
+  --text: #e5e7eb;
+  --accent: #2563eb;
 }
 
-*{ box-sizing:border-box; }
-html,body,#app,#map{ height:100%; margin:0; }
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+/* =====================
+   RESETEO Y BASE
+===================== */
+* {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+}
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #000;
+  color: var(--text);
+  overflow-x: hidden;
+}
+button {
+  cursor: pointer;
+  font: inherit;
 }
 
-/* =============================
+/* =====================
    TOPBAR
-============================= */
-.topbar{
-  position:fixed; inset:0 0 auto 0; height:52px;
-  background:#111827d0; backdrop-filter: blur(8px);
-  display:flex; align-items:center; gap:10px; padding:0 12px;
-  border-bottom:1px solid #1f2937; z-index:1000;
+===================== */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px;
+  z-index: 1500;
 }
-.topbar h1{ font-size:16px; margin:0; font-weight:700; letter-spacing:.3px; }
-.topbar button{
-  background:var(--surface-2); color:var(--text);
-  border:1px solid var(--border); border-radius:10px;
-  padding:6px 10px; cursor:pointer; min-width:44px; min-height:44px;
+.topbar h1 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
 }
-
-/* =============================
-   MAP & MESSAGES
-============================= */
-#map{ position:fixed; inset:52px 0 0 0; }
-.mapboxgl-map{ background:#0b1220; }
-
-#map-error{
-  position:fixed; top:60px; left:50%; transform:translateX(-50%);
-  background:#b91c1c; color:#fff; padding:6px 10px; border-radius:6px;
-  z-index:2000; font-size:14px;
-}
-.map-health{
-  position:fixed; bottom:10px; right:10px;
-  background:#111827d0; color:var(--text);
-  padding:4px 8px; border-radius:6px; font-size:12px; z-index:1000;
+.topbar select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-darker);
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 14px;
 }
 
-/* =============================
-   PANELS / ASIDES
-============================= */
-.panel{
-  position:fixed; top:52px; bottom:0; width:320px;
-  background:var(--panel); border-right:1px solid #1f2937; z-index:1001; overflow:auto;
+/* =====================
+   BOTÓN HAMBURGER
+===================== */
+.hamburger {
+  position: relative;
+  width: 44px; height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-dark);
+  display: grid; place-items: center;
+  z-index: 1200; /* encima del switcher */
 }
-#sidebar{ left:0; }
-#glossary{ right:0; border-right:none; border-left:1px solid #1f2937; }
-.hidden{ display:none; }
-
-.panel-section{ padding:12px; }
-.panel-section h2{ margin:8px 0 6px; font-size:14px; }
-details{ background:#0b1326; border:1px solid #1f2a44; border-radius:10px; padding:8px 10px; margin:10px 0; }
-summary{ cursor:pointer; color:var(--muted); font-weight:700; }
-
-.chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
-.chip{
-  border:1px solid #64748b; border-radius:999px; padding:6px 12px;
-  color:#ffffff; background:rgba(148,163,184,.22);
-  cursor:pointer; font-size:13px; user-select:none;
-  transition: background .2s, color .2s, border-color .2s, transform .05s;
-  min-height:36px; min-width:44px; max-width:100%;
-  white-space:normal; overflow-wrap:anywhere;
+.hamburger .bars,
+.hamburger .bars::before,
+.hamburger .bars::after {
+  content: "";
+  display: block;
+  width: 18px; height: 2px;
+  background: var(--text);
+  border-radius: 2px;
 }
-.chip:hover{ background:rgba(148,163,184,.35); }
-.chip:active{ transform:translateY(1px); }
-.chip.active{ background:#16a34a; color:#fff; border-color:#16a34a; }
+.hamburger .bars::before { transform: translateY(-6px); }
+.hamburger .bars::after  { transform: translateY(6px); }
 
-.btn{
-  width:100%; padding:10px 12px; border-radius:10px;
-  border:1px solid var(--border-soft); background:#0b1326; color:#e5e7eb;
-  cursor:pointer; margin-top:8px; min-height:44px;
+/* =====================
+   BASEMAP SWITCHER
+===================== */
+.basemap-switcher {
+  position: fixed;
+  top: calc(52px + 8px); /* debajo de la topbar */
+  left: 12px;
+  display: flex; gap: 8px;
+  padding: 6px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  backdrop-filter: blur(8px);
+  z-index: 1100;
 }
-.input{
-  width:80px; padding:6px; border-radius:8px;
-  border:1px solid var(--border-soft); background:#0b1326; color:#e5e7eb;
+.basemap-switcher button {
+  appearance:none; -webkit-appearance:none;
+  border: 1px solid var(--border);
+  background: var(--bg-darker);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
 }
-.altitude-inputs{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.basemap-switcher button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+/* Safari: quita blur si no soporta */
+@supports (-webkit-touch-callout: none) {
+  .basemap-switcher {
+    backdrop-filter: none;
+    background: rgba(17,24,39,0.92);
+  }
+}
 
-/* =============================
-   POPUPS
-============================= */
+/* =====================
+   POPUP DESTINO
+===================== */
 .mapboxgl-popup-content,
-.leaflet-popup-content-wrapper{
-  background:#0b1326; color:#e5e7eb; border:1px solid #1f2a44;
-  width:fit-content; max-width:400px; max-height:80vh; overflow-y:auto;
+.leaflet-popup-content-wrapper {
+  background: #0b1326;
+  color: var(--text);
+  border: 1px solid #1f2a44;
+  width: min(92vw, 440px);
+  max-height: calc(100vh - 160px - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  border-radius: 12px;
 }
-.mapboxgl-popup-tip, .leaflet-popup-tip{ background:#0b1326; }
-
-/* High-contrast close button */
-.mapboxgl-popup-close-button{
-  background-color: rgba(255,255,255,0.92); color:#111; border-radius:6px;
-  font-weight:700; line-height:1; box-shadow:0 0 0 1px rgba(0,0,0,0.08);
+.mapboxgl-popup-close-button {
+  background-color: rgba(255,255,255,0.92);
+  color: #111;
+  border-radius: 8px;
+  font-weight: 700;
 }
-
-@media (max-width:600px){
-  .mapboxgl-popup-content, .leaflet-popup-content-wrapper{ max-width:300px; }
-  .panel{ width:100%; }
+.popup h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  line-height: 1.3;
+  word-break: break-word;
 }
-
-.badge{ display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #334155; margin-right:6px; }
-
-.compass-ctrl{
-  width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+.popup a {
+  color: #93c5fd;
 }
-.compass-arrow{
-  width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent;
-  border-bottom:14px solid #f8fafc; transform-origin:50% 80%;
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
 }
-
-/* Popup inner */
-.popup h3{ margin:0 0 8px; font-size:18px; line-height:1.3; }
-.popup .grid{ display:grid; grid-template-columns:1fr 1fr; gap:6px 18px; margin-bottom:8px; }
-@media (max-width:420px){ .popup .grid{ grid-template-columns:1fr; } }
-.popup .section{ margin:10px 0; }
-.pills{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.pill{
-  padding:4px 10px; border-radius:999px;
-  border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.06);
-  display:inline-block; font-size:12px; max-width:100%; overflow-wrap:anywhere; white-space:normal;
-}
-.links{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-a.btn-link{ padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.25); text-decoration:none; font-weight:600; }
-
-/* photo gallery */
-.gallery{ display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:2px; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
-.gallery img{ height:120px; width:auto; border-radius:8px; object-fit:cover; flex:0 0 auto; scroll-snap-align:start; box-shadow:0 1px 3px rgba(0,0,0,.3); }
-@media (max-width:420px){ .gallery img{ height:90px; } }
-
-/* focus-visible */
-button:focus-visible, a:focus-visible{ outline:2px solid #7aa2ff; outline-offset:2px; }
-
-/* =============================
-   BASEMAP SWITCHER (Left-aligned, Safari-friendly)
-============================= */
-.basemap-switcher{
-  position:absolute;
-  top: calc(58px + max(6px, env(safe-area-inset-top))); /* debajo de topbar */
-  left: 10px;
-  z-index:1001;
-
-  display:flex; flex-wrap:wrap; gap:6px;
-  padding:6px 8px; border-radius:12px;
-
-  background: rgba(20,20,20,0.55);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  border:1px solid var(--elev-outline);
-  box-shadow: 0 2px 6px rgba(0,0,0,.25);
-
-  max-width: 75%; /* no invade zona de controles del mapa */
-}
-.basemap-switcher button{
-  -webkit-appearance:none; appearance:none;
-  background:#1f2937; color:#e5e7eb;
-  border:1px solid #374151; border-radius:10px;
-  padding:6px 10px; font:600 14px/1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
-  letter-spacing:.2px; cursor:pointer; user-select:none;
-  -webkit-font-smoothing:antialiased;
-  transition: background .15s, border-color .15s, color .15s, transform .05s;
-  box-shadow: 0 1px 0 rgba(0,0,0,.25) inset;
-  min-height:34px; white-space:nowrap;
-}
-.basemap-switcher button:hover{ background:#263242; }
-.basemap-switcher button:active{ transform: translateY(1px); }
-.basemap-switcher button.active{
-  background:#2563eb; border-color:#2563eb; color:#fff;
-  box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 4px 14px rgba(37,99,235,.25);
+.pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.06);
+  font-size: 12px;
 }
 
-@media (max-width:768px){
-  .basemap-switcher{ gap:5px; padding:6px 8px; }
-  .basemap-switcher button{ font-size:13px; padding:5px 10px; }
-}
-@media (max-width:480px){
-  .basemap-switcher{
-    top: calc(60px + max(6px, env(safe-area-inset-top)));
-    max-width:78%;
-    gap:4px; padding:4px 6px; border-radius:10px;
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 420px) {
+  .mapboxgl-popup-content,
+  .leaflet-popup-content-wrapper {
+    width: 92vw;
+    max-width: 92vw;
   }
-  .basemap-switcher button{
-    font-size:12px; padding:4px 8px; min-width:60px; min-height:30px;
-  }
-}
-
-/* =============================
-   DESTINATION CHIP (sticky, mobile-friendly)
-   Usa un contenedor .chip-destino que puedes insertar desde JS cuando se selecciona un destino.
-============================= */
-.chip-destino{
-  position:fixed;
-  left:10px;
-  right: calc(60px + env(safe-area-inset-right, 0px)); /* deja sitio a los controles del mapa */
-  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  z-index:1002;
-
-  display:flex; gap:8px; align-items:flex-start; flex-wrap:wrap;
-
-  padding:10px 12px; border-radius:12px;
-  background: rgba(17,24,39,0.92);
-  -webkit-backdrop-filter: saturate(160%) blur(8px);
-  backdrop-filter: saturate(160%) blur(8px);
-  border:1px solid rgba(255,255,255,.1);
-  box-shadow: 0 6px 18px rgba(0,0,0,.35);
-
-  max-width: 92vw; /* se adapta a móvil */
-  color:#e5e7eb;
-}
-.chip-destino h3{
-  margin:0 0 6px 0; font-size:16px; line-height:1.3; font-weight:700;
-  max-width:100%; overflow-wrap:anywhere;
-}
-.chip-destino a{ color:#93c5fd; text-decoration:none; font-weight:700; }
-.chip-destino a:hover{ text-decoration:underline; }
-.chip-destino .row{ display:flex; flex-wrap:wrap; gap:6px 12px; width:100%; }
-.chip-destino .kv{ font-size:13px; color:#e5e7eb; }
-.chip-destino .kv b{ color:#f8fafc; }
-
-@media (max-width:480px){
-  .chip-destino{
-    left:8px;
-    right: calc(56px + env(safe-area-inset-right, 0px));
-    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-    padding:8px 10px; border-radius:10px;
-  }
-  .chip-destino h3{ font-size:15px; }
-  .chip-destino .kv{ font-size:12px; }
-}
-
-/* =============================
-   ACCESSIBILITY / MISC
-============================= */
-button:focus-visible, a:focus-visible{
-  outline:2px solid #7aa2ff; outline-offset:2px;
 }
