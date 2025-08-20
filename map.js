@@ -49,6 +49,8 @@ async function initMapOnce(){
     zoom: 2
   });
 
+  map.on('click', ev => console.log('map click', ev.point));
+
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
   map.addControl(new mapboxgl.GeolocateControl({
     positionOptions: { enableHighAccuracy: true },
