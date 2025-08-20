@@ -197,12 +197,26 @@ function reattachSourcesAndLayers() {
 function onUnclusteredClick(e) {
   const f = e.features && e.features[0];
   if (!f) return;
+
   const coords = f.geometry.coordinates.slice();
   const html = f.properties.html || '';
-  new mapboxgl.Popup({ closeOnMove: true })
+
+  // Mucho padding para autopan en móvil (barra de Safari, etc.)
+  const autoPanPadding = { top: 80, right: 28, bottom: 140, left: 28 };
+
+  new mapboxgl.Popup({
+    closeOnMove: true,
+    offset: 16,                      // despega del marcador
+    anchor: 'bottom',                // más estable visualmente
+    maxWidth: '420px',               // límite “duro”; CSS pone el responsivo
+    className: 'gountain-popup',
+  })
     .setLngLat(coords)
     .setHTML(html)
     .addTo(map);
+
+  // Fuerza autopan con padding grande
+  try { map.panInsideBounds(map.getBounds(), { padding: autoPanPadding }); } catch {}
 }
 
 function onClusterClick(e) {
