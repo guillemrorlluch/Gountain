@@ -283,3 +283,38 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   }
   .destination-chips::-webkit-scrollbar{ display:none; }
 }
+
+/* El popup por encima del mapa y clicable */
+.mapboxgl-popup {
+  z-index: 1100;            /* por encima de canvas y controles */
+  pointer-events: auto;     /* recibe eventos */
+}
+
+/* El contenido también debe ser clicable (enlaces, close, etc.) */
+.mapboxgl-popup-content {
+  pointer-events: auto;
+}
+
+/* Asegura que el canvas no tape el popup por z-index */
+.mapboxgl-canvas-container,
+.mapboxgl-canvas {
+  z-index: 0;
+}
+
+/* Mantén los overlays como click-through, pero sus botones sí clicables */
+.basemap-switcher,
+.destination-chips,
+.chip-bar { pointer-events: none; }
+
+.basemap-switcher button,
+.destination-chips .chip,
+.chip-bar .chip { pointer-events: auto; }
+
+/* Título del destino: color y subrayado al hover */
+.popup h3 a {
+  color: #1da1f2;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+}
+.popup h3 a:hover { text-decoration: underline; }
