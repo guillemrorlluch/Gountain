@@ -4,28 +4,77 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>It's Gountain Time</title>
-  <link rel="manifest" href="/manifest.json?v=12">
-  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=12">
-  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=12">
-  <link rel="stylesheet" href="/styles.css?v=12">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
+  <!-- PWA / Manifest -->
+  <link rel="manifest" href="/manifest.json?v=12" />
+  <meta name="theme-color" content="#00a0c6" />
+  <meta name="background-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="It's Gountain" />
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=12" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=12" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css?v=12" />
+
+  <!-- Mapbox GL (v2 compatible con tu código actual) -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js" defer></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
 </head>
 <body>
-  <header class="top-bar">
-    <button id="menu-toggle" class="menu-btn" aria-label="Abrir filtros">☰</button>
-    <h1>It's Gountain Time</h1>
-    <div id="basemap-switcher" class="basemap-switcher"></div>
+  <!-- Topbar -->
+  <header class="topbar">
+    <button id="menu-toggle" class="hamburger" aria-label="Abrir filtros">
+      <span class="bars"></span>
+    </button>
+    <h1>It's Gountain</h1>
+    <select id="continent-select" aria-label="Filtrar continente">
+      <option value="">Todos los continentes</option>
+      <option value="América del Norte">América del Norte</option>
+      <option value="América del Sur">América del Sur</option>
+      <option value="Europa">Europa</option>
+      <option value="África">África</option>
+      <option value="Asia">Asia</option>
+      <option value="Oceanía">Oceanía</option>
+      <option value="Antártida">Antártida</option>
+    </select>
+    <button id="btnInfo" class="info-btn" aria-label="Open glossary">ℹ️</button>
   </header>
 
-  <main id="map"></main>
+  <!-- Basemap switcher (alineado a la izquierda bajo la topbar) -->
+  <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
 
-  <div id="chip-bar" class="chip-bar"></div>
+  <!-- Paneles (si los usas) -->
+  <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros"></aside>
+  <aside id="glossary" class="panel hidden" aria-label="Glosario"></aside>
 
-  <footer>
-    <div id="map-health" aria-live="polite"></div>
-  </footer>
+  <!-- Mapa -->
+  <div id="map"></div>
+
+  <!-- Barra de chips de destinos -->
+  <div id="dest-chips" class="destination-chips" aria-label="Destinations"></div>
+
+  <!-- Health / errores -->
+  <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
+  <div id="map-error" class="hidden" role="alert"></div>
+
+  <!-- JS de tu app -->
   <script type="module" src="/dist/app.bundle.js?v=12"></script>
   <script type="module" src="/map.js?v=12"></script>
+
+  <!-- Service Worker: REGISTRO DENTRO DEL BODY -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw-v12.js?v=12").catch(console.error);
+      });
+    }
+  </script>
+
+  <noscript>Esta app necesita JavaScript para funcionar.</noscript>
 </body>
 </html>
