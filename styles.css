@@ -14,7 +14,7 @@
   --danger:#b91c1c;
 }
 *{box-sizing:border-box}
-html, body, #app, #map { height:100%; margin:0; } /* <- CRÍTICO */
+html, body, #app, #map { height:100%; margin:0; }
 body{
   background:var(--bg);
   color:var(--text);
@@ -32,11 +32,17 @@ body{
   padding:0 12px;
   background:#111827d0;
   border-bottom:1px solid var(--border);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   z-index:1000;
+  /* no intercepta clics del mapa debajo */
+  pointer-events:none;
 }
 .topbar h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
+/* reactivamos los controles dentro de topbar */
+.topbar .hamburger,
+.topbar select,
+.topbar .info-btn{ pointer-events:auto; }
+
 .topbar select{
   margin-left:auto;
   appearance:none;
@@ -66,36 +72,42 @@ body{
    BASEMAP SWITCHER
 ========================= */
 .basemap-switcher{
-  position:fixed; left:12px; top:56px; /* bajo topbar */
+  position:fixed; left:12px; top:56px;
   display:flex; gap:6px; flex-wrap:wrap;
   padding:8px;
   background:#111827d0; border:1px solid var(--border); border-radius:10px;
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-  z-index:1001; /* por encima del mapa, debajo de los modales */
+  z-index:1001;
   max-width:calc(100vw - 24px);
+  /* contenedor transparente a los clics */
+  pointer-events:none;
 }
 .basemap-switcher button{
   border:1px solid #374151; border-radius:999px;
   background:#1f2937; color:var(--text);
   padding:6px 10px; font-size:13px; cursor:pointer; min-height:32px;
+  /* los botones sí reciben clics */
+  pointer-events:auto;
 }
 .basemap-switcher button.active{
   border-color:var(--accent);
   box-shadow:0 0 0 1px var(--accent) inset;
 }
 
-/* Deja aire a los controles top-right de Mapbox */
-.mapboxgl-ctrl-top-right{ top:56px; } 
+/* Controles Mapbox */
+.mapboxgl-ctrl-top-right{ top:56px; }
 .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top:64px; }
 
 /* =========================
    MAP CONTAINER
 ========================= */
 #map{
-  position:fixed; /* <- importante para que ocupe toda la ventana */
-  top:56px; left:0; right:0; bottom:0;
+  position:fixed; top:56px; left:0; right:0; bottom:0;
   background:#0b1220; z-index:0;
+  pointer-events:auto; /* el mapa recibe clics */
 }
+.mapboxgl-canvas{ pointer-events:auto; }
+
 .map-health{
   position:fixed;bottom:10px;right:10px;
   background:#111827d0;color:var(--text);
@@ -107,24 +119,6 @@ body{
 }
 
 /* =========================
-   INTERACCIÓN: el mapa debe recibir clics
-========================= */
-#map, .mapboxgl-canvas{ pointer-events:auto; }
-
-/* Overlays: contenedores transparentes a eventos,
-   sólo sus elementos interactivos reciben clics */
-.basemap-switcher,
-.destination-chips,
-.chip-bar{ pointer-events:none; }
-
-.basemap-switcher button,
-.destination-chips .chip,
-.chip-bar .chip{ pointer-events:auto; }
-
-/* Un panel oculto no debe tapar el mapa */
-.panel.hidden{ display:none !important; }
-
-/* =========================
    PANELS
 ========================= */
 .panel{
@@ -133,6 +127,7 @@ body{
 }
 #sidebar{left:0}
 #glossary{right:0; border-right:none; border-left:1px solid var(--border)}
+.panel.hidden{ display:none !important; } /* no tapa el mapa */
 .hidden{display:none}
 .panel-section{padding:12px}
 .panel-section h2{margin:8px 0 6px; font-size:14px}
@@ -159,21 +154,18 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
    POPUP (destino) — tema claro
 ========================= */
 .mapboxgl-popup { max-width: 420px; font-family: system-ui, sans-serif; }
-
 .mapboxgl-popup-content{
-  background:#F5F5F7;          /* Fondo claro */
-  color:#1c1c1c;               /* Texto oscuro */
+  background:#F5F5F7;
+  color:#1c1c1c;
   font-size:14px;
   line-height:1.5;
   padding:16px;
   border-radius:10px;
   box-shadow:0 2px 10px rgba(0,0,0,.15);
 }
-
 .mapboxgl-popup-content h3,
 .mapboxgl-popup-content h4,
 .mapboxgl-popup-content strong{ color:#1c1c1c; }
-
 .mapboxgl-popup-close-button{
   color:#1c1c1c;
   font-size:18px;
@@ -183,10 +175,9 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 /* Título clicable del destino */
 .popup h3{margin:0 0 8px; font-size:18px; line-height:1.3}
 .popup h3 a{
-  color:#1da1f2;            /* color solicitado */
-  text-decoration:none;     /* sin subrayado por defecto */
-  border:0;                 /* elimina borde punteado previo */
-  cursor:pointer;
+  color:#1da1f2;              /* color solicitado */
+  text-decoration:none;       /* sin subrayado por defecto */
+  border:0; cursor:pointer;
 }
 .popup h3 a:hover{ text-decoration:underline; } /* subrayado en hover */
 
@@ -222,11 +213,37 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
   background:#111827d0; border-top:1px solid var(--border);
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   z-index:1000;
-  pointer-events:none; /* contenedor transparente */
+  pointer-events:none;           /* contenedor transparente */
 }
 .chip-bar .chip{white-space:nowrap; pointer-events:auto;}
 .chip-bar::-webkit-scrollbar{height:6px}
 .chip-bar::-webkit-scrollbar-thumb{background:#475569;border-radius:999px}
+
+/* =========================
+   DESTINATION CHIPS
+========================= */
+.destination-chips{
+  position:absolute;
+  left:12px;
+  right:84px;             /* hueco para zoom/geolocate (top-right) */
+  bottom:12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+  z-index:900;
+  padding:6px;
+  max-width:calc(100% - 96px);
+  pointer-events:none;           /* contenedor transparente */
+  box-sizing:border-box;
+}
+.destination-chips .chip{
+  white-space:nowrap;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  pointer-events:auto;           /* chip clicable */
+}
 
 /* =========================
    ACCESSIBILITY
@@ -256,39 +273,12 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   .gallery img{height:90px}
 }
 
-/* =========================
-   DESTINATION CHIPS (lista de destinos)
-   - Escritorio: varias filas (wrap)
-   - Móvil: una fila con scroll horizontal
-   - No tapa los controles de zoom/ubicación
-========================= */
-.destination-chips{
-  position:absolute;
-  left:12px;
-  right:84px;             /* hueco para zoom/geolocate (top-right) */
-  bottom:12px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  align-items:center;
-  z-index:900;
-  padding:6px;
-  max-width:calc(100% - 96px);
-  pointer-events:none; /* contenedor transparente */
-  box-sizing:border-box;
-}
-.destination-chips .chip{
-  white-space:nowrap;
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  pointer-events:auto; /* chip clicable */
-}
+/* En móvil: chips en 1 fila con scroll suave */
 @media (max-width: 768px){
   .destination-chips{
-    right:12px;            /* mismo margen que la izquierda */
-    flex-wrap:nowrap;      /* sin wrap en móvil */
-    overflow-x:auto;       /* scroll lateral */
+    right:12px;
+    flex-wrap:nowrap;
+    overflow-x:auto;
     -webkit-overflow-scrolling:touch;
   }
   .destination-chips::-webkit-scrollbar{ display:none; }
