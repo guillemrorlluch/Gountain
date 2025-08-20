@@ -1,13 +1,14 @@
 {
-  "name": "Gountain Time",
+  "name": "It's Gountain Time",
   "short_name": "Gountain",
-  "description": "Mapa interactivo de picos y travesías con filtros, reseñas y recomendaciones de material.",
-  "start_url": "/?v=12",
+  "description": "Explora destinos de montaña y trekking en un mapa interactivo.",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#00a0c6",
-  "orientation": "portrait-primary",
+  "categories": ["travel", "lifestyle", "maps"],
 
   "icons": [
     {
@@ -26,19 +27,16 @@
 
   "shortcuts": [
     {
-      "name": "Europa",
-      "short_name": "Europa",
-      "url": "/?continent=Europa&v=12",
-      "icons": [{ "src": "/assets/GountainTime-192.png?v=12", "sizes": "192x192" }]
+      "name": "Mapa",
+      "short_name": "Mapa",
+      "description": "Abrir el mapa de montañas",
+      "url": "/?map"
     },
     {
-      "name": "Asia",
-      "short_name": "Asia",
-      "url": "/?continent=Asia&v=12",
-      "icons": [{ "src": "/assets/GountainTime-192.png?v=12", "sizes": "192x192" }]
+      "name": "Destinos",
+      "short_name": "Destinos",
+      "description": "Ver lista de destinos",
+      "url": "/?destinations"
     }
-  ],
-
-  "categories": ["travel", "navigation", "sports", "lifestyle"],
-  "prefer_related_applications": false
+  ]
 }
