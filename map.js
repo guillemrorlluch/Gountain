@@ -27,7 +27,7 @@ async function initMapOnce(){
     return;
   }
   if (typeof mapboxgl === 'undefined') {
-    setHealth('No token');
+    setHealth('Mapbox not loaded');
     alert('Mapbox GL JS failed to load.');
     return;
   }
@@ -99,9 +99,12 @@ function buildStyleSwitcher() {
     const btn = document.createElement('button');
     btn.textContent = label;
     btn.addEventListener('click', () => {
-      const newStyle = label === 'Satellite' ? STYLES.satellite
-        : label === 'Hybrid' ? STYLES.hybrid
-        : STYLES.standard;
+      if (label === '3D') {
+        toggle3D();
+        setActive(btn);
+        return;
+      }
+      const newStyle = STYLES[key];
       map.setStyle(newStyle);
       map.once('style.load', () => {
         enableTerrainAndSky(map);
@@ -115,6 +118,11 @@ function buildStyleSwitcher() {
     [...host.children].forEach(b => b.classList.toggle('active', b === activeBtn));
   }
   if (host.firstChild) host.firstChild.classList.add('active');
+}
+
+function toggle3D(){
+  const pitch = map.getPitch();
+  map.easeTo({ pitch: pitch === 0 ? 60 : 0, bearing: pitch === 0 ? -30 : 0, duration: 1000 });
 }
 
 function reattachSourcesAndLayers() {
@@ -227,7 +235,7 @@ function popupHtml(d){
   const gUrl = `https://www.google.com/search?q=${q}`;
   const boots = Array.isArray(d.botas) ? d.botas.map(asPill).join('') : '';
   const links = [
-    ['Google', d.link || d.google_search],
+    ['Google', d.link || d.google_search || gUrl],
     ['AllTrails', d.alltrails],
     ['Wikiloc', d.wikiloc],
     ['Wikipedia', d.wikipedia]
@@ -357,7 +365,28 @@ async function loadDestinos(){
     const data = await res.json();
     allDestinations = data.map(normalizeContinent);
     applyFilters();
+    renderChips(allDestinations);
   } catch(err){
     console.error('Error loading destinos:', err);
   }
+}
+
+/* ---------- Chips responsive ---------- */
+function renderChips(list){
+  const bar = document.getElementById('chip-bar');
+  if (!bar) return;
+  bar.innerHTML = '';
+  const names = [...new Set(list.map(d => d.nombre).filter(Boolean))];
+  names.forEach(name => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = name;
+    chip.addEventListener('click', () => {
+      const destino = allDestinations.find(d => d.nombre === name);
+      if (destino) {
+        map.flyTo({ center: [destino.coords[1], destino.coords[0]], zoom: 8 });
+      }
+    });
+    bar.appendChild(chip);
+  });
 }
