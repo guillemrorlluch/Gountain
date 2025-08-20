@@ -249,7 +249,8 @@ function onUnclusteredClick(e) {
   if (!f) return;
 
   const coords = f.geometry.coordinates.slice();
-  const html = f.properties.html || '';
+  let html = f.properties.html;
+  if (!html) html = '<div style="background:#fff;color:#000;padding:4px;">Missing popup HTML</div>';
 
   const autoPanPadding = { top: 80, right: 28, bottom: 140, left: 28 };
 
@@ -401,11 +402,15 @@ function normalizeContinent(d){
 function buildGeo(list){
   return {
     type: 'FeatureCollection',
-    features: list.map(d => ({
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
-      properties: { ...d, color: markerColor(d), html: popupHtml(d) }
-    }))
+    features: list.map(d => {
+      const properties = { ...d, color: markerColor(d), html: popupHtml(d) };
+      console.assert(properties.html, 'Missing popup HTML for', d);
+      return {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
+        properties
+      };
+    })
   };
 }
 
