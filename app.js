@@ -1,7 +1,6 @@
 // app.js — v12
-import { getBuildId, MAPBOX_TOKEN } from './config.js';
 
-// Normaliza etiquetas de dificultad a buckets
+// ---------- Difficulty bucketing ----------
 export function normalizeDiff(diff) {
   if (!diff) return 'Trek';
   if (diff.startsWith('AD')) return 'AD';
@@ -11,7 +10,7 @@ export function normalizeDiff(diff) {
   return diff.includes('Trek') ? 'Trek' : diff;
 }
 
-// Paleta para botas
+// ---------- Boot palette ----------
 export const BOOT_COLORS = {
   "Cualquiera": "#22c55e",
   "Depende": "#f59e0b",
@@ -24,17 +23,6 @@ export const BOOT_COLORS = {
   "Botas triple capa (8000 m+)": "#d97706",
   "Otras ligeras (para trekking no técnico)": "#14b8a6"
 };
-
-function renderBootLegend(){
-  const ul = document.getElementById('legend-botas');
-  if (!ul) return;
-  ul.innerHTML = '';
-  Object.entries(BOOT_COLORS).forEach(([name, color]) => {
-    const li = document.createElement('li');
-    li.innerHTML = `<span style="display:inline-block;width:10px;height:10px;border-radius:999px;background:${color};margin-right:8px;border:1px solid #334155;"></span>${name}`;
-    ul.appendChild(li);
-  });
-}
 
 export function markerColor(d, bootColors = BOOT_COLORS) {
   const pr = [
@@ -49,8 +37,11 @@ export function markerColor(d, bootColors = BOOT_COLORS) {
     'Depende',
     'Otras ligeras (para trekking no técnico)'
   ];
-  for (const p of pr)
-    if (Array.isArray(d.botas) && d.botas.includes(p)) return bootColors[p] || '#22c55e';
+  for (const p of pr) {
+    if (Array.isArray(d.botas) && d.botas.includes(p)) {
+      return bootColors[p] || '#22c55e';
+    }
+  }
   return '#22c55e';
 }
 
@@ -81,14 +72,13 @@ export function monthsToSeasons(meses) {
 }
 
 export function withinFilters(d, F) {
-  const cont = F.continente.size === 0 || F.continente.has(d.continente);
-  const dif = F.dificultad.size === 0 || F.dificultad.has(normalizeDiff(d.dificultad));
-  const tipo = F.tipo.size === 0 || F.tipo.has(d.tipo);
-  const botas =
-    F.botas.size === 0 || (Array.isArray(d.botas) && d.botas.some(b => F.botas.has(b)));
-  const season = F.season.size === 0 || (Array.isArray(d.seasons) && d.seasons.some(s => F.season.has(s)));
-  const altMin = F.altitude.min == null || d.altitud_m >= F.altitude.min;
-  const altMax = F.altitude.max == null || d.altitud_m <= F.altitude.max;
+  const cont = F.continente?.size === 0 || F.continente?.has?.(d.continente);
+  const dif = F.dificultad?.size === 0 || F.dificultad?.has?.(normalizeDiff(d.dificultad));
+  const tipo = F.tipo?.size === 0 || F.tipo?.has?.(d.tipo);
+  const botas = F.botas?.size === 0 || (Array.isArray(d.botas) && d.botas.some(b => F.botas.has(b)));
+  const season = F.season?.size === 0 || (Array.isArray(d.seasons) && d.seasons.some(s => F.season.has(s)));
+  const altMin = F.altitude?.min == null || d.altitud_m >= F.altitude.min;
+  const altMax = F.altitude?.max == null || d.altitud_m <= F.altitude.max;
   return cont && dif && tipo && botas && season && altMin && altMax;
 }
 
@@ -106,46 +96,38 @@ export function computeBounds(list) {
   return { west, south, east, north };
 }
 
+// ---------- Small UI hooks (no SW here) ----------
+function renderBootLegend() {
+  const ul = document.getElementById('legend-botas');
+  if (!ul) return;
+  ul.innerHTML = '';
+  Object.entries(BOOT_COLORS).forEach(([name, color]) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="pill" style="background:${color}33;border-color:${color};color:#fff">${name}</span>`;
+    ul.appendChild(li);
+  });
+}
+
 if (typeof window !== 'undefined') {
+  // Info panel toggle
   const btnInfo = document.getElementById('btnInfo');
   const glossary = document.getElementById('glossary');
   if (btnInfo && glossary) {
-    btnInfo.addEventListener('click', () => {
-      glossary.classList.toggle('hidden');
-    });
+    btnInfo.addEventListener('click', () => glossary.classList.toggle('hidden'));
   }
 
+  // Sidebar (filters) toggle
   const btnMenu = document.getElementById('btnMenu');
   const sidebar = document.getElementById('sidebar');
   if (btnMenu && sidebar) {
     btnMenu.addEventListener('click', () => sidebar.classList.toggle('hidden'));
   }
 
+  // Populate boots legend when DOM is ready
   document.addEventListener('DOMContentLoaded', renderBootLegend);
-
-  // ---- Service Worker (v12) ----
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      try {
-        const reg = await navigator.serviceWorker.register(`/sw-v12.js?v=${getBuildId()}`);
-
-        if (reg.waiting) {
-          reg.waiting.postMessage({ type: 'SKIP_WAITING', buildId: getBuildId() });
-        }
-
-        let reloaded = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (reloaded) return;
-          reloaded = true;
-          setTimeout(() => location.reload(), 150);
-        });
-      } catch (e) {
-        console.warn('SW register failed', e);
-      }
-    });
-  }
 }
 
+// Keep named + default export for prior imports
 export default {
   normalizeDiff,
   markerColor,
