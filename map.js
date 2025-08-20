@@ -220,6 +220,18 @@ function reattachSourcesAndLayers() {
     paint: { 'text-color': '#e5e7eb', 'text-halo-color':'#111827', 'text-halo-width':1 }
   });
 
+// quita listeners viejos y vuelve a ponerlos (importante tras setStyle)
+  map.off('click', 'unclustered-point', onUnclusteredClick);
+  map.off('click', 'clusters', onClusterClick);
+
+  map.on('click', 'unclustered-point', onUnclusteredClick);
+  map.on('click', 'clusters', onClusterClick);
+
+// por si la jerarquía de capas los tapa, súbelas al frente
+  ['clusters','cluster-count','unclustered-point','destino-labels'].forEach(id=>{
+  if (map.getLayer(id)) map.moveLayer(id);
+});
+
   const top = map.getStyle().layers.at(-1).id;
   ['clusters','cluster-count','unclustered-point','destino-labels']
     .forEach(id => map.moveLayer(id, top));
@@ -244,26 +256,33 @@ function onClusterLeave(){ map.getCanvas().style.cursor = ''; }
    EVENTS (popup, clusters)
 ---------------------------- */
 function onUnclusteredClick(e) {
-  console.log('CLICK FEATURE', e.features?.[0]);
   const f = e.features && e.features[0];
   if (!f) return;
 
   const coords = f.geometry.coordinates.slice();
-  let html = f.properties.html;
-  if (!html) html = '<div style="background:#fff;color:#000;padding:4px;">Missing popup HTML</div>';
+  const html = f.properties && f.properties.html ? f.properties.html : "";
 
-  const autoPanPadding = { top: 80, right: 28, bottom: 140, left: 28 };
-
-  new mapboxgl.Popup({
-    closeOnMove: true,
+  // popup estable (no se cierra al mover/volver a dibujar)
+  const popup = new mapboxgl.Popup({
+    closeOnMove: false,      // <- evita cierre inmediato
+    closeButton: true,
     offset: 16,
-    anchor: 'bottom',
+    anchor: 'top',           // coincide con el HTML que viste
     maxWidth: '420px',
-    className: 'gountain-popup'
+    className: 'gountain-popup',
+    focusAfterOpen: false
   })
-    .setLngLat(coords)
-    .setHTML(html)
-    .addTo(map);
+  .setLngLat(coords)
+  .setHTML(html)
+  .addTo(map);
+
+  // Auto-pan con padding generoso en móvil
+  try {
+    map.panInsideBounds(map.getBounds(), {
+      padding: { top: 80, right: 28, bottom: 140, left: 28 }
+    });
+  } catch {}
+}
 
   // Nudge view so the popup never clips on mobile chrome/safari UI
   try { map.panBy([0, 0], { padding: autoPanPadding }); } catch {}
