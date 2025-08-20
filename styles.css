@@ -140,14 +140,32 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 /* =========================
    POPUP (destino)
 ========================= */
-.mapboxgl-popup-content{
-  background:#0b1326; color:#e5e7eb; border:1px solid #1f2a44; border-radius:10px;
-  width:fit-content; max-width:400px; max-height:80vh; overflow-y:auto;
+.mapboxgl-popup {
+  max-width: 320px;
+  font-family: system-ui, sans-serif;
 }
-.mapboxgl-popup-tip{background:#0b1326}
-.mapboxgl-popup-close-button{
-  background:rgba(255,255,255,.95); color:#111; border-radius:6px; font-weight:700; line-height:1;
-  box-shadow:0 0 0 1px rgba(0,0,0,.08);
+
+.mapboxgl-popup-content {
+  background: #F5F5F7; /* Fondo claro */
+  color: #1c1c1c;      /* Texto en negro */
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+.mapboxgl-popup-content h3,
+.mapboxgl-popup-content h4,
+.mapboxgl-popup-content strong {
+  color: #1c1c1c; /* Encabezados y texto en negrita en negro */
+}
+
+.mapboxgl-popup-close-button {
+  color: #1c1c1c;   /* Botón de cierre visible */
+  font-size: 18px;
+  top: 8px;
+  right: 10px;
 }
 .popup h3{margin:0 0 8px; font-size:18px; line-height:1.3}
 .popup h3 a{color:#fff;text-decoration:none;border-bottom:1px dashed #ffffff40}
