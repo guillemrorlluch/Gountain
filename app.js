@@ -1,5 +1,4 @@
 // app.js — v12
-import { getBuildId, MAPBOX_TOKEN } from './config.js';
 
 // Normaliza etiquetas de dificultad a buckets
 export function normalizeDiff(diff) {
@@ -122,28 +121,6 @@ if (typeof window !== 'undefined') {
   }
 
   document.addEventListener('DOMContentLoaded', renderBootLegend);
-
-  // ---- Service Worker (v12) ----
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-      try {
-        const reg = await navigator.serviceWorker.register(`/sw-v12.js?v=${getBuildId()}`);
-
-        if (reg.waiting) {
-          reg.waiting.postMessage({ type: 'SKIP_WAITING', buildId: getBuildId() });
-        }
-
-        let reloaded = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (reloaded) return;
-          reloaded = true;
-          setTimeout(() => location.reload(), 150);
-        });
-      } catch (e) {
-        console.warn('SW register failed', e);
-      }
-    });
-  }
 }
 
 export default {

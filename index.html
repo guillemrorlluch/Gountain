@@ -28,7 +28,7 @@
 <body>
   <!-- Topbar -->
   <header class="topbar">
-    <button id="menu-toggle" class="hamburger" aria-label="Abrir filtros">
+    <button id="btnMenu" class="hamburger" aria-label="Abrir filtros">
       <span class="bars"></span>
     </button>
     <h1>It's Gountain</h1>
@@ -71,6 +71,14 @@
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/sw-v12.js?v=12").catch(console.error);
+      });
+
+      // Guard against infinite reload loops
+      let didReload = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (didReload) return;
+        didReload = true;
+        setTimeout(() => location.reload(), 200);
       });
     }
   </script>
