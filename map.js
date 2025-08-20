@@ -221,6 +221,10 @@ function reattachSourcesAndLayers() {
     paint: { 'text-color': '#e5e7eb', 'text-halo-color':'#111827', 'text-halo-width':1 }
   });
 
+  const top = map.getStyle().layers.at(-1).id;
+  ['clusters','cluster-count','unclustered-point','destino-labels']
+    .forEach(id => map.moveLayer(id, top));
+
   // Re-attach layer-bound events every time (layers are recreated after setStyle)
   if (listenersAttached) {
     try {
