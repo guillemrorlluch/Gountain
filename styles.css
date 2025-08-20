@@ -165,9 +165,10 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 /* Título clicable del destino */
 .popup h3{margin:0 0 8px; font-size:18px; line-height:1.3}
 .popup h3 a{
-  color:#1da1f2;               /* color solicitado */
+  color:#1da1f2;             /* color solicitado */
   text-decoration:none;        /* sin subrayado por defecto */
   border:0;                    /* elimina borde punteado previo */
+  cursor:pointer;
 }
 .popup h3 a:hover{ text-decoration:underline; } /* subrayado en hover */
 
