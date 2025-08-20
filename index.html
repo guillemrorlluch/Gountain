@@ -10,7 +10,9 @@
   <meta name="theme-color" content="#00a0c6">
   <meta name="background-color" content="#ffffff">
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="It's Gountain">
 
   <!-- Mapbox GL JS (CDN) -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
@@ -38,14 +40,23 @@
 
   <!-- Vercel Analytics -->
   <script>
-  (function(){var s=document.createElement("script");s.src="https://va.vercel-scripts.com/v1/script.js";s.defer=true;document.head.appendChild(s);})();
+    (function(){
+      var s=document.createElement("script");
+      s.src="https://va.vercel-scripts.com/v1/script.js";
+      s.defer=true;
+      document.head.appendChild(s);
+    })();
   </script>
 
   <!-- Vercel Speed Insights -->
-<script>
-  (function(){var s=document.createElement("script");s.src="https://va.vercel-scripts.com/v1/speed-insights.js";s.defer=true;document.head.appendChild(s);})();
-</script>
-
+  <script>
+    (function(){
+      var s=document.createElement("script");
+      s.src="https://va.vercel-scripts.com/v1/speed-insights.js";
+      s.defer=true;
+      document.head.appendChild(s);
+    })();
+  </script>
 </head>
 
 <body>
@@ -136,5 +147,10 @@
   <script type="module" src="/map.js?v=11"></script>
 
   <noscript>Esta app necesita JavaScript para funcionar.</noscript>
+
+  <!-- Ajuste opcional de CSS en línea (puedes moverlo a styles.css) -->
+  <style>
+    .basemap-switcher { top: 60px; } /* Ajusta si tapa la topbar en móviles */
+  </style>
 </body>
 </html>
