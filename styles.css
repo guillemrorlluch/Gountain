@@ -1,175 +1,216 @@
-/* =====================
-   VARIABLES
-===================== */
-:root {
-  --bg-dark: #0f172a;
-  --bg-darker: #111827;
-  --bg-overlay: rgba(17, 24, 39, 0.85);
-  --border: #334155;
-  --text: #e5e7eb;
-  --accent: #2563eb;
+/* =========================
+   THEME / RESETS
+========================= */
+:root{
+  --bg:#0b1220;
+  --panel:#0f172a;
+  --text:#f8fafc;
+  --muted:#cbd5e1;
+  --accent:#22c55e;
+  --focus:#3b82f6;
+  --border:#1f2937;
+  --chip:#94a3b81f;
+  --chip-border:#64748b;
+  --danger:#b91c1c;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
-/* =====================
-   RESETEO Y BASE
-===================== */
-* {
-  box-sizing: border-box;
-  margin: 0; padding: 0;
+/* =========================
+   LAYOUT: TOPBAR
+========================= */
+.topbar{
+  position:fixed;inset:0 0 auto 0;height:56px;
+  display:flex;align-items:center;gap:10px;
+  padding:0 12px;
+  background:#111827d0;
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px); /* Safari */
+  z-index:1000;
 }
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: #000;
-  color: var(--text);
-  overflow-x: hidden;
+.topbar h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
+.topbar select{
+  margin-left:auto;
+  appearance:none;
+  background:#1f2937;
+  color:var(--text);
+  border:1px solid #374151;border-radius:10px;
+  padding:6px 10px;
+  min-height:36px;
 }
-button {
-  cursor: pointer;
-  font: inherit;
-}
-
-/* =====================
-   TOPBAR
-===================== */
-.topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 52px;
-  background: var(--bg-dark);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 12px;
-  z-index: 1500;
-}
-.topbar h1 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-}
-.topbar select {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--bg-darker);
-  color: var(--text);
-  padding: 6px 10px;
-  font-size: 14px;
+.info-btn{
+  margin-left:6px;
+  min-width:36px;min-height:36px;
+  border-radius:10px;border:1px solid #374151;
+  background:#1f2937;color:var(--text);cursor:pointer;
 }
 
-/* =====================
-   BOTÓN HAMBURGER
-===================== */
-.hamburger {
-  position: relative;
-  width: 44px; height: 44px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg-dark);
-  display: grid; place-items: center;
-  z-index: 1200; /* encima del switcher */
+/* Hamburger (tres palitos) */
+.hamburger{
+  width:40px;height:36px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:10px;border:1px solid #374151;background:#1f2937;color:var(--text);cursor:pointer;
 }
-.hamburger .bars,
-.hamburger .bars::before,
-.hamburger .bars::after {
-  content: "";
-  display: block;
-  width: 18px; height: 2px;
-  background: var(--text);
-  border-radius: 2px;
+.hamburger .bars, .hamburger .bars::before, .hamburger .bars::after{
+  content:"";display:block;width:18px;height:2px;background:var(--text);position:relative;border-radius:2px;
 }
-.hamburger .bars::before { transform: translateY(-6px); }
-.hamburger .bars::after  { transform: translateY(6px); }
+.hamburger .bars::before{position:absolute;top:-6px}
+.hamburger .bars::after{position:absolute;top:6px}
 
-/* =====================
+/* =========================
    BASEMAP SWITCHER
-===================== */
-.basemap-switcher {
-  position: fixed;
-  top: calc(52px + 8px); /* debajo de la topbar */
-  left: 12px;
-  display: flex; gap: 8px;
-  padding: 6px;
-  background: var(--bg-overlay);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  backdrop-filter: blur(8px);
-  z-index: 1100;
+   - bajo la topbar, alineado izquierda
+   - no tapa los controles de Mapbox
+========================= */
+.basemap-switcher{
+  position:fixed;left:12px;top:56px; /* justo bajo la topbar */
+  display:flex;gap:6px;flex-wrap:wrap;
+  padding:8px;
+  background:#111827d0;border:1px solid var(--border);border-radius:10px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  z-index:1000;
+  max-width:calc(100vw - 24px); /* margen lateral seguro */
 }
-.basemap-switcher button {
-  appearance:none; -webkit-appearance:none;
-  border: 1px solid var(--border);
-  background: var(--bg-darker);
-  color: var(--text);
-  border-radius: 12px;
-  padding: 8px 12px;
-  font-size: 14px;
-  line-height: 1;
-  white-space: nowrap;
+.basemap-switcher button{
+  border:1px solid #374151;border-radius:999px;
+  background:#1f2937;color:var(--text);
+  padding:6px 10px;font-size:13px;cursor:pointer;min-height:32px;
 }
-.basemap-switcher button.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
+.basemap-switcher button.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+
+/* Deja aire a los controles top-right de Mapbox */
+.mapboxgl-ctrl-top-right{ top: 56px; } /* que empiecen bajo la topbar */
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top: 64px; } 
+/* ↑ los controles quedan por debajo del switcher sin solaparse */
+
+/* =========================
+   MAP CONTAINER
+========================= */
+#map{
+  position:fixed;
+  top:56px; /* debajo topbar */
+  left:0;right:0;bottom:0;
+  background:#0b1220;
 }
-/* Safari: quita blur si no soporta */
-@supports (-webkit-touch-callout: none) {
-  .basemap-switcher {
-    backdrop-filter: none;
-    background: rgba(17,24,39,0.92);
-  }
+.map-health{
+  position:fixed;bottom:10px;right:10px;
+  background:#111827d0;color:var(--text);
+  padding:4px 8px;border-radius:6px;font-size:12px;z-index:1000
+}
+#map-error{
+  position:fixed;top:64px;left:50%;transform:translateX(-50%);
+  background:var(--danger);color:#fff;padding:6px 10px;border-radius:6px;z-index:2000;font-size:14px
 }
 
-/* =====================
-   POPUP DESTINO
-===================== */
-.mapboxgl-popup-content,
-.leaflet-popup-content-wrapper {
-  background: #0b1326;
-  color: var(--text);
-  border: 1px solid #1f2a44;
-  width: min(92vw, 440px);
-  max-height: calc(100vh - 160px - env(safe-area-inset-bottom));
-  overflow-y: auto;
-  padding: 16px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
-  border-radius: 12px;
+/* =========================
+   PANELS (Filtros / Glosario)
+========================= */
+.panel{
+  position:fixed;top:56px;bottom:0;width:320px;background:var(--panel);
+  border-right:1px solid var(--border);z-index:1001;overflow:auto
 }
-.mapboxgl-popup-close-button {
-  background-color: rgba(255,255,255,0.92);
-  color: #111;
-  border-radius: 8px;
-  font-weight: 700;
+#sidebar{left:0}
+#glossary{right:0;border-right:none;border-left:1px solid var(--border)}
+.hidden{display:none}
+.panel-section{padding:12px}
+.panel-section h2{margin:8px 0 6px;font-size:14px}
+details{
+  background:#0b1326;border:1px solid #1f2a44;border-radius:10px;
+  padding:8px 10px;margin:10px 0
 }
-.popup h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  line-height: 1.3;
-  word-break: break-word;
+summary{cursor:pointer;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{
+  border:1px solid var(--chip-border);border-radius:999px;padding:6px 12px;
+  color:#fff;background:var(--chip);cursor:pointer;font-size:13px;user-select:none;
+  transition:background .2s,color .2s,border-color .2s,transform .05s;min-height:36px;min-width:44px
 }
-.popup a {
-  color: #93c5fd;
+.chip:hover{background:#94a3b833}
+.chip:active{transform:translateY(1px)}
+.chip.active{background:#16a34a;color:#fff;border-color:#16a34a}
+.btn{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #334155;background:#0b1326;color:#e5e7eb;cursor:pointer;margin-top:8px;min-height:44px}
+.input{width:80px;padding:6px;border-radius:8px;border:1px solid #334155;background:#0b1326;color:#e5e7eb}
+.altitude-inputs{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* =========================
+   POPUP (destino)
+   - Close button contrast elevado
+   - Responsive content
+========================= */
+.mapboxgl-popup-content{
+  background:#0b1326;color:#e5e7eb;border:1px solid #1f2a44;border-radius:10px;
+  width:fit-content;max-width:400px;max-height:80vh;overflow-y:auto
 }
-.pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
+.mapboxgl-popup-tip{background:#0b1326}
+.mapboxgl-popup-close-button{
+  background:rgba(255,255,255,.95);color:#111;border-radius:6px;font-weight:700;line-height:1;
+  box-shadow:0 0 0 1px rgba(0,0,0,.08)
 }
-.pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.25);
-  background: rgba(255,255,255,.06);
-  font-size: 12px;
+.popup h3{margin:0 0 8px;font-size:18px;line-height:1.3}
+.popup h3 a{color:#fff;text-decoration:none;border-bottom:1px dashed #ffffff40}
+.popup .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin-bottom:8px}
+.popup .section{margin:10px 0}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pill{padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);display:inline-block;font-size:12px}
+.links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+a.btn-link{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.25);text-decoration:none;font-weight:600;color:#fff}
+
+/* Galería de fotos */
+.gallery{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.gallery img{height:120px;width:auto;border-radius:8px;object-fit:cover;flex:0 0 auto;scroll-snap-align:start;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+
+/* =========================
+   CHIP BAR (fila de destinos) - móvil
+========================= */
+.chip-bar{
+  position:fixed;left:0;right:0;bottom:0;
+  display:flex;gap:8px;align-items:center;
+  overflow-x:auto;padding:10px 12px;
+  background:#111827d0;border-top:1px solid var(--border);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  z-index:1000;
+}
+.chip-bar .chip{white-space:nowrap}
+.chip-bar::-webkit-scrollbar{height:6px}
+.chip-bar::-webkit-scrollbar-thumb{background:#475569;border-radius:999px}
+
+/* =========================
+   MAPBOX BASE
+========================= */
+.mapboxgl-map{background:#0b1220}
+.mapboxgl-ctrl button:focus-visible,
+button:focus-visible,a:focus-visible,select:focus-visible{
+  outline:2px solid #7aa2ff;outline-offset:2px
 }
 
-/* =====================
+/* =========================
    RESPONSIVE
-===================== */
-@media (max-width: 420px) {
-  .mapboxgl-popup-content,
-  .leaflet-popup-content-wrapper {
-    width: 92vw;
-    max-width: 92vw;
-  }
+========================= */
+@media (max-width: 800px){
+  /* switcher más compacto */
+  .basemap-switcher{left:10px;right:auto;max-width:calc(100vw - 20px)}
+}
+@media (max-width: 600px){
+  .topbar{height:52px}
+  #map{top:52px}
+  .basemap-switcher{top:52px}
+  .mapboxgl-ctrl-top-right{ top: 52px; }
+  .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top: 60px; }
+
+  .mapboxgl-popup-content{max-width:300px}
+  .panel{width:100%}
+
+  /* popup a ancho de pantalla cuando haga falta */
+  .mapboxgl-popup-content{max-width: min(92vw, 380px)}
+}
+@media (max-width:420px){
+  .popup .grid{grid-template-columns:1fr}
+  .gallery img{height:90px}
 }
