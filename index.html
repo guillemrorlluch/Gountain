@@ -15,15 +15,15 @@
   <meta name="apple-mobile-web-app-title" content="It's Gountain" />
 
   <!-- Icons (con cache-busting) -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=12" />
-  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=12" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=13" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=13" />
 
   <!-- Mapbox GL v2 (compatible con tu código) -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js" defer></script>
 
   <!-- CSS de la app (con cache-busting) -->
-  <link rel="stylesheet" href="/styles.css?v=12" />
+  <link rel="stylesheet" href="/styles.css?v=13" />
 </head>
 <body>
   <!-- Topbar -->
@@ -63,22 +63,13 @@
   <div id="map-error" class="hidden" role="alert"></div>
 
   <!-- JS de tu app (con cache-busting) -->
-  <script type="module" src="/dist/app.bundle.js?v=12"></script>
-  <script type="module" src="/map.js?v=12"></script>
+  <script type="module" src="/dist/app.bundle.js?v=13"></script>
+  <script type="module" src="/map.js?v=13"></script>
 
-  <!-- Service Worker v12 (con recarga segura, sin bucles) -->
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw-v12.js?v=12").catch(console.error);
-      });
-
-      let didReload = false;
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (didReload) return;
-        didReload = true;
-        // Pequeño delay para que el nuevo SW tome control antes de recargar
-        setTimeout(() => location.reload(), 200);
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw-v13.js?v=13').catch(console.error);
       });
     }
   </script>
