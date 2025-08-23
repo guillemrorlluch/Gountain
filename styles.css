@@ -40,9 +40,10 @@ body{
 
 .topbar h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
 /* reactivamos los controles dentro de topbar */
+.topbar { pointer-events:none; }
 .topbar .hamburger,
 .topbar select,
-.topbar .info-btn{ pointer-events:auto; }
+.topbar .info-btn { pointer-events:auto; }
 
 .topbar select{
   margin-left:auto;
