@@ -75,5 +75,71 @@
   </script>
 
   <noscript>Esta app necesita JavaScript para funcionar.</noscript>
+
+  <script>
+  // ---- UI wiring: menú (filtros) y glosario ----
+  (function () {
+    const $ = (sel) => document.querySelector(sel);
+
+    const btnMenu   = $('#btnMenu');
+    const btnInfo   = $('#btnInfo');
+    const sidebar   = $('#sidebar');
+    const glossary  = $('#glossary');
+    const select    = $('#continent-select');
+
+    // Contenido mínimo de los paneles (edítalo a tu gusto)
+    if (sidebar && !sidebar.innerHTML.trim()) {
+      sidebar.innerHTML = `
+        <div class="panel-section">
+          <h2>Filtros</h2>
+          <p>Elige continente arriba a la derecha.</p>
+          <p>Puedes añadir aquí más filtros, chips, etc.</p>
+          <button class="btn" id="closeSidebar">Cerrar</button>
+        </div>`;
+    }
+    if (glossary && !glossary.innerHTML.trim()) {
+      glossary.innerHTML = `
+        <div class="panel-section">
+          <h2>Glosario</h2>
+          <details open>
+            <summary>Dificultades</summary>
+            <p><strong>F</strong> Fácil, <strong>PD</strong> Poco Difícil, <strong>AD</strong> Algo Difícil, <strong>D</strong> Difícil…</p>
+          </details>
+          <details>
+            <summary>Consejos</summary>
+            <p>LNT, prever meteo, equipo adecuado, permisos, etc.</p>
+          </details>
+          <button class="btn" id="closeGlossary">Cerrar</button>
+        </div>`;
+    }
+
+    // Toggles
+    if (btnMenu && sidebar) {
+      btnMenu.addEventListener('click', () => sidebar.classList.toggle('hidden'));
+      sidebar.addEventListener('click', (e) => {
+        if (e.target.id === 'closeSidebar') sidebar.classList.add('hidden');
+      });
+    }
+    if (btnInfo && glossary) {
+      btnInfo.addEventListener('click', () => glossary.classList.toggle('hidden'));
+      glossary.addEventListener('click', (e) => {
+        if (e.target.id === 'closeGlossary') glossary.classList.add('hidden');
+      });
+    }
+
+    // (Opcional) cuando cambie el select de continente, emite un evento.
+    // map.js puede escuchar este evento si quieres aplicar filtros en vivo.
+    if (select) {
+      select.addEventListener('change', () => {
+        window.__FILTERS__ = window.__FILTERS__ || {};
+        window.__FILTERS__.continent = select.value || '';
+        window.dispatchEvent(new CustomEvent('gountain:filters-changed', {
+          detail: { continent: window.__FILTERS__.continent }
+        }));
+      });
+    }
+  })();
+</script>
+
 </body>
 </html>
