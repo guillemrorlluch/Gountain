@@ -1,4 +1,4 @@
-// map.js — v12
+// map.js — v13
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */
@@ -7,6 +7,7 @@ const healthEl = document.getElementById('map-health');
 function setHealth(t){ if (healthEl) healthEl.textContent = t; }
 
 let __MAPBOX_MOUNTED__ = false;
+let listenersAttached = false;
 
 const STYLES = {
   standard: 'mapbox://styles/mapbox/streets-v12',
@@ -150,154 +151,6 @@ function toggle3D(){
 }
 
 /* ---------------------------
-   SOURCES + LAYERS (clusters, points, labels)
----------------------------- */
-function reattachSourcesAndLayers() {
-  const data = buildGeo(allDestinations.filter(passContinent));
-
-  if (map.getSource('destinos')) {
-    if (map.getLayer('cluster-count'))     map.removeLayer('cluster-count');
-    if (map.getLayer('clusters'))          map.removeLayer('clusters');
-    if (map.getLayer('unclustered-point')) map.removeLayer('unclustered-point');
-    if (map.getLayer('destino-labels'))    map.removeLayer('destino-labels');
-    map.removeSource('destinos');
-  }
-
-  map.addSource('destinos', {
-    type: 'geojson',
-    data,
-    cluster: true,
-    clusterRadius: 50,
-    clusterMaxZoom: 9
-  });
-
-  map.addLayer({
-    id: 'clusters',
-    type: 'circle',
-    source: 'destinos',
-    filter: ['has','point_count'],
-    paint: {
-      'circle-color': '#2b6cb0',
-      'circle-radius': ['step', ['get','point_count'], 18, 10, 22, 50, 28, 100, 34, 500, 40],
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#fff'
-    }
-  });
-
-  map.addLayer({
-    id: 'cluster-count',
-    type: 'symbol',
-    source: 'destinos',
-    filter: ['has','point_count'],
-    layout: { 'text-field':['get','point_count_abbreviated'], 'text-size':14 },
-    paint: { 'text-color':'#ffffff' }
-  });
-
-  map.addLayer({
-    id: 'unclustered-point',
-    type: 'circle',
-    source: 'destinos',
-    filter: ['!',['has','point_count']],
-    paint: {
-      'circle-radius': 6,
-      'circle-color': ['get','color'],
-      'circle-stroke-width': 1,
-      'circle-stroke-color': '#fff'
-    }
-  });
-
-  map.addLayer({
-    id: 'destino-labels',
-    type: 'symbol',
-    source: 'destinos',
-    filter: ['!',['has','point_count']],
-    layout: {
-      'text-field': ['get','nombre'],
-      'text-size': 12,
-      'text-offset': [0, 1.2],
-      'text-allow-overlap': true
-    },
-    paint: { 'text-color': '#e5e7eb', 'text-halo-color':'#111827', 'text-halo-width':1 }
-  });
-
-// quita listeners viejos y vuelve a ponerlos (importante tras setStyle)
-  map.off('click', 'unclustered-point', onUnclusteredClick);
-  map.off('click', 'clusters', onClusterClick);
-
-  map.on('click', 'unclustered-point', onUnclusteredClick);
-  map.on('click', 'clusters', onClusterClick);
-
-// por si la jerarquía de capas los tapa, súbelas al frente
-  ['clusters','cluster-count','unclustered-point','destino-labels'].forEach(id=>{
-  if (map.getLayer(id)) map.moveLayer(id);
-});
-
-  const top = map.getStyle().layers.at(-1).id;
-  ['clusters','cluster-count','unclustered-point','destino-labels']
-    .forEach(id => map.moveLayer(id, top));
-
-  // Re-attach layer-bound events every time (layers are recreated after setStyle)
-  ['unclustered-point','clusters'].forEach(layer => {
-    map.off('click', layer, onUnclusteredClick);
-    map.off('mouseenter', layer, onClusterEnter);
-    map.off('mouseleave', layer, onClusterLeave);
-  });
-  map.on('click', 'unclustered-point', onUnclusteredClick);
-  map.on('click', 'clusters', onClusterClick);
-  map.on('mouseenter', 'clusters', onClusterEnter);
-  map.on('mouseleave', 'clusters', onClusterLeave);
-
-}
-
-function onClusterEnter(){ map.getCanvas().style.cursor = 'pointer'; }
-function onClusterLeave(){ map.getCanvas().style.cursor = ''; }
-
-/* ---------------------------
-   EVENTS (popup, clusters)
----------------------------- */
-function onUnclusteredClick(e) {
-  const f = e.features && e.features[0];
-  if (!f) return;
-
-  const coords = f.geometry.coordinates.slice();
-  const html = f.properties && f.properties.html ? f.properties.html : "";
-
-  // popup estable (no se cierra al mover/volver a dibujar)
-  const popup = new mapboxgl.Popup({
-    closeOnMove: false,      // <- evita cierre inmediato
-    closeButton: true,
-    offset: 16,
-    anchor: 'top',           // coincide con el HTML que viste
-    maxWidth: '420px',
-    className: 'gountain-popup',
-    focusAfterOpen: false
-  })
-  .setLngLat(coords)
-  .setHTML(html)
-  .addTo(map);
-
-  // Auto-pan con padding generoso en móvil
-  try {
-    map.panInsideBounds(map.getBounds(), {
-      padding: { top: 80, right: 28, bottom: 140, left: 28 }
-    });
-  } catch {}
-}
-
-  // Nudge view so the popup never clips on mobile chrome/safari UI
-  try { map.panBy([0, 0], { padding: autoPanPadding }); } catch {}
-}
-
-function onClusterClick(e) {
-  const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
-  const clusterId = features[0].properties.cluster_id;
-  map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
-    if (err) return;
-    map.easeTo({ center: features[0].geometry.coordinates, zoom });
-  });
-}
-
-/* ---------------------------
    POPUP HTML
 ---------------------------- */
 function asPill(t){ return `<span class="pill">${t}</span>`; }
@@ -433,9 +286,6 @@ function buildGeo(list){
   };
 }
 
-/* ---------------------------
-   DATA / FILTERS / FIT
----------------------------- */
 function updateMapWith(list){
   const geo = buildGeo(list);
   const src = map.getSource('destinos');
@@ -447,6 +297,118 @@ function updateMapWith(list){
   }
 }
 
+  /* ---------------------------
+     SOURCES + LAYERS (clusters, points, labels)
+  ---------------------------- */
+function reattachSourcesAndLayers() {
+  const data = buildGeo(allDestinations.filter(passContinent));
+
+  if (map.getSource('destinos')) {
+    if (map.getLayer('cluster-count')) map.removeLayer('cluster-count');
+    if (map.getLayer('clusters')) map.removeLayer('clusters');
+    if (map.getLayer('unclustered-point')) map.removeLayer('unclustered-point');
+    if (map.getLayer('destino-labels')) map.removeLayer('destino-labels');
+    map.removeSource('destinos');
+  }
+
+  map.addSource('destinos', {
+    type: 'geojson',
+    data,
+    cluster: true,
+    clusterRadius: 50,
+    clusterMaxZoom: 9
+  });
+
+  map.addLayer({
+    id: 'clusters',
+    type: 'circle',
+    source: 'destinos',
+    filter: ['has','point_count'],
+    paint: {
+      'circle-color': '#2b6cb0',
+      'circle-radius': ['step', ['get','point_count'], 18, 10, 22, 50, 28, 100, 34, 500, 40],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#fff'
+    }
+  });
+
+  map.addLayer({
+    id: 'cluster-count',
+    type: 'symbol',
+    source: 'destinos',
+    filter: ['has','point_count'],
+    layout: { 'text-field':['get','point_count_abbreviated'], 'text-size':14 },
+    paint: { 'text-color':'#ffffff' }
+  });
+
+  map.addLayer({
+    id: 'unclustered-point',
+    type: 'circle',
+    source: 'destinos',
+    filter: ['!',['has','point_count']],
+    paint: {
+      'circle-radius': 6,
+      'circle-color': ['get','color'],
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#fff'
+    }
+  });
+
+  map.addLayer({
+    id: 'destino-labels',
+    type: 'symbol',
+    source: 'destinos',
+    filter: ['!',['has','point_count']],
+    layout: {
+      'text-field': ['get','nombre'],
+      'text-size': 12,
+      'text-offset': [0, 1.2],
+      'text-allow-overlap': true
+    },
+    paint: { 'text-color': '#e5e7eb', 'text-halo-color':'#111827', 'text-halo-width':1 }
+  });
+
+  if (!listenersAttached) {
+    map.on('click', 'unclustered-point', onUnclusteredClick);
+    map.on('click', 'clusters', onClusterClick);
+    map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+    listenersAttached = true;
+  }
+}
+
+function onUnclusteredClick(e) {
+  const f = e.features && e.features[0];
+  if (!f) return;
+
+  const coords = f.geometry.coordinates.slice();
+  const html = f.properties.html || '';
+
+  const autoPanPadding = { top: 80, right: 28, bottom: 140, left: 28 };
+
+  new mapboxgl.Popup({
+    closeOnMove: true,
+    offset: 16,
+    anchor: 'bottom',
+    maxWidth: '420px',
+    className: 'gountain-popup',
+  })
+    .setLngLat(coords)
+    .setHTML(html)
+    .addTo(map);
+
+  try { map.panInsideBounds(map.getBounds(), { padding: autoPanPadding }); } catch {}
+}
+
+function onClusterClick(e) {
+  const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+  const clusterId = features[0].properties.cluster_id;
+  map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
+    if (err) return;
+    map.easeTo({ center: features[0].geometry.coordinates, zoom });
+  });
+}
+
 function passContinent(d){
   if (!state.continent) return true;
   return d.continente === state.continent;
@@ -454,8 +416,8 @@ function passContinent(d){
 
 function fitToList(list){
   if (!list || !list.length) return;
-  const west  = Math.min(...list.map(d => d.coords[1]));
-  const east  = Math.max(...list.map(d => d.coords[1]));
+  const west = Math.min(...list.map(d => d.coords[1]));
+  const east = Math.max(...list.map(d => d.coords[1]));
   const south = Math.min(...list.map(d => d.coords[0]));
   const north = Math.max(...list.map(d => d.coords[0]));
   if ([west,east,south,north].some(v => !isFinite(v))) return;
@@ -470,34 +432,11 @@ function applyFilters(){
 
 async function loadDestinos(){
   try {
-    const res  = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
+    const res = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
     const data = await res.json();
     allDestinations = data.map(normalizeContinent);
     applyFilters();
-    renderChips(allDestinations);
   } catch(err){
     console.error('Error loading destinos:', err);
   }
-}
-
-/* ---------------------------
-   CHIP BAR (responsive list of destination names)
----------------------------- */
-function renderChips(list){
-  const bar = document.getElementById('chip-bar');
-  if (!bar) return;
-  bar.innerHTML = '';
-  const names = [...new Set(list.map(d => d.nombre).filter(Boolean))];
-  names.forEach(name => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.textContent = name;
-    chip.addEventListener('click', () => {
-      const destino = allDestinations.find(d => d.nombre === name);
-      if (destino) {
-        map.flyTo({ center: [destino.coords[1], destino.coords[0]], zoom: 8 });
-      }
-    });
-    bar.appendChild(chip);
-  });
 }
