@@ -297,9 +297,9 @@ function updateMapWith(list){
   }
 }
 
-  /* ---------------------------
-     SOURCES + LAYERS (clusters, points, labels)
-  ---------------------------- */
+/* ---------------------------
+   SOURCES + LAYERS (clusters, points, labels)
+---------------------------- */
 function reattachSourcesAndLayers() {
   const data = buildGeo(allDestinations.filter(passContinent));
 
@@ -440,3 +440,212 @@ async function loadDestinos(){
     console.error('Error loading destinos:', err);
   }
 }
+
+/* =========================================================
+   ADD: Panels (Sidebar filters & Glossary) + Filters logic
+   - No duplica constantes ni toca el mapa/ capas existentes
+========================================================= */
+
+// toggles de paneles
+function setupPanelToggles() {
+  const btnMenu  = document.getElementById('btnMenu');
+  const btnInfo  = document.getElementById('btnInfo');
+  const sidebar  = document.getElementById('sidebar');
+  const glossary = document.getElementById('glossary');
+
+  if (btnMenu && sidebar) {
+    btnMenu.addEventListener('click', () => {
+      sidebar.classList.toggle('hidden');
+      if (!sidebar.classList.contains('hidden') && glossary) glossary.classList.add('hidden');
+    });
+  }
+  if (btnInfo && glossary) {
+    btnInfo.addEventListener('click', () => {
+      glossary.classList.toggle('hidden');
+      if (!glossary.classList.contains('hidden') && sidebar) sidebar.classList.add('hidden');
+    });
+  }
+}
+
+// contenido del panel de filtros
+function renderSidebarPanel() {
+  const el = document.getElementById('sidebar');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="panel-section">
+      <h2>Filtros</h2>
+
+      <details open>
+        <summary>Dificultad</summary>
+        <div id="filter-dificultad" class="chips"></div>
+      </details>
+
+      <details>
+        <summary>Botas</summary>
+        <div id="filter-botas" class="chips"></div>
+      </details>
+
+      <details>
+        <summary>Tipo</summary>
+        <div id="filter-tipo" class="chips"></div>
+      </details>
+
+      <details>
+        <summary>Altitud (m)</summary>
+        <div class="altitude-inputs">
+          <label for="alt-min">Min</label>
+          <input id="alt-min" class="input" type="number" inputmode="numeric" placeholder="0">
+          <label for="alt-max">Max</label>
+          <input id="alt-max" class="input" type="number" inputmode="numeric" placeholder="9000">
+        </div>
+      </details>
+
+      <details>
+        <summary>Temporada</summary>
+        <div id="filter-season" class="chips"></div>
+      </details>
+
+      <button id="clearFilters" class="btn">Limpiar filtros</button>
+    </div>
+  `;
+
+  putChips('filter-dificultad', ['F','PD','AD','D'], v => toggleFilter('dificultad', v));
+  putChips('filter-botas', [
+    'Bestard Teix Lady GTX','Scarpa Ribelle Lite HD','Scarpa Zodiac Tech LT GTX',
+    'La Sportiva Aequilibrium ST GTX','La Sportiva Nepal Cube GTX','Nepal (doble bota técnica de alta montaña)',
+    'Botas triple capa (8000 m+)','Cualquiera','Depende','Otras ligeras (para trekking no técnico)'
+  ], v => toggleFilter('botas', v));
+  putChips('filter-tipo', ['Pico','Travesía','Volcán','Glaciar'], v => toggleFilter('tipo', v));
+  putChips('filter-season', ['Jan–Mar','Apr–Jun','Jul–Sep','Oct–Dec'], v => toggleFilter('meses', v));
+
+  const minI = document.getElementById('alt-min');
+  const maxI = document.getElementById('alt-max');
+  [minI, maxI].forEach(i => i && i.addEventListener('change', applyFilters));
+
+  const clear = document.getElementById('clearFilters');
+  clear && clear.addEventListener('click', () => {
+    state.filters = {};
+    if (minI) minI.value = '';
+    if (maxI) maxI.value = '';
+    document.querySelectorAll('#sidebar .chip.active').forEach(c => c.classList.remove('active'));
+    applyFilters();
+  });
+}
+
+// contenido del glosario + leyenda botas
+function renderGlossaryPanel() {
+  const el = document.getElementById('glossary');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="panel-section">
+      <h2>Glosario</h2>
+
+      <details open>
+        <summary>Siglas</summary>
+        <ul>
+          <li><b>PN</b>: Parque Nacional</li>
+          <li><b>UIAA</b>: Escala de dificultad</li>
+          <li><b>F</b> Fácil · <b>PD</b> Poco Difícil · <b>AD</b> Bastante Difícil · <b>D</b> Difícil</li>
+          <li><b>Vivac</b>: pernocta ligera</li>
+          <li><b>Scrambling</b>: progresión sin ser deportiva</li>
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Leyenda de botas</summary>
+        <ul id="legend-botas"></ul>
+      </details>
+    </div>
+  `;
+
+  const ul = el.querySelector('#legend-botas');
+  if (ul && typeof BOOT_COLORS === 'object') {
+    ul.innerHTML = Object.entries(BOOT_COLORS)
+      .map(([name, color]) =>
+        `<li style="display:flex;align-items:center;gap:8px;margin:6px 0">
+           <span style="width:14px;height:14px;border-radius:3px;background:${color};display:inline-block;border:1px solid #00000022"></span>
+           <span>${name}</span>
+         </li>`
+      ).join('');
+  }
+}
+
+/* ----- helpers de chips/filtros ----- */
+state.filters = state.filters || {};
+
+function putChips(hostId, values, onClick){
+  const host = document.getElementById(hostId);
+  if (!host) return;
+  host.innerHTML = '';
+  values.forEach(v => {
+    const c = document.createElement('button');
+    c.className = 'chip';
+    c.type = 'button';
+    c.textContent = v;
+    c.addEventListener('click', () => {
+      c.classList.toggle('active');
+      onClick && onClick(v);
+      applyFilters();
+    });
+    host.appendChild(c);
+  });
+}
+
+function toggleFilter(key, value){
+  const s = new Set(state.filters[key] || []);
+  if (s.has(value)) s.delete(value); else s.add(value);
+  state.filters[key] = [...s];
+}
+
+/* ---- Extiende passContinent con filtros básicos ---- */
+const __passContinentBase = passContinent;
+passContinent = function(d){
+  if (!__passContinentBase(d)) return false;
+
+  const f = state.filters || {};
+
+  // dificultad
+  if (f.dificultad && f.dificultad.length) {
+    if (!f.dificultad.some(tag => (d.dificultad || '').includes(tag))) return false;
+  }
+  // botas
+  if (f.botas && f.botas.length) {
+    const boots = Array.isArray(d.botas) ? d.botas : [];
+    if (!boots.some(b => f.botas.includes(b))) return false;
+  }
+  // tipo
+  if (f.tipo && f.tipo.length) {
+    if (!f.tipo.includes(d.tipo)) return false;
+  }
+  // meses (muy simple: substring de etiquetas)
+  if (f.meses && f.meses.length) {
+    const m = String(d.meses || '');
+    if (!f.meses.some(x => m.includes(x))) return false;
+  }
+  // altitud
+  const minI = document.getElementById('alt-min');
+  const maxI = document.getElementById('alt-max');
+  const min = minI && minI.value ? Number(minI.value) : -Infinity;
+  const max = maxI && maxI.value ? Number(maxI.value) : Infinity;
+  const alt = Number(d.altitud_m || d.altitud || NaN);
+  if (!Number.isNaN(alt) && !(alt >= min && alt <= max)) return false;
+
+  return true;
+};
+
+/* ---- Select de continente (topbar) ---- */
+(function hookContinentSelect(){
+  const sel = document.getElementById('continent-select');
+  if (!sel) return;
+  sel.addEventListener('change', () => {
+    state.continent = sel.value || '';
+    applyFilters();
+  });
+})();
+
+/* ---- Inicializa paneles al cargar DOM ---- */
+document.addEventListener('DOMContentLoaded', () => {
+  setupPanelToggles();
+  renderSidebarPanel();
+  renderGlossaryPanel();
+});
