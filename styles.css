@@ -194,8 +194,8 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 }
 .links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 
-/* Oculta cualquier enlace "Google" dentro del popup */
-.mapboxgl-popup-content a[href^="https://www.google.com"]{
+/* ✅ Oculta enlaces a Google SOLO dentro del bloque .links */
+.links a[href*="google.com"]{
   display:none !important;
 }
 
