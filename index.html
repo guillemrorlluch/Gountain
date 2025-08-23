@@ -18,11 +18,11 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=13" />
   <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=13" />
 
-  <!-- Mapbox GL v2 (compatible con tu código) -->
+  <!-- Mapbox GL v2 -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js" defer></script>
 
-  <!-- CSS de la app (con cache-busting) -->
+  <!-- CSS de la app -->
   <link rel="stylesheet" href="/styles.css?v=13" />
 </head>
 <body>
@@ -49,8 +49,70 @@
   <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
 
   <!-- Paneles -->
-  <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros"></aside>
-  <aside id="glossary" class="panel hidden" aria-label="Glosario"></aside>
+  <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
+    <div class="panel-section">
+      <h2>Filtros</h2>
+      <details>
+        <summary>Dificultad</summary>
+        <div id="filter-dificultad" class="chips"></div>
+      </details>
+      <details>
+        <summary>Botas</summary>
+        <div id="filter-botas" class="chips"></div>
+      </details>
+      <details>
+        <summary>Tipo</summary>
+        <div id="filter-tipo" class="chips"></div>
+      </details>
+      <details>
+        <summary>Altitud (m)</summary>
+        <div class="altitude-inputs">
+          <label for="alt-min">Min</label>
+          <input id="alt-min" class="input" type="number" aria-label="Altitud mínima">
+          <label for="alt-max">Max</label>
+          <input id="alt-max" class="input" type="number" aria-label="Altitud máxima">
+          <div id="altitude-chip" class="chips"></div>
+        </div>
+      </details>
+      <details>
+        <summary>Temporada</summary>
+        <div id="filter-season" class="chips"></div>
+      </details>
+      <button id="clearFilters" class="btn">Limpiar filtros</button>
+    </div>
+  </aside>
+
+  <aside id="glossary" class="panel hidden" aria-label="Glosario">
+    <div class="panel-section">
+      <h2>Glosario</h2>
+      <details open>
+        <summary>Siglas</summary>
+        <ul>
+          <li><b>PN</b>: Parque Nacional (normas de acampada y gas)</li>
+          <li><b>UIAA</b>: Escala internacional de dificultad</li>
+          <li><b>F</b>: Fácil</li>
+          <li><b>PD</b>: Poco Difícil</li>
+          <li><b>AD</b>: Bastante Difícil</li>
+          <li><b>D</b>: Difícil</li>
+          <li><b>Vivac</b>: Pernocta con tienda ligera (montar al atardecer, recoger al amanecer)</li>
+          <li><b>Scrambling</b>: Progresión con manos/pies en roca sin ser escalada deportiva</li>
+        </ul>
+      </details>
+      <details id="boots-legend" open>
+        <summary>Leyenda de botas</summary>
+        <ul id="legend-botas">
+          <li>Cualquiera</li>
+          <li>Depende</li>
+          <li>Bestard Teix Lady GTX</li>
+          <li>Scarpa Ribelle Lite HD</li>
+          <li>Scarpa Zodiac Tech LT GTX</li>
+          <li>La Sportiva Aequilibrium ST GTX</li>
+          <li>La Sportiva Nepal Cube GTX</li>
+          <li>Nepal (doble bota técnica de alta montaña)</li>
+        </ul>
+      </details>
+    </div>
+  </aside>
 
   <!-- Mapa -->
   <div id="map"></div>
@@ -62,10 +124,11 @@
   <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
   <div id="map-error" class="hidden" role="alert"></div>
 
-  <!-- JS de tu app (con cache-busting) -->
+  <!-- JS de tu app -->
   <script type="module" src="/dist/app.bundle.js?v=13"></script>
   <script type="module" src="/map.js?v=13"></script>
 
+  <!-- SW -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -76,70 +139,170 @@
 
   <noscript>Esta app necesita JavaScript para funcionar.</noscript>
 
+  <!-- UI Filters -->
   <script>
-  // ---- UI wiring: menú (filtros) y glosario ----
-  (function () {
-    const $ = (sel) => document.querySelector(sel);
+  // =======================
+  // Gountain – UI filters v2
+  // =======================
+  (() => {
+    const $  = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
+    // ---- Elementos
     const btnMenu   = $('#btnMenu');
     const btnInfo   = $('#btnInfo');
     const sidebar   = $('#sidebar');
     const glossary  = $('#glossary');
     const select    = $('#continent-select');
+    const clearBtn  = $('#clearFilters');
+    const altMin    = $('#alt-min');
+    const altMax    = $('#alt-max');
+    const altChipBox= $('#altitude-chip');
 
-    // Contenido mínimo de los paneles (edítalo a tu gusto)
-    if (sidebar && !sidebar.innerHTML.trim()) {
-      sidebar.innerHTML = `
-        <div class="panel-section">
-          <h2>Filtros</h2>
-          <p>Elige continente arriba a la derecha.</p>
-          <p>Puedes añadir aquí más filtros, chips, etc.</p>
-          <button class="btn" id="closeSidebar">Cerrar</button>
-        </div>`;
-    }
-    if (glossary && !glossary.innerHTML.trim()) {
-      glossary.innerHTML = `
-        <div class="panel-section">
-          <h2>Glosario</h2>
-          <details open>
-            <summary>Dificultades</summary>
-            <p><strong>F</strong> Fácil, <strong>PD</strong> Poco Difícil, <strong>AD</strong> Algo Difícil, <strong>D</strong> Difícil…</p>
-          </details>
-          <details>
-            <summary>Consejos</summary>
-            <p>LNT, prever meteo, equipo adecuado, permisos, etc.</p>
-          </details>
-          <button class="btn" id="closeGlossary">Cerrar</button>
-        </div>`;
-    }
+    // ---- Abrir/cerrar paneles
+    btnMenu?.addEventListener('click', () => sidebar?.classList.toggle('hidden'));
+    btnInfo?.addEventListener('click', () => glossary?.classList.toggle('hidden'));
 
-    // Toggles
-    if (btnMenu && sidebar) {
-      btnMenu.addEventListener('click', () => sidebar.classList.toggle('hidden'));
-      sidebar.addEventListener('click', (e) => {
-        if (e.target.id === 'closeSidebar') sidebar.classList.add('hidden');
+    // ---- Opciones por defecto (sobrescribibles con window.__FILTER_OPTIONS__)
+    const FILTER_OPTIONS = Object.assign({
+      dificultad: ['F','PD','AD','D'],
+      botas: [
+        'Cualquiera','Depende','Bestard Teix Lady GTX','Scarpa Ribelle Lite HD',
+        'Scarpa Zodiac Tech LT GTX','La Sportiva Aequilibrium ST GTX',
+        'La Sportiva Nepal Cube GTX','Nepal (doble bota técnica de alta montaña)'
+      ],
+      tipo: ['Travesía','Ascensión','Circular','Lineal','Alpinismo','Scrambling'],
+      season: ['Invierno','Primavera','Verano','Otoño']
+    }, window.__FILTER_OPTIONS__ || {});
+
+    // ---- Estado
+    const state = {
+      continent: '',
+      dificultad: new Set(),
+      botas: new Set(),
+      tipo: new Set(),
+      season: new Set(),
+      altMin: null,
+      altMax: null
+    };
+
+    // ---- Render chips
+    function renderChips(containerId, options, key) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = '';
+      options.forEach(opt => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'chip';
+        b.textContent = opt;
+        b.dataset.key = key;
+        b.dataset.value = opt;
+        b.setAttribute('aria-pressed', 'false');
+        el.appendChild(b);
       });
     }
-    if (btnInfo && glossary) {
-      btnInfo.addEventListener('click', () => glossary.classList.toggle('hidden'));
-      glossary.addEventListener('click', (e) => {
-        if (e.target.id === 'closeGlossary') glossary.classList.add('hidden');
-      });
+    renderChips('filter-dificultad', FILTER_OPTIONS.dificultad, 'dificultad');
+    renderChips('filter-botas',      FILTER_OPTIONS.botas,      'botas');
+    renderChips('filter-tipo',       FILTER_OPTIONS.tipo,       'tipo');
+    renderChips('filter-season',     FILTER_OPTIONS.season,     'season');
+
+    // ---- Emitir evento para map.js
+    function emit() {
+      const payload = {
+        continent: state.continent,
+        dificultad: Array.from(state.dificultad),
+        botas: Array.from(state.botas),
+        tipo: Array.from(state.tipo),
+        season: Array.from(state.season),
+        altMin: state.altMin,
+        altMax: state.altMax
+      };
+      window.dispatchEvent(new CustomEvent('gountain:filters-changed', { detail: payload }));
     }
 
-    // (Opcional) cuando cambie el select de continente, emite un evento.
-    // map.js puede escuchar este evento si quieres aplicar filtros en vivo.
-    if (select) {
-      select.addEventListener('change', () => {
-        window.__FILTERS__ = window.__FILTERS__ || {};
-        window.__FILTERS__.continent = select.value || '';
-        window.dispatchEvent(new CustomEvent('gountain:filters-changed', {
-          detail: { continent: window.__FILTERS__.continent }
-        }));
-      });
+    // ---- Delegación de clicks en chips
+    document.body.addEventListener('click', (e) => {
+      const b = e.target.closest('.chip');
+      if (!b) return;
+      const key = b.dataset.key;
+      const val = b.dataset.value;
+      const set = state[key];
+      if (!(set instanceof Set)) return;
+
+      if (set.has(val)) {
+        set.delete(val);
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      } else {
+        set.add(val);
+        b.classList.add('active');
+        b.setAttribute('aria-pressed', 'true');
+      }
+      emit();
+    });
+
+    // ---- Altitud con debounce + chip removible
+    function renderAltChip() {
+      if (!altChipBox) return;
+      altChipBox.innerHTML = '';
+      const { altMin:mn, altMax:mx } = state;
+      if (mn != null || mx != null) {
+        const c = document.createElement('button');
+        c.type = 'button';
+        c.className = 'chip active';
+        c.title = 'Quitar filtro de altitud';
+        c.textContent = `${mn != null ? mn : '–'}–${mx != null ? mx : '–'} m`;
+        c.addEventListener('click', () => {
+          state.altMin = state.altMax = null;
+          if (altMin) altMin.value = '';
+          if (altMax) altMax.value = '';
+          renderAltChip(); emit();
+        });
+        altChipBox.appendChild(c);
+      }
     }
+
+    let altTimer;
+    function onAltChange() {
+      clearTimeout(altTimer);
+      altTimer = setTimeout(() => {
+        state.altMin = altMin?.value !== '' ? Number(altMin.value) : null;
+        state.altMax = altMax?.value !== '' ? Number(altMax.value) : null;
+        renderAltChip(); emit();
+      }, 180);
+    }
+    altMin?.addEventListener('input', onAltChange);
+    altMax?.addEventListener('input', onAltChange);
+
+    // ---- Select de continente
+    select?.addEventListener('change', () => {
+      state.continent = select.value || '';
+      emit();
+    });
+
+    // ---- Limpiar filtros
+    clearBtn?.addEventListener('click', () => {
+      state.dificultad.clear();
+      state.botas.clear();
+      state.tipo.clear();
+      state.season.clear();
+      state.altMin = state.altMax = null;
+
+      $$('#sidebar .chip.active').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      if (altMin) altMin.value = '';
+      if (altMax) altMax.value = '';
+      renderAltChip();
+      emit();
+    });
+
+    // ---- Primer render/emisión
+    renderAltChip();
+    emit();
   })();
-</script>
-
+  </script>
 </body>
 </html>
