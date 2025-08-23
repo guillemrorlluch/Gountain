@@ -77,5 +77,6 @@ copy(path.join(ROOT, "map.js"),    path.join(OUT, "map.js"));
 copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
 copy(path.join(ROOT, 'sw-v12.js'), path.join(OUT, 'sw-v12.js'));
+copy(path.join(ROOT, "manifest.json"), path.join(OUT, "manifest.json"));
 
 console.log("✅ Build Completed in /vercel/output");
