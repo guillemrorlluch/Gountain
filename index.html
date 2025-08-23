@@ -62,24 +62,16 @@
   <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
   <div id="map-error" class="hidden" role="alert"></div>
 
-  <!-- JS de tu app (con cache-busting) -->
-  <script type="module" src="/dist/app.bundle.js?v=12"></script>
+  <!-- App CSS/JS -->
   <script type="module" src="/map.js?v=12"></script>
 
-  <!-- Service Worker v12 (con recarga segura, sin bucles) -->
+  <!-- Service Worker -->
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw-v12.js?v=12").catch(console.error);
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw-v12.js?v=12').catch(console.error);
       });
-
-      let didReload = false;
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (didReload) return;
-        didReload = true;
-        // Pequeño delay para que el nuevo SW tome control antes de recargar
-        setTimeout(() => location.reload(), 200);
-      });
+      /* Do NOT force reload on controllerchange to avoid loops */
     }
   </script>
 

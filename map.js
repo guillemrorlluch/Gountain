@@ -1,5 +1,5 @@
 // map.js — v12
-import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
+import { MAPBOX_TOKEN, getBuildId } from './config.js';
 
 /* global mapboxgl */
 let map;
@@ -18,6 +18,7 @@ const state = (window.__FILTERS__ = window.__FILTERS__ || {});
 state.continent = state.continent || '';
 
 let allDestinations = [];
+const autoPanPadding = { top: 80, right: 28, bottom: 140, left: 28 };
 
 /* ---------------------------
    BOOT / MAP INIT
@@ -278,14 +279,10 @@ function onUnclusteredClick(e) {
 
   // Auto-pan con padding generoso en móvil
   try {
-    map.panInsideBounds(map.getBounds(), {
-      padding: { top: 80, right: 28, bottom: 140, left: 28 }
-    });
+    map.panInsideBounds(map.getBounds(), { padding: autoPanPadding });
+    // Nudge view so the popup nunca se corta en las barras del navegador móvil
+    map.panBy([0, 0], { padding: autoPanPadding });
   } catch {}
-}
-
-  // Nudge view so the popup never clips on mobile chrome/safari UI
-  try { map.panBy([0, 0], { padding: autoPanPadding }); } catch {}
 }
 
 function onClusterClick(e) {
