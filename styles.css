@@ -40,10 +40,9 @@ body{
 
 .topbar h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
 /* reactivamos los controles dentro de topbar */
-.topbar { pointer-events:none; }
 .topbar .hamburger,
 .topbar select,
-.topbar .info-btn { pointer-events:auto; }
+.topbar { pointer-events:auto; }      /* la topbar debe ser clicable */
 
 .topbar select{
   margin-left:auto;
@@ -129,7 +128,7 @@ body{
 }
 #sidebar{left:0}
 #glossary{right:0; border-right:none; border-left:1px solid var(--border)}
-.panel.hidden{ display:none !important; } /* no tapa el mapa */
+.panel.hidden{ display:none!important; } /* panel oculto no tapa el mapa */
 .hidden{display:none}
 .panel-section{padding:12px}
 .panel-section h2{margin:8px 0 6px; font-size:14px}
