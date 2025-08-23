@@ -20,6 +20,13 @@ state.continent = state.continent || '';
 
 let allDestinations = [];
 
+window.addEventListener('gountain:filters-changed', () => {
+  const c = (window.__FILTERS__ && window.__FILTERS__.continent) || '';
+  const visible = allDestinations.filter(d => !c || d.continente === c);
+  updateMapWith(visible);
+  fitToList(visible);
+});
+
 /* ---------------------------
    BOOT / MAP INIT
 ---------------------------- */
