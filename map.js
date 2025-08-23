@@ -442,32 +442,50 @@ async function loadDestinos(){
 }
 
 /* =========================================================
-   ADD: Panels (Sidebar filters & Glossary) + Filters logic
-   - No duplica constantes ni toca el mapa/ capas existentes
+   Panels (Sidebar filters & Glossary) + Filters logic
 ========================================================= */
 
-// toggles de paneles
 function setupPanelToggles() {
   const btnMenu  = document.getElementById('btnMenu');
   const btnInfo  = document.getElementById('btnInfo');
   const sidebar  = document.getElementById('sidebar');
   const glossary = document.getElementById('glossary');
 
+  console.debug('[UI] wiring panel toggles', { btnMenu: !!btnMenu, btnInfo: !!btnInfo, sidebar: !!sidebar, glossary: !!glossary });
+
   if (btnMenu && sidebar) {
-    btnMenu.addEventListener('click', () => {
+    btnMenu.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
       sidebar.classList.toggle('hidden');
       if (!sidebar.classList.contains('hidden') && glossary) glossary.classList.add('hidden');
     });
   }
+
   if (btnInfo && glossary) {
-    btnInfo.addEventListener('click', () => {
+    btnInfo.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
       glossary.classList.toggle('hidden');
       if (!glossary.classList.contains('hidden') && sidebar) sidebar.classList.add('hidden');
     });
   }
+
+  /* Fallback por si el DOM cambia en runtime (delegación) */
+  document.body.addEventListener('click', (e) => {
+    const m = e.target.closest && e.target.closest('#btnMenu');
+    const i = e.target.closest && e.target.closest('#btnInfo');
+    if (m && sidebar) {
+      e.preventDefault(); e.stopPropagation();
+      sidebar.classList.toggle('hidden');
+      if (!sidebar.classList.contains('hidden') && glossary) glossary.classList.add('hidden');
+    }
+    if (i && glossary) {
+      e.preventDefault(); e.stopPropagation();
+      glossary.classList.toggle('hidden');
+      if (!glossary.classList.contains('hidden') && sidebar) sidebar.classList.add('hidden');
+    }
+  });
 }
 
-// contenido del panel de filtros
 function renderSidebarPanel() {
   const el = document.getElementById('sidebar');
   if (!el) return;
@@ -532,7 +550,6 @@ function renderSidebarPanel() {
   });
 }
 
-// contenido del glosario + leyenda botas
 function renderGlossaryPanel() {
   const el = document.getElementById('glossary');
   if (!el) return;
@@ -570,7 +587,7 @@ function renderGlossaryPanel() {
   }
 }
 
-/* ----- helpers de chips/filtros ----- */
+/* ---- helpers de chips/filtros ---- */
 state.filters = state.filters || {};
 
 function putChips(hostId, values, onClick){
@@ -604,30 +621,25 @@ passContinent = function(d){
 
   const f = state.filters || {};
 
-  // dificultad
-  if (f.dificultad && f.dificultad.length) {
+  if (f.dificultad?.length) {
     if (!f.dificultad.some(tag => (d.dificultad || '').includes(tag))) return false;
   }
-  // botas
-  if (f.botas && f.botas.length) {
+  if (f.botas?.length) {
     const boots = Array.isArray(d.botas) ? d.botas : [];
     if (!boots.some(b => f.botas.includes(b))) return false;
   }
-  // tipo
-  if (f.tipo && f.tipo.length) {
+  if (f.tipo?.length) {
     if (!f.tipo.includes(d.tipo)) return false;
   }
-  // meses (muy simple: substring de etiquetas)
-  if (f.meses && f.meses.length) {
+  if (f.meses?.length) {
     const m = String(d.meses || '');
     if (!f.meses.some(x => m.includes(x))) return false;
   }
-  // altitud
   const minI = document.getElementById('alt-min');
   const maxI = document.getElementById('alt-max');
-  const min = minI && minI.value ? Number(minI.value) : -Infinity;
-  const max = maxI && maxI.value ? Number(maxI.value) : Infinity;
-  const alt = Number(d.altitud_m || d.altitud || NaN);
+  const min = minI?.value ? Number(minI.value) : -Infinity;
+  const max = maxI?.value ? Number(maxI.value) : Infinity;
+  const alt = Number(d.altitud_m ?? d.altitud ?? NaN);
   if (!Number.isNaN(alt) && !(alt >= min && alt <= max)) return false;
 
   return true;
@@ -643,8 +655,15 @@ passContinent = function(d){
   });
 })();
 
-/* ---- Inicializa paneles al cargar DOM ---- */
-document.addEventListener('DOMContentLoaded', () => {
+/* ---- Inicializa paneles (si el DOM ya está listo, corre ya) ---- */
+function ready(fn){
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fn, { once:true });
+  } else {
+    fn();
+  }
+}
+ready(() => {
   setupPanelToggles();
   renderSidebarPanel();
   renderGlossaryPanel();
