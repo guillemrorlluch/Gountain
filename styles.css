@@ -27,197 +27,209 @@ body{
    LAYOUT: TOPBAR
 ========================= */
 .topbar{
-  position:fixed; left:0; right:0; top:0; height:56px;
-  display:flex; align-items:center; gap:10px;
-  padding:0 12px;
+  position:fixed; left:0; right:0; top:0; height:3.5rem; /* 56px */
+  display:flex; align-items:center; gap:0.625rem; /* 10px */
+  padding:0 0.75rem; /* 12px */
   background:#111827d0;
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  border-bottom:0.0625rem solid var(--border); /* 1px */
+  backdrop-filter:blur(0.5rem); /* 8px */
+  -webkit-backdrop-filter:blur(0.5rem);
   z-index:1000;
-  /* IMPORTANTE: la topbar debe ser clicable */
   pointer-events:auto;
 }
 
-.topbar h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
+.topbar h1{margin:0;font-size:1rem;font-weight:700;letter-spacing:0.018rem}
 /* reactivamos los controles dentro de topbar */
 .topbar .hamburger,
 .topbar select,
-.topbar { pointer-events:auto; }      /* la topbar debe ser clicable */
+.topbar { pointer-events:auto; }
 
 .topbar select{
   margin-left:auto;
   appearance:none;
   background:#1f2937; color:var(--text);
-  border:1px solid #374151; border-radius:10px;
-  padding:6px 10px; min-height:36px;
+  border:0.0625rem solid #374151;
+  border-radius:0.625rem; /* 10px */
+  padding:0.375rem 0.625rem; /* 6px 10px */
+  min-height:2.25rem; /* 36px */
 }
 .info-btn{
-  margin-left:6px;
-  min-width:36px; min-height:36px;
-  border-radius:10px; border:1px solid #374151;
+  margin-left:0.375rem; /* 6px */
+  min-width:2.25rem; min-height:2.25rem; /* 36px */
+  border-radius:0.625rem; border:0.0625rem solid #374151;
   background:#1f2937; color:var(--text); cursor:pointer;
 }
 
 /* Hamburger */
 .hamburger{
-  width:40px; height:36px; display:inline-flex; align-items:center; justify-content:center;
-  border-radius:10px; border:1px solid #374151; background:#1f2937; color:var(--text); cursor:pointer;
+  width:2.5rem; height:2.25rem; /* 40px, 36px */
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:0.625rem; border:0.0625rem solid #374151;
+  background:#1f2937; color:var(--text); cursor:pointer;
 }
 .hamburger .bars, .hamburger .bars::before, .hamburger .bars::after{
-  content:""; display:block; width:18px; height:2px; background:var(--text); position:relative; border-radius:2px;
+  content:""; display:block; width:1.125rem; height:0.125rem; /* 18px, 2px */
+  background:var(--text); position:relative; border-radius:0.125rem;
 }
-.hamburger .bars::before{ position:absolute; top:-6px }
-.hamburger .bars::after{ position:absolute; top:6px }
+.hamburger .bars::before{ position:absolute; top:-0.375rem } /* -6px */
+.hamburger .bars::after{ position:absolute; top:0.375rem }   /* 6px */
 
 /* =========================
    BASEMAP SWITCHER
 ========================= */
 .basemap-switcher{
-  position:fixed; left:12px; top:56px;
-  display:flex; gap:6px; flex-wrap:wrap;
-  padding:8px;
-  background:#111827d0; border:1px solid var(--border); border-radius:10px;
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  position:fixed; left:0.75rem; top:3.5rem; /* 12px, 56px */
+  display:flex; gap:0.375rem; flex-wrap:wrap; /* 6px */
+  padding:0.5rem; /* 8px */
+  background:#111827d0; border:0.0625rem solid var(--border); border-radius:0.625rem;
+  backdrop-filter:blur(0.5rem); -webkit-backdrop-filter:blur(0.5rem);
   z-index:1001;
-  max-width:calc(100vw - 24px);
-  /* contenedor transparente a los clics */
+  max-width:calc(100vw - 1.5rem); /* 24px */
   pointer-events:none;
 }
 .basemap-switcher button{
-  border:1px solid #374151; border-radius:999px;
+  border:0.0625rem solid #374151; border-radius:999px;
   background:#1f2937; color:var(--text);
-  padding:6px 10px; font-size:13px; cursor:pointer; min-height:32px;
-  /* los botones sí reciben clics */
+  padding:0.375rem 0.625rem; font-size:0.8125rem; cursor:pointer; /* 13px */
+  min-height:2rem; /* 32px */
   pointer-events:auto;
 }
 .basemap-switcher button.active{
   border-color:var(--accent);
-  box-shadow:0 0 0 1px var(--accent) inset;
+  box-shadow:0 0 0 0.0625rem var(--accent) inset;
 }
 
 /* Controles Mapbox */
-.mapboxgl-ctrl-top-right{ top:56px; }
-.mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top:64px; }
+.mapboxgl-ctrl-top-right{ top:3.5rem; } /* 56px */
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top:4rem; } /* 64px */
 
 /* =========================
    MAP CONTAINER
 ========================= */
 #map{
-  position:fixed; top:56px; left:0; right:0; bottom:0;
+  position:fixed; top:3.5rem; left:0; right:0; bottom:0; /* 56px */
   background:#0b1220; z-index:0;
-  pointer-events:auto; /* el mapa recibe clics */
+  pointer-events:auto;
 }
 .mapboxgl-canvas{ pointer-events:auto; }
 
 .map-health{
-  position:fixed;bottom:10px;right:10px;
+  position:fixed;bottom:0.625rem;right:0.625rem; /* 10px */
   background:#111827d0;color:var(--text);
-  padding:4px 8px;border-radius:6px;font-size:12px;z-index:1000
+  padding:0.25rem 0.5rem; border-radius:0.375rem; font-size:0.75rem; z-index:1000; /* 4px 8px 6px 12px */
 }
 #map-error{
-  position:fixed;top:64px;left:50%;transform:translateX(-50%);
-  background:var(--danger);color:#fff;padding:6px 10px;border-radius:6px;z-index:2000;font-size:14px
+  position:fixed;top:4rem;left:50%;transform:translateX(-50%); /* 64px */
+  background:var(--danger);color:#fff;padding:0.375rem 0.625rem;border-radius:0.375rem;z-index:2000;font-size:0.875rem; /* 6px 10px 6px 14px */
 }
 
 /* =========================
    PANELS
 ========================= */
 .panel{
-  position:fixed; top:56px; bottom:0; width:320px; background:var(--panel);
-  border-right:1px solid var(--border); z-index:1001; overflow:auto;
+  position:fixed; top:3.5rem; bottom:0; width:20rem; background:var(--panel); /* 320px */
+  border-right:0.0625rem solid var(--border); z-index:1001; overflow:auto;
 }
 #sidebar{left:0}
-#glossary{right:0; border-right:none; border-left:1px solid var(--border)}
-.panel.hidden{ display:none!important; } /* panel oculto no tapa el mapa */
+#glossary{right:0; border-right:none; border-left:0.0625rem solid var(--border)}
+.panel.hidden{ display:none!important; }
 .hidden{display:none}
-.panel-section{padding:12px}
-.panel-section h2{margin:8px 0 6px; font-size:14px}
+.panel-section{padding:0.75rem} /* 12px */
+.panel-section h2{margin:0.5rem 0 0.375rem; font-size:0.875rem} /* 8px 6px */
 details{
-  background:#0b1326; border:1px solid #1f2a44; border-radius:10px;
-  padding:8px 10px; margin:10px 0;
+  background:#0b1326; border:0.0625rem solid #1f2a44; border-radius:0.625rem; /* 1px 10px */
+  padding:0.5rem 0.625rem; margin:0.625rem 0; /* 8px 10px */
 }
 summary{cursor:pointer;color:var(--muted);font-weight:700}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.5rem} /* 8px */
+
+/* LEYENDA DE BOTAS */
+#legend-botas{
+  display:flex;
+  flex-direction:column;
+  gap:0.6rem;                  /* más espacio entre burbujas */
+  padding-left:1rem;           /* mantiene alineación si usas viñetas */
+}
+#legend-botas li{
+  margin:0;
+  padding:0;
+  /* si quieres quitar viñetas: descomenta la línea siguiente */
+  /* list-style:none; */
+}
+
 .chip{
-  border:1px solid var(--chip-border); border-radius:999px; padding:6px 12px;
-  color:#fff; background:var(--chip); cursor:pointer; font-size:13px;
+  border:0.0625rem solid var(--chip-border); border-radius:999px; padding:0.375rem 0.75rem; /* 6px 12px */
+  color:#fff; background:var(--chip); cursor:pointer; font-size:0.8125rem; /* 13px */
   user-select:none; transition:background .2s,color .2s,border-color .2s,transform .05s;
-  min-height:36px; min-width:44px;
+  min-height:2.25rem; min-width:2.75rem; /* 36px, 44px */
 }
 .chip:hover{background:#94a3b833}
-.chip:active{transform:translateY(1px)}
+.chip:active{transform:translateY(0.0625rem)} /* 1px */
 .chip.active{background:#16a34a;color:#fff;border-color:#16a34a}
-.btn{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #334155;background:#0b1326;color:#e5e7eb;cursor:pointer;margin-top:8px;min-height:44px}
-.input{width:80px;padding:6px;border-radius:8px;border:1px solid #334155;background:#0b1326;color:#e5e7eb}
-.altitude-inputs{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.btn{
+  width:100%;padding:0.625rem 0.75rem;border-radius:0.625rem;border:0.0625rem solid #334155;background:#0b1326;color:#e5e7eb;cursor:pointer;margin-top:0.5rem;min-height:2.75rem; /* 10/12/10/44 */
+}
+.input{
+  width:5rem; padding:0.375rem; border-radius:0.5rem; border:0.0625rem solid #334155; background:#0b1326; color:#e5e7eb; /* 80/6/8/1 */
+}
+.altitude-inputs{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap} /* 8px */
 
 /* =========================
    POPUP (destino) — tema claro
 ========================= */
-.mapboxgl-popup { max-width: 420px; font-family: system-ui, sans-serif; }
+.mapboxgl-popup { max-width:26.25rem; font-family: system-ui, sans-serif; } /* 420px */
 .mapboxgl-popup-content{
-  background:#F5F5F7;
-  color:#1c1c1c;
-  font-size:14px;
-  line-height:1.5;
-  padding:16px;
-  border-radius:10px;
-  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  background:#F5F5F7; color:#1c1c1c; font-size:0.875rem; line-height:1.5;
+  padding:1rem; border-radius:0.625rem;
+  box-shadow:0 0.125rem 0.625rem rgba(0,0,0,.15); /* 0 2px 10px */
 }
 .mapboxgl-popup-content h3,
 .mapboxgl-popup-content h4,
 .mapboxgl-popup-content strong{ color:#1c1c1c; }
 .mapboxgl-popup-close-button{
   color:#1c1c1c;
-  font-size:18px;
-  top:8px; right:10px;
+  font-size:1.125rem; /* 18px */
+  top:0.5rem; right:0.625rem; /* 8px 10px */
 }
 
 /* Título clicable del destino */
-.popup h3{margin:0 0 8px; font-size:18px; line-height:1.3}
+.popup h3{margin:0 0 0.5rem; font-size:1.125rem; line-height:1.3} /* 18px */
 .popup h3 a{
-  color:#1da1f2;              /* color solicitado */
-  text-decoration:none;       /* sin subrayado por defecto */
-  border:0; cursor:pointer;
+  color:#1da1f2; text-decoration:none; border:0; cursor:pointer;
 }
-.popup h3 a:hover{ text-decoration:underline; } /* subrayado en hover */
+.popup h3 a:hover{ text-decoration:underline; }
 
-.popup .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin-bottom:8px}
-.popup .section{margin:10px 0}
-.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.popup .grid{display:grid;grid-template-columns:1fr 1fr;gap:0.375rem 1.125rem;margin-bottom:0.5rem} /* 6px 18px 8px */
+.popup .section{margin:0.625rem 0} /* 10px */
+.pills{display:flex;flex-wrap:wrap;gap:0.375rem;margin-top:0.375rem} /* 6px */
 .pill{
-  padding:4px 10px;
-  border-radius:999px;
-  border:1px solid rgba(17,24,39,.15);
-  background:#b6d9ef;
-  display:inline-block;
-  font-size:12px
+  padding:0.25rem 0.625rem; border-radius:999px;
+  border:0.0625rem solid rgba(17,24,39,.15);
+  background:#b6d9ef; display:inline-block; font-size:0.75rem; /* 12px */
 }
-.links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.links{display:flex;gap:0.5rem;margin-top:0.625rem;flex-wrap:wrap} /* 8px 10px */
 
 /* ✅ Oculta enlaces a Google SOLO dentro del bloque .links */
-.links a[href*="google.com"]{
-  display:none !important;
-}
+.links a[href*="google.com"]{ display:none !important; }
 
 /* Galería */
-.gallery{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:2px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.gallery img{height:120px;width:auto;border-radius:8px;object-fit:cover;flex:0 0 auto;scroll-snap-align:start;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.gallery{display:flex;gap:0.5rem;margin-top:0.625rem;overflow-x:auto;padding-bottom:0.125rem;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.gallery img{height:7.5rem;width:auto;border-radius:0.5rem;object-fit:cover;flex:0 0 auto;scroll-snap-align:start;box-shadow:0 0.0625rem 0.1875rem rgba(0,0,0,.3)} /* 120px, 8px, 1px 3px */
 
 /* =========================
    CHIP BAR (móvil)
 ========================= */
 .chip-bar{
   position:fixed; left:0; right:0; bottom:0;
-  display:flex; gap:8px; align-items:center;
-  overflow-x:auto; padding:10px 12px;
-  background:#111827d0; border-top:1px solid var(--border);
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  display:flex; gap:0.5rem; align-items:center;
+  overflow-x:auto; padding:0.625rem 0.75rem;
+  background:#111827d0; border-top:0.0625rem solid var(--border);
+  backdrop-filter:blur(0.5rem); -webkit-backdrop-filter:blur(0.5rem);
   z-index:1000;
-  pointer-events:none;           /* contenedor transparente */
+  pointer-events:none;
 }
 .chip-bar .chip{white-space:nowrap; pointer-events:auto;}
-.chip-bar::-webkit-scrollbar{height:6px}
+.chip-bar::-webkit-scrollbar{height:0.375rem}
 .chip-bar::-webkit-scrollbar-thumb{background:#475569;border-radius:999px}
 
 /* =========================
@@ -225,17 +237,17 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 ========================= */
 .destination-chips{
   position:absolute;
-  left:12px;
-  right:84px;             /* hueco para zoom/geolocate (top-right) */
-  bottom:12px;
+  left:0.75rem;
+  right:5.25rem;             /* 84px */
+  bottom:0.75rem;
   display:flex;
   flex-wrap:wrap;
-  gap:6px;
+  gap:0.375rem;
   align-items:center;
   z-index:900;
-  padding:6px;
-  max-width:calc(100% - 96px);
-  pointer-events:none;           /* contenedor transparente */
+  padding:0.375rem;
+  max-width:calc(100% - 6rem); /* 96px */
+  pointer-events:none;
   box-sizing:border-box;
 }
 .destination-chips .chip{
@@ -243,7 +255,7 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
   max-width:100%;
   overflow:hidden;
   text-overflow:ellipsis;
-  pointer-events:auto;           /* chip clicable */
+  pointer-events:auto;
 }
 
 /* =========================
@@ -251,33 +263,33 @@ summary{cursor:pointer;color:var(--muted);font-weight:700}
 ========================= */
 .mapboxgl-ctrl button:focus-visible,
 button:focus-visible, a:focus-visible, select:focus-visible{
-  outline:2px solid #7aa2ff; outline-offset:2px;
+  outline:0.125rem solid #7aa2ff; outline-offset:0.125rem; /* 2px */
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width:800px){
-  .basemap-switcher{left:10px;max-width:calc(100vw - 20px)}
+@media (max-width:50rem){ /* 800px */
+  .basemap-switcher{left:0.625rem;max-width:calc(100vw - 1.25rem)} /* 10px 20px */
 }
-@media (max-width:600px){
-  .topbar{height:52px}
-  #map{top:52px}
-  .basemap-switcher{top:52px}
-  .mapboxgl-ctrl-top-right{top:52px}
-  .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{margin-top:60px}
-  .mapboxgl-popup{ max-width:min(92vw, 420px); }
+@media (max-width:37.5rem){ /* 600px */
+  .topbar{height:3.25rem} /* 52px */
+  #map{top:3.25rem}
+  .basemap-switcher{top:3.25rem}
+  .mapboxgl-ctrl-top-right{top:3.25rem}
+  .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{margin-top:3.75rem} /* 60px */
+  .mapboxgl-popup{ max-width:min(92vw, 26.25rem); } /* 420px */
   .panel{width:100%}
 }
-@media (max-width:420px){
+@media (max-width:26.25rem){ /* 420px */
   .popup .grid{grid-template-columns:1fr}
-  .gallery img{height:90px}
+  .gallery img{height:5.625rem} /* 90px */
 }
 
 /* En móvil: chips en 1 fila con scroll suave */
-@media (max-width: 768px){
+@media (max-width:48rem){ /* 768px */
   .destination-chips{
-    right:12px;
+    right:0.75rem;
     flex-wrap:nowrap;
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
@@ -285,37 +297,15 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   .destination-chips::-webkit-scrollbar{ display:none; }
 }
 
-/* El popup por encima del mapa y clicable */
-.mapboxgl-popup {
-  z-index: 1100;            /* por encima de canvas y controles */
-  pointer-events: auto;     /* recibe eventos */
-}
+/* Z-index y eventos para popups/canvas */
+.mapboxgl-popup { z-index: 1100; pointer-events: auto; }
+.mapboxgl-popup-content { pointer-events: auto; }
+.mapboxgl-canvas-container, .mapboxgl-canvas { z-index: 0; }
 
-/* El contenido también debe ser clicable (enlaces, close, etc.) */
-.mapboxgl-popup-content {
-  pointer-events: auto;
-}
-
-/* Asegura que el canvas no tape el popup por z-index */
-.mapboxgl-canvas-container,
-.mapboxgl-canvas {
-  z-index: 0;
-}
-
-/* Mantén los overlays como click-through, pero sus botones sí clicables */
-.basemap-switcher,
-.destination-chips,
-.chip-bar { pointer-events: none; }
-
-.basemap-switcher button,
-.destination-chips .chip,
-.chip-bar .chip { pointer-events: auto; }
+/* Overlays click-through, botones clicables */
+.basemap-switcher, .destination-chips, .chip-bar { pointer-events: none; }
+.basemap-switcher button, .destination-chips .chip, .chip-bar .chip { pointer-events: auto; }
 
 /* Título del destino: color y subrayado al hover */
-.popup h3 a {
-  color: #1da1f2;
-  text-decoration: none;
-  border: 0;
-  cursor: pointer;
-}
+.popup h3 a { color: #1da1f2; text-decoration: none; border: 0; cursor: pointer; }
 .popup h3 a:hover { text-decoration: underline; }
