@@ -34,9 +34,10 @@ body{
   border-bottom:1px solid var(--border);
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   z-index:1000;
-  /* no intercepta clics del mapa debajo */
-  pointer-events:none;
+  /* IMPORTANTE: la topbar debe ser clicable */
+  pointer-events:auto;
 }
+
 .topbar h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.3px}
 /* reactivamos los controles dentro de topbar */
 .topbar .hamburger,
