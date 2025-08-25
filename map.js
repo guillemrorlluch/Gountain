@@ -169,10 +169,7 @@ function isVisible(el) {
   return cs.display !== 'none' && !el.classList.contains('hidden') && cs.visibility !== 'hidden';
 }
 
-/**
- * Calcula los márgenes útiles (safe areas) en px según UI visible now.
- * No mueve el mapa: solo devuelve { top, right, bottom, left }.
- */
+/** Márgenes útiles (px) según UI visible */
 function getSafeAreas() {
   const topbar   = $('.topbar');
   const sidebar  = byId('sidebar');
@@ -187,10 +184,7 @@ function getSafeAreas() {
   return { top, right, bottom, left };
 }
 
-/**
- * Si lngLat cae fuera del rectángulo útil, hace un pan suave
- * con padding = safe areas. Devuelve true si movió el mapa.
- */
+/** Autopan rápido para encajar un punto dentro del rectángulo útil */
 function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
   const sa = getSafeAreas();
   const { clientWidth: W, clientHeight: H } = mapInstance.getContainer();
@@ -204,7 +198,6 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
   let dx = 0, dy = 0;
   if (p.x < leftBound)        dx = leftBound - p.x;
   else if (p.x > rightBound)  dx = rightBound - p.x;
-
   if (p.y < topBound)         dy = topBound - p.y;
   else if (p.y > bottomBound) dy = bottomBound - p.y;
 
@@ -213,13 +206,85 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
       center: mapInstance.unproject([p.x + dx, p.y + dy]),
       padding: sa,
       duration: opts.duration ?? 450,
-      easing: t => t * (2 - t) // ease-out
+      easing: t => t * (2 - t)
     });
     return true;
   }
   return false;
 }
-/* --------------------------- */
+
+/* -----------------------------------------
+   🆕 Popup inteligente: medida + anclaje + bbox
+------------------------------------------*/
+const POPUP_CFG = {
+  maxWidthPx: 420,   // mismo límite que tu CSS (26.25rem)
+  markerGap: 16      // separación entre marcador y card
+};
+
+function getPopupMeasureEl() {
+  let el = document.getElementById('popup-measure');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'popup-measure';
+    el.style.position = 'fixed';
+    el.style.left = '-9999px';
+    el.style.top = '-9999px';
+    el.style.opacity = '0';
+    el.style.pointerEvents = 'none';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+
+function measurePopupSize(html) {
+  const maxW = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
+  const holder = getPopupMeasureEl();
+  holder.style.maxWidth = maxW + 'px';
+  holder.innerHTML = `<div class="mapboxgl-popup-content">${html}</div>`;
+  const rect = holder.firstChild.getBoundingClientRect();
+  const size = { w: Math.ceil(rect.width), h: Math.ceil(rect.height) };
+  holder.innerHTML = '';
+  return size;
+}
+
+function choosePopupAnchor(p, size, sa, W, H, gap = POPUP_CFG.markerGap) {
+  const space = {
+    left:   p.x - sa.left  - gap,
+    right:  (W - sa.right) - p.x - gap,
+    top:    p.y - sa.top   - gap,
+    bottom: (H - sa.bottom) - p.y - gap
+  };
+  if (space.right >= size.w) return 'left';   // card a la derecha del punto
+  if (space.left  >= size.w) return 'right';  // card a la izquierda del punto
+  if (space.top    >= size.h) return 'bottom';
+  if (space.bottom >= size.h) return 'top';
+  const entries = Object.entries(space).sort((a,b)=>b[1]-a[1]);
+  const best = entries[0][0];
+  return (best === 'right') ? 'left' :
+         (best === 'left')  ? 'right' :
+         (best === 'top')   ? 'bottom' : 'top';
+}
+
+function computePopupBounding(p, size, anchor, gap = POPUP_CFG.markerGap) {
+  switch (anchor) {
+    case 'left':   return { x: p.x + gap,            y: p.y - size.h/2, w: size.w, h: size.h };
+    case 'right':  return { x: p.x - gap - size.w,   y: p.y - size.h/2, w: size.w, h: size.h };
+    case 'top':    return { x: p.x - size.w/2,       y: p.y - gap - size.h,       w: size.w, h: size.h };
+    case 'bottom': return { x: p.x - size.w/2,       y: p.y + gap,                w: size.w, h: size.h };
+    default:       return { x: p.x + gap,            y: p.y - size.h/2, w: size.w, h: size.h };
+  }
+}
+
+function boundingExcess(b, sa, W, H) {
+  const leftBound = sa.left, rightBound = W - sa.right;
+  const topBound  = sa.top,  bottomBound = H - sa.bottom;
+  let dx = 0, dy = 0;
+  if (b.x < leftBound)             dx = leftBound - b.x;
+  else if (b.x + b.w > rightBound) dx = rightBound - (b.x + b.w);
+  if (b.y < topBound)              dy = topBound - b.y;
+  else if (b.y + b.h > bottomBound)dy = bottomBound - (b.y + b.h);
+  return { dx, dy };
+}
 
 /* ---------------------------
    POPUP HTML
@@ -448,13 +513,16 @@ function reattachSourcesAndLayers() {
   }
 }
 
-// 🆕 pequeña ayuda para abrir popup tras mover el mapa (si hizo autopan)
-function openPopupAt(coords, html) {
+/* ---------------------------
+   🆕 openPopupAt con anclaje dinámico
+---------------------------- */
+function openPopupAt(coords, html, anchor = 'auto') {
+  const maxW = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
   new mapboxgl.Popup({
     closeOnMove: true,
-    offset: 16,
-    anchor: 'bottom',
-    maxWidth: '420px',
+    offset: POPUP_CFG.markerGap,
+    anchor,                          // anclaje dinámico elegido
+    maxWidth: `${maxW}px`,
     className: 'gountain-popup',
   })
     .setLngLat(coords)
@@ -462,19 +530,40 @@ function openPopupAt(coords, html) {
     .addTo(map);
 }
 
+/* ---------------------------
+   🆕 Click en punto: medir → anclar → autopan mínimo → abrir
+---------------------------- */
 function onUnclusteredClick(e) {
   const f = e.features && e.features[0];
   if (!f) return;
 
   const coords = f.geometry.coordinates.slice();
-  const html = f.properties.html || '';
+  const html   = f.properties.html || '';
 
-  // 🆕 Autopan solo si el punto cae fuera del rectángulo útil (no movemos por abrir paneles)
-  const moved = autopanToFitPoint(map, coords, { duration: 450 });
-  if (moved) {
-    map.once('moveend', () => openPopupAt(coords, html)); // abrir después del pan para que closeOnMove no lo cierre
+  // 1) Medir popup con HTML real (máx. ancho responsive)
+  const size = measurePopupSize(html);
+
+  // 2) Elegir anclaje según aire disponible (incluye safe areas)
+  const sa = getSafeAreas();
+  const { clientWidth: W, clientHeight: H } = map.getContainer();
+  const p = map.project(coords);
+  const anchor = choosePopupAnchor(p, size, sa, W, H);
+
+  // 3) Calcular bbox del popup y ver si se sale. Si sí, autopan mínimo.
+  const bbox = computePopupBounding(p, size, anchor);
+  const { dx, dy } = boundingExcess(bbox, sa, W, H);
+
+  if (dx || dy) {
+    const newCenter = map.unproject([p.x + dx, p.y + dy]);
+    map.easeTo({
+      center: newCenter,
+      padding: sa,
+      duration: 450,
+      easing: t => t * (2 - t)
+    });
+    map.once('moveend', () => openPopupAt(coords, html, anchor));
   } else {
-    openPopupAt(coords, html);
+    openPopupAt(coords, html, anchor);
   }
 }
 
