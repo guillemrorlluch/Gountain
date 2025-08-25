@@ -1,4 +1,4 @@
-// map.js — v13
+// map.js — v13 (popup inteligente + safe areas móvil)
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */
@@ -20,16 +20,9 @@ state.continent = state.continent || '';
 
 let allDestinations = [];
 
-window.addEventListener('gountain:filters-changed', () => {
-  const c = (window.__FILTERS__ && window.__FILTERS__.continent) || '';
-  const visible = allDestinations.filter(d => !c || d.continente === c);
-  updateMapWith(visible);
-  fitToList(visible);
-});
-
-/* ---------------------------
-   BOOT / MAP INIT
----------------------------- */
+// =====================================================
+// BOOT / MAP INIT
+// =====================================================
 async function initMapOnce(){
   if (__MAPBOX_MOUNTED__) return;
   __MAPBOX_MOUNTED__ = true;
@@ -78,9 +71,9 @@ async function initMapOnce(){
 
 document.addEventListener('DOMContentLoaded', initMapOnce);
 
-/* ---------------------------
-   TERRAIN + SKY
----------------------------- */
+// =====================================================
+// TERRAIN + SKY
+// =====================================================
 function enableTerrainAndSky(m) {
   if (!m.getSource('mapbox-dem')) {
     m.addSource('mapbox-dem', {
@@ -105,9 +98,9 @@ function enableTerrainAndSky(m) {
   }
 }
 
-/* ---------------------------
-   STYLE SWITCHER + 3D
----------------------------- */
+// =====================================================
+// STYLE SWITCHER + 3D
+// =====================================================
 function buildStyleSwitcher() {
   const host = document.getElementById('basemap-switcher');
   if (!host) return;
@@ -116,7 +109,7 @@ function buildStyleSwitcher() {
     ['Standard','standard'],
     ['Satellite','satellite'],
     ['Hybrid','hybrid'],
-    ['3D','standard'] // 3D is a pitch/bearing toggle on the current style
+    ['3D','standard'] // 3D = pitch/bearing toggle
   ];
 
   host.innerHTML = '';
@@ -134,7 +127,7 @@ function buildStyleSwitcher() {
       map.setStyle(newStyle);
       map.once('style.load', () => {
         enableTerrainAndSky(map);
-        reattachSourcesAndLayers(); // must recreate sources/layers/events
+        reattachSourcesAndLayers(); // recrea sources/layers/events
       });
       setActive(btn);
     });
@@ -157,9 +150,10 @@ function toggle3D(){
   });
 }
 
-/* ---------------------------
-   🆕 SAFE AREAS + AUTOPAN (helpers)
----------------------------- */
+// =====================================================
+// SAFE AREAS + AUTOPAN (helpers)
+// =====================================================
+
 // Helpers DOM
 function $(sel) { return document.querySelector(sel); }
 function byId(id) { return document.getElementById(id); }
@@ -169,6 +163,10 @@ function isVisible(el) {
   return cs.display !== 'none' && !el.classList.contains('hidden') && cs.visibility !== 'hidden';
 }
 
+// Responsive helpers
+function isMobile(){ return window.matchMedia('(max-width: 640px)').matches; }
+function getMarkerGap(){ return isMobile() ? 24 : 16; }  // separación punto-card
+
 /** Márgenes útiles (px) según UI visible */
 function getSafeAreas() {
   const topbar   = $('.topbar');
@@ -176,10 +174,14 @@ function getSafeAreas() {
   const glossary = byId('glossary');
   const chipbar  = $('.chip-bar') || byId('dest-chips');
 
-  const top    = (topbar?.offsetHeight || 0) + 16;
-  const left   = (isVisible(sidebar)  ? sidebar.offsetWidth  : 0) + 16;
-  const right  = (isVisible(glossary) ? glossary.offsetWidth : 0) + 16;
-  const bottom = ((chipbar && isVisible(chipbar)) ? chipbar.getBoundingClientRect().height : 0) + 16;
+  const base = isMobile() ? 28 : 16; // más aire en móvil
+
+  const top    = (topbar?.offsetHeight || 0) + base;
+  const left   = (isVisible(sidebar)  ? sidebar.offsetWidth  : 0) + base;
+  const right  = (isVisible(glossary) ? glossary.offsetWidth : 0) + base;
+
+  const chipH  = (chipbar && isVisible(chipbar)) ? chipbar.getBoundingClientRect().height : 0;
+  const bottom = Math.max(chipH + base, base + (isMobile() ? 12 : 0));
 
   return { top, right, bottom, left };
 }
@@ -213,12 +215,11 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
   return false;
 }
 
-/* -----------------------------------------
-   🆕 Popup inteligente: medida + anclaje + bbox
-------------------------------------------*/
+// =====================================================
+// Popup inteligente: medida + anclaje + bbox
+// =====================================================
 const POPUP_CFG = {
-  maxWidthPx: 420,   // mismo límite que tu CSS (26.25rem)
-  markerGap: 16      // separación entre marcador y card
+  maxWidthPx: 420,   // igual que tu CSS (26.25rem)
 };
 
 function getPopupMeasureEl() {
@@ -247,7 +248,7 @@ function measurePopupSize(html) {
   return size;
 }
 
-function choosePopupAnchor(p, size, sa, W, H, gap = POPUP_CFG.markerGap) {
+function choosePopupAnchor(p, size, sa, W, H, gap = getMarkerGap()) {
   const space = {
     left:   p.x - sa.left  - gap,
     right:  (W - sa.right) - p.x - gap,
@@ -265,7 +266,7 @@ function choosePopupAnchor(p, size, sa, W, H, gap = POPUP_CFG.markerGap) {
          (best === 'top')   ? 'bottom' : 'top';
 }
 
-function computePopupBounding(p, size, anchor, gap = POPUP_CFG.markerGap) {
+function computePopupBounding(p, size, anchor, gap = getMarkerGap()) {
   switch (anchor) {
     case 'left':   return { x: p.x + gap,            y: p.y - size.h/2, w: size.w, h: size.h };
     case 'right':  return { x: p.x - gap - size.w,   y: p.y - size.h/2, w: size.w, h: size.h };
@@ -286,9 +287,9 @@ function boundingExcess(b, sa, W, H) {
   return { dx, dy };
 }
 
-/* ---------------------------
-   POPUP HTML
----------------------------- */
+// =====================================================
+// POPUP HTML
+// =====================================================
 function asPill(t){ return `<span class="pill">${t}</span>`; }
 function field(label,val){
   if (val == null) return '';
@@ -357,9 +358,9 @@ function popupHtml(d){
   </div>`;
 }
 
-/* ---------------------------
-   COLORS + GEO
----------------------------- */
+// =====================================================
+// COLORS + GEO
+// =====================================================
 const BOOT_COLORS = {
   "Cualquiera": "#22c55e",
   "Depende": "#f59e0b",
@@ -433,9 +434,9 @@ function updateMapWith(list){
   }
 }
 
-/* ---------------------------
-   SOURCES + LAYERS (clusters, points, labels)
----------------------------- */
+// =====================================================
+// SOURCES + LAYERS (clusters, points, labels)
+// =====================================================
 function reattachSourcesAndLayers() {
   const data = buildGeo(allDestinations.filter(passContinent));
 
@@ -513,26 +514,43 @@ function reattachSourcesAndLayers() {
   }
 }
 
-/* ---------------------------
-   🆕 openPopupAt con anclaje dinámico
----------------------------- */
+// =====================================================
+// openPopupAt (anclaje + altura máxima + scroll)
+// =====================================================
+let __activePopup = null;
+
 function openPopupAt(coords, html, anchor = 'auto') {
   const maxW = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
-  new mapboxgl.Popup({
+  const gap  = getMarkerGap();
+
+  try { __activePopup?.remove?.(); } catch {}
+
+  const popup = new mapboxgl.Popup({
     closeOnMove: true,
-    offset: POPUP_CFG.markerGap,
-    anchor,                          // anclaje dinámico elegido
+    offset: gap,
+    anchor,
     maxWidth: `${maxW}px`,
     className: 'gountain-popup',
   })
     .setLngLat(coords)
     .setHTML(html)
     .addTo(map);
+
+  // Limitar altura del contenido según viewport y safe areas
+  const sa = getSafeAreas();
+  const maxH = Math.floor(window.innerHeight - sa.top - sa.bottom - gap);
+  const content = popup.getElement().querySelector('.mapboxgl-popup-content');
+  if (content) {
+    content.style.maxHeight = `${Math.max(120, maxH)}px`;
+    content.style.overflowY = 'auto';
+  }
+
+  __activePopup = popup;
 }
 
-/* ---------------------------
-   🆕 Click en punto: medir → anclar → autopan mínimo → abrir
----------------------------- */
+// =====================================================
+// Click en punto: medir → anclar → autopan → abrir
+// =====================================================
 function onUnclusteredClick(e) {
   const f = e.features && e.features[0];
   if (!f) return;
@@ -541,16 +559,20 @@ function onUnclusteredClick(e) {
   const html   = f.properties.html || '';
 
   // 1) Medir popup con HTML real (máx. ancho responsive)
-  const size = measurePopupSize(html);
+  const sa  = getSafeAreas();
+  const gap = getMarkerGap();
+  let size = measurePopupSize(html);
+  // altura permitida en viewport
+  const allowedH = Math.max(120, window.innerHeight - sa.top - sa.bottom - gap);
+  size.h = Math.min(size.h, allowedH);
 
-  // 2) Elegir anclaje según aire disponible (incluye safe areas)
-  const sa = getSafeAreas();
+  // 2) Elegir anclaje según aire disponible
   const { clientWidth: W, clientHeight: H } = map.getContainer();
   const p = map.project(coords);
-  const anchor = choosePopupAnchor(p, size, sa, W, H);
+  const anchor = choosePopupAnchor(p, size, sa, W, H, gap);
 
   // 3) Calcular bbox del popup y ver si se sale. Si sí, autopan mínimo.
-  const bbox = computePopupBounding(p, size, anchor);
+  const bbox = computePopupBounding(p, size, anchor, gap);
   const { dx, dy } = boundingExcess(bbox, sa, W, H);
 
   if (dx || dy) {
@@ -575,6 +597,17 @@ function onClusterClick(e) {
     map.easeTo({ center: features[0].geometry.coordinates, zoom });
   });
 }
+
+// =====================================================
+// Filters + fit
+// =====================================================
+function onFiltersChanged() {
+  const c = (window.__FILTERS__ && window.__FILTERS__.continent) || '';
+  const visible = allDestinations.filter(d => !c || d.continente === c);
+  updateMapWith(visible);
+  fitToList(visible);
+}
+window.addEventListener('gountain:filters-changed', onFiltersChanged);
 
 function passContinent(d){
   if (!state.continent) return true;
@@ -608,10 +641,9 @@ async function loadDestinos(){
   }
 }
 
-/* =========================================================
-   Panels (Sidebar filters & Glossary) + Filters logic
-========================================================= */
-
+// =====================================================
+// Panels (Sidebar filters & Glossary) + Filters logic
+// =====================================================
 function setupPanelToggles() {
   const btnMenu  = document.getElementById('btnMenu');
   const btnInfo  = document.getElementById('btnInfo');
@@ -636,7 +668,7 @@ function setupPanelToggles() {
     });
   }
 
-  /* Fallback por si el DOM cambia en runtime (delegación) */
+  // Fallback (delegación)
   document.body.addEventListener('click', (e) => {
     const m = e.target.closest && e.target.closest('#btnMenu');
     const i = e.target.closest && e.target.closest('#btnInfo');
@@ -754,7 +786,7 @@ function renderGlossaryPanel() {
   }
 }
 
-/* ---- helpers de chips/filtros ---- */
+// ---- helpers de chips/filtros ----
 state.filters = state.filters || {};
 
 function putChips(hostId, values, onClick){
@@ -781,7 +813,7 @@ function toggleFilter(key, value){
   state.filters[key] = [...s];
 }
 
-/* ---- Extiende passContinent con filtros básicos ---- */
+// ---- Extiende passContinent con filtros básicos ----
 const __passContinentBase = passContinent;
 passContinent = function(d){
   if (!__passContinentBase(d)) return false;
@@ -812,7 +844,7 @@ passContinent = function(d){
   return true;
 };
 
-/* ---- Select de continente (topbar) ---- */
+// ---- Select de continente (topbar) ----
 (function hookContinentSelect(){
   const sel = document.getElementById('continent-select');
   if (!sel) return;
@@ -822,7 +854,7 @@ passContinent = function(d){
   });
 })();
 
-/* ---- Inicializa paneles (si el DOM ya está listo, corre ya) ---- */
+// ---- Inicializa paneles (si el DOM ya está listo, corre ya) ----
 function ready(fn){
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', fn, { once:true });
