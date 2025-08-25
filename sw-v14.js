@@ -1,11 +1,12 @@
-// sw-v13.js
-const CACHE_NAME = "gountain-cache-v13";
+
+// sw-v14.js
+const CACHE_NAME = "gountain-cache-v14";
 const OFFLINE_URLS = [
   "/", "/index.html", "/styles.css",
   "/map.js",
   "/dist/app.bundle.js",
-  "/assets/GountainTime-192.png",
-  "/assets/GountainTime-512.png"
+  "/assets/Gountain-192.png",
+  "/assets/Gountain-512.png"
 ];
 
 self.addEventListener("install", (event) => {
