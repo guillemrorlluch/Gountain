@@ -158,6 +158,70 @@ function toggle3D(){
 }
 
 /* ---------------------------
+   🆕 SAFE AREAS + AUTOPAN (helpers)
+---------------------------- */
+// Helpers DOM
+function $(sel) { return document.querySelector(sel); }
+function byId(id) { return document.getElementById(id); }
+function isVisible(el) {
+  if (!el) return false;
+  const cs = getComputedStyle(el);
+  return cs.display !== 'none' && !el.classList.contains('hidden') && cs.visibility !== 'hidden';
+}
+
+/**
+ * Calcula los márgenes útiles (safe areas) en px según UI visible now.
+ * No mueve el mapa: solo devuelve { top, right, bottom, left }.
+ */
+function getSafeAreas() {
+  const topbar   = $('.topbar');
+  const sidebar  = byId('sidebar');
+  const glossary = byId('glossary');
+  const chipbar  = $('.chip-bar') || byId('dest-chips');
+
+  const top    = (topbar?.offsetHeight || 0) + 16;
+  const left   = (isVisible(sidebar)  ? sidebar.offsetWidth  : 0) + 16;
+  const right  = (isVisible(glossary) ? glossary.offsetWidth : 0) + 16;
+  const bottom = ((chipbar && isVisible(chipbar)) ? chipbar.getBoundingClientRect().height : 0) + 16;
+
+  return { top, right, bottom, left };
+}
+
+/**
+ * Si lngLat cae fuera del rectángulo útil, hace un pan suave
+ * con padding = safe areas. Devuelve true si movió el mapa.
+ */
+function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
+  const sa = getSafeAreas();
+  const { clientWidth: W, clientHeight: H } = mapInstance.getContainer();
+  const p = mapInstance.project(lngLat);
+
+  const leftBound   = sa.left;
+  const rightBound  = W - sa.right;
+  const topBound    = sa.top;
+  const bottomBound = H - sa.bottom;
+
+  let dx = 0, dy = 0;
+  if (p.x < leftBound)        dx = leftBound - p.x;
+  else if (p.x > rightBound)  dx = rightBound - p.x;
+
+  if (p.y < topBound)         dy = topBound - p.y;
+  else if (p.y > bottomBound) dy = bottomBound - p.y;
+
+  if (dx !== 0 || dy !== 0) {
+    mapInstance.easeTo({
+      center: mapInstance.unproject([p.x + dx, p.y + dy]),
+      padding: sa,
+      duration: opts.duration ?? 450,
+      easing: t => t * (2 - t) // ease-out
+    });
+    return true;
+  }
+  return false;
+}
+/* --------------------------- */
+
+/* ---------------------------
    POPUP HTML
 ---------------------------- */
 function asPill(t){ return `<span class="pill">${t}</span>`; }
@@ -384,15 +448,8 @@ function reattachSourcesAndLayers() {
   }
 }
 
-function onUnclusteredClick(e) {
-  const f = e.features && e.features[0];
-  if (!f) return;
-
-  const coords = f.geometry.coordinates.slice();
-  const html = f.properties.html || '';
-
-  const autoPanPadding = { top: 80, right: 28, bottom: 140, left: 28 };
-
+// 🆕 pequeña ayuda para abrir popup tras mover el mapa (si hizo autopan)
+function openPopupAt(coords, html) {
   new mapboxgl.Popup({
     closeOnMove: true,
     offset: 16,
@@ -403,8 +460,22 @@ function onUnclusteredClick(e) {
     .setLngLat(coords)
     .setHTML(html)
     .addTo(map);
+}
 
-  try { map.panInsideBounds(map.getBounds(), { padding: autoPanPadding }); } catch {}
+function onUnclusteredClick(e) {
+  const f = e.features && e.features[0];
+  if (!f) return;
+
+  const coords = f.geometry.coordinates.slice();
+  const html = f.properties.html || '';
+
+  // 🆕 Autopan solo si el punto cae fuera del rectángulo útil (no movemos por abrir paneles)
+  const moved = autopanToFitPoint(map, coords, { duration: 450 });
+  if (moved) {
+    map.once('moveend', () => openPopupAt(coords, html)); // abrir después del pan para que closeOnMove no lo cierre
+  } else {
+    openPopupAt(coords, html);
+  }
 }
 
 function onClusterClick(e) {
