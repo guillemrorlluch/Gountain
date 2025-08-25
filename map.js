@@ -1,4 +1,4 @@
-// map.js — v13 (popup inteligente + safe areas móvil)
+// map.js — v14 (popup inteligente + safe areas móvil)
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */

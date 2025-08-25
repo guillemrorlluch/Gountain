@@ -15,15 +15,15 @@
   <meta name="apple-mobile-web-app-title" content="It's Gountain" />
 
   <!-- Icons (con cache-busting) -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=13" />
-  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=13" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/GountainTime-192.png?v=14" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/assets/GountainTime-512.png?v=14" />
 
   <!-- Mapbox GL v2 -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js" defer></script>
 
   <!-- CSS de la app -->
-  <link rel="stylesheet" href="/styles.css?v=13" />
+  <link rel="stylesheet" href="/styles.css?v=14" />
 </head>
 <body>
   <!-- Topbar -->
@@ -125,14 +125,14 @@
   <div id="map-error" class="hidden" role="alert"></div>
 
   <!-- JS de tu app -->
-  <script type="module" src="/dist/app.bundle.js?v=13"></script>
-  <script type="module" src="/map.js?v=13"></script>
+  <script type="module" src="/dist/app.bundle.js?v=14"></script>
+  <script type="module" src="/map.js?v=14"></script>
 
   <!-- SW -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw-v13.js?v=13').catch(console.error);
+        navigator.serviceWorker.register('/sw-v14.js?v=14').catch(console.error);
       });
     }
   </script>
