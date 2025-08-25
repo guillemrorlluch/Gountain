@@ -1,5 +1,6 @@
-// sw-v13.js
-const CACHE_NAME = "gountain-cache-v13";
+
+// sw-v14.js
+const CACHE_NAME = "gountain-cache-v14";
 const OFFLINE_URLS = [
   "/", "/index.html", "/styles.css",
   "/map.js",
