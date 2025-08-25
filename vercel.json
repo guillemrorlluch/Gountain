@@ -4,5 +4,13 @@
     { "source": "/(.*).html", "headers": [{ "key": "Cache-Control", "value": "no-store" }] },
     { "source": "/_next/static/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
     { "source": "/data/(.*).json", "headers": [{ "key": "Cache-Control", "value": "public, max-age=60, stale-while-revalidate=300" }] }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "its-gountain-time.vercel.app" }],
+      "destination": "https://gountain.vercel.app/:path*",
+      "permanent": true
+    }
   ]
 }
