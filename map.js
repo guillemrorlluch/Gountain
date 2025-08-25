@@ -1,4 +1,4 @@
-// map.js — v13 (Paso 2 + Paso 3 Side Sheet)
+// map.js — v13
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */
@@ -19,13 +19,6 @@ const state = (window.__FILTERS__ = window.__FILTERS__ || {});
 state.continent = state.continent || '';
 
 let allDestinations = [];
-// 🆕 SHEET: índice por slug
-const bySlug = new Map();
-
-// 🆕 SHEET: “último” feature y popup
-let __lastFeatureProps = null;
-let __lastFeatureCoords = null;
-let __activePopup = null;
 
 window.addEventListener('gountain:filters-changed', () => {
   const c = (window.__FILTERS__ && window.__FILTERS__.continent) || '';
@@ -76,25 +69,10 @@ async function initMapOnce(){
     enableTerrainAndSky(map);
     buildStyleSwitcher();
     loadDestinos();
-    // 🆕 SHEET: preparar delegación de click (CTA desde popup)
-    installGlobalDetailHandler();
-    // 🆕 SHEET: abrir detalle si la URL ya trae ?place=...
-    maybeOpenFromURL();
   });
 
   map.on('style.load', () => {
     enableTerrainAndSky(map);
-  });
-
-  // 🆕 SHEET: gestionar back/forward
-  window.addEventListener('popstate', () => {
-    const slug = new URL(location.href).searchParams.get('place');
-    if (slug) {
-      const d = bySlug.get(slug);
-      if (d) openDetailSheet(d, [d.coords[1], d.coords[0]], { push: false });
-    } else {
-      closeDetailSheet({ fromHistory: true });
-    }
   });
 }
 
@@ -138,7 +116,7 @@ function buildStyleSwitcher() {
     ['Standard','standard'],
     ['Satellite','satellite'],
     ['Hybrid','hybrid'],
-    ['3D','standard']
+    ['3D','standard'] // 3D is a pitch/bearing toggle on the current style
   ];
 
   host.innerHTML = '';
@@ -180,7 +158,7 @@ function toggle3D(){
 }
 
 /* ---------------------------
-   SAFE AREAS + AUTOPAN (helpers)
+   🆕 SAFE AREAS + AUTOPAN (helpers)
 ---------------------------- */
 // Helpers DOM
 function $(sel) { return document.querySelector(sel); }
@@ -191,21 +169,16 @@ function isVisible(el) {
   return cs.display !== 'none' && !el.classList.contains('hidden') && cs.visibility !== 'hidden';
 }
 
-// 🆕 SHEET: detectar el sheet para incluir su ancho/alto en safe areas
-function getDetailSheetEl(){ return byId('detail-sheet'); }
-
 /** Márgenes útiles (px) según UI visible */
 function getSafeAreas() {
   const topbar   = $('.topbar');
   const sidebar  = byId('sidebar');
   const glossary = byId('glossary');
-  const detail   = getDetailSheetEl();
   const chipbar  = $('.chip-bar') || byId('dest-chips');
 
   const top    = (topbar?.offsetHeight || 0) + 16;
   const left   = (isVisible(sidebar)  ? sidebar.offsetWidth  : 0) + 16;
-  const right  = (isVisible(glossary) ? glossary.offsetWidth : 0)
-               + (isVisible(detail)   ? detail.offsetWidth   : 0) + 16;
+  const right  = (isVisible(glossary) ? glossary.offsetWidth : 0) + 16;
   const bottom = ((chipbar && isVisible(chipbar)) ? chipbar.getBoundingClientRect().height : 0) + 16;
 
   return { top, right, bottom, left };
@@ -241,9 +214,12 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
 }
 
 /* -----------------------------------------
-   Popup inteligente (Paso 2): medida + anclaje + bbox
+   🆕 Popup inteligente: medida + anclaje + bbox
 ------------------------------------------*/
-const POPUP_CFG = { maxWidthPx: 420, markerGap: 16 };
+const POPUP_CFG = {
+  maxWidthPx: 420,   // mismo límite que tu CSS (26.25rem)
+  markerGap: 16      // separación entre marcador y card
+};
 
 function getPopupMeasureEl() {
   let el = document.getElementById('popup-measure');
@@ -270,6 +246,7 @@ function measurePopupSize(html) {
   holder.innerHTML = '';
   return size;
 }
+
 function choosePopupAnchor(p, size, sa, W, H, gap = POPUP_CFG.markerGap) {
   const space = {
     left:   p.x - sa.left  - gap,
@@ -277,8 +254,8 @@ function choosePopupAnchor(p, size, sa, W, H, gap = POPUP_CFG.markerGap) {
     top:    p.y - sa.top   - gap,
     bottom: (H - sa.bottom) - p.y - gap
   };
-  if (space.right >= size.w) return 'left';
-  if (space.left  >= size.w) return 'right';
+  if (space.right >= size.w) return 'left';   // card a la derecha del punto
+  if (space.left  >= size.w) return 'right';  // card a la izquierda del punto
   if (space.top    >= size.h) return 'bottom';
   if (space.bottom >= size.h) return 'top';
   const entries = Object.entries(space).sort((a,b)=>b[1]-a[1]);
@@ -287,6 +264,7 @@ function choosePopupAnchor(p, size, sa, W, H, gap = POPUP_CFG.markerGap) {
          (best === 'left')  ? 'right' :
          (best === 'top')   ? 'bottom' : 'top';
 }
+
 function computePopupBounding(p, size, anchor, gap = POPUP_CFG.markerGap) {
   switch (anchor) {
     case 'left':   return { x: p.x + gap,            y: p.y - size.h/2, w: size.w, h: size.h };
@@ -296,6 +274,7 @@ function computePopupBounding(p, size, anchor, gap = POPUP_CFG.markerGap) {
     default:       return { x: p.x + gap,            y: p.y - size.h/2, w: size.w, h: size.h };
   }
 }
+
 function boundingExcess(b, sa, W, H) {
   const leftBound = sa.left, rightBound = W - sa.right;
   const topBound  = sa.top,  bottomBound = H - sa.bottom;
@@ -308,7 +287,7 @@ function boundingExcess(b, sa, W, H) {
 }
 
 /* ---------------------------
-   POPUP HTML (+ CTA "Ver detalle")
+   POPUP HTML
 ---------------------------- */
 function asPill(t){ return `<span class="pill">${t}</span>`; }
 function field(label,val){
@@ -334,24 +313,11 @@ function photosHtml(d){
   </div>`;
 }
 
-// 🆕 SHEET: slug util
-function slugify(s=''){
-  return String(s)
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-}
-function getSlugFor(d){
-  const base = `${d.nombre || ''}-${d.pais || ''}-${(d.coords||[]).join(',')}`;
-  return slugify(base);
-}
-
 function popupHtml(d){
   const title = d.nombre || '';
   const where = d.pais ? ` (${d.pais})` : '';
   const q = encodeURIComponent(`${title}${where ? ' ' + d.pais : ''}`);
   const gUrl = `https://www.google.com/search?q=${q}`;
-  const slug = d.slug || getSlugFor(d);
 
   const boots = Array.isArray(d.botas) ? d.botas.map(asPill).join('') : '';
 
@@ -366,11 +332,6 @@ function popupHtml(d){
          `<a class="btn-link" href="${U}" target="_blank" rel="noopener">${L}</a>`
        ).join('')}</div>`
     : '';
-
-  // 🆕 SHEET: CTA "Ver detalle" para abrir el side sheet
-  const cta = `<div class="links">
-      <a href="?place=${slug}" class="btn" data-action="open-detail" data-slug="${slug}">Ver detalle</a>
-    </div>`;
 
   return `<div class="popup">
     <h3><a href="${gUrl}" target="_blank" rel="noopener">${title}${where}</a></h3>
@@ -393,7 +354,6 @@ function popupHtml(d){
     ${field('Reseña', d.resena ? `“${d.resena}”` : '')}
     ${linksHtml}
     ${photosHtml(d)}
-    ${cta}
   </div>`;
 }
 
@@ -447,23 +407,15 @@ function normalizeContinent(d){
   return d;
 }
 
-// 🆕 SHEET: añade slug en el dataset y rellena índice
-function addSlugTo(d){
-  if (!d.slug) d.slug = getSlugFor(d);
-  bySlug.set(d.slug, d);
-  return d;
-}
-
 function buildGeo(list){
   return {
     type: 'FeatureCollection',
     features: list.map(d => {
-      const dd = addSlugTo(d);
-      const properties = { ...dd, color: markerColor(dd), html: popupHtml(dd) };
-      console.assert(properties.html, 'Missing popup HTML for', dd);
+      const properties = { ...d, color: markerColor(d), html: popupHtml(d) };
+      console.assert(properties.html, 'Missing popup HTML for', d);
       return {
         type: 'Feature',
-        geometry: { type: 'Point', coordinates: [dd.coords[1], dd.coords[0]] },
+        geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
         properties
       };
     })
@@ -562,28 +514,24 @@ function reattachSourcesAndLayers() {
 }
 
 /* ---------------------------
-   openPopupAt (dinámico) — Paso 2
+   🆕 openPopupAt con anclaje dinámico
 ---------------------------- */
 function openPopupAt(coords, html, anchor = 'auto') {
   const maxW = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
-  // cerramos popup anterior
-  try { __activePopup?.remove?.(); } catch {}
-  const popup = new mapboxgl.Popup({
+  new mapboxgl.Popup({
     closeOnMove: true,
     offset: POPUP_CFG.markerGap,
-    anchor,
+    anchor,                          // anclaje dinámico elegido
     maxWidth: `${maxW}px`,
     className: 'gountain-popup',
   })
     .setLngLat(coords)
     .setHTML(html)
     .addTo(map);
-
-  __activePopup = popup;
 }
 
 /* ---------------------------
-   Click en punto — Paso 2
+   🆕 Click en punto: medir → anclar → autopan mínimo → abrir
 ---------------------------- */
 function onUnclusteredClick(e) {
   const f = e.features && e.features[0];
@@ -591,10 +539,8 @@ function onUnclusteredClick(e) {
 
   const coords = f.geometry.coordinates.slice();
   const html   = f.properties.html || '';
-  __lastFeatureProps = f.properties;   // 🆕 SHEET
-  __lastFeatureCoords = coords;        // 🆕 SHEET
 
-  // 1) Medir popup con HTML real
+  // 1) Medir popup con HTML real (máx. ancho responsive)
   const size = measurePopupSize(html);
 
   // 2) Elegir anclaje según aire disponible (incluye safe areas)
@@ -655,7 +601,7 @@ async function loadDestinos(){
   try {
     const res = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
     const data = await res.json();
-    allDestinations = data.map(normalizeContinent).map(addSlugTo);
+    allDestinations = data.map(normalizeContinent);
     applyFilters();
   } catch(err){
     console.error('Error loading destinos:', err);
@@ -716,7 +662,7 @@ function renderSidebarPanel() {
 
       <details open>
         <summary>Dificultad</summary>
-        <div id="filter-dificultad" class="chips"></>
+        <div id="filter-dificultad" class="chips"></div>
       </details>
 
       <details>
@@ -875,138 +821,6 @@ passContinent = function(d){
     applyFilters();
   });
 })();
-
-/* =========================================================
-   🆕 SHEET — Side Sheet (desktop) / base móvil + URL
-========================================================= */
-
-function ensureDetailSheet(){
-  let el = byId('detail-sheet');
-  if (el) return el;
-  el = document.createElement('aside');
-  el.id = 'detail-sheet';
-  el.className = 'panel hidden';  // reutiliza estilos .panel (aparece a la derecha)
-  el.setAttribute('aria-label', 'Detalle del destino');
-  el.innerHTML = `
-    <div class="panel-section">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem">
-        <h2 id="detail-title" style="margin:0">Detalle</h2>
-        <button id="detail-close" class="btn" style="min-width:auto;padding:.25rem .5rem">Cerrar</button>
-      </div>
-      <div id="detail-content" style="margin-top:.75rem"></div>
-    </div>
-  `;
-  document.body.appendChild(el);
-
-  el.querySelector('#detail-close').addEventListener('click', () => closeDetailSheet());
-  // ESC para cerrar
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !el.classList.contains('hidden')) closeDetailSheet();
-  });
-
-  return el;
-}
-
-function renderDetail(d){
-  const title = d.nombre || 'Detalle';
-  const where = d.pais ? ` (${d.pais})` : '';
-  const html = `
-    <div class="popup" style="color:#e5e7eb">
-      <h3 style="margin-bottom:.5rem">${title}${where}</h3>
-      <div class="grid" style="margin-bottom:.5rem">
-        ${field('Continente', d.continente)}
-        ${field('Tipo', d.tipo)}
-        ${field('Altitud', d.altitud_m ? `${d.altitud_m} m` : '')}
-        ${field('Dificultad', d.dificultad)}
-        ${field('Meses', d.meses)}
-        ${field('Temp aprox', d.temp_aprox)}
-      </div>
-      ${Array.isArray(d.botas) && d.botas.length ? `
-        <div class="section"><strong>Botas:</strong>
-          <div class="pills">${d.botas.map(asPill).join('')}</div>
-        </div>` : ''
-      }
-      <div class="section">
-        ${field('Equipo', d.equipo || '—')}
-        ${field('Vivac', d.vivac)}
-        ${field('Permisos', d.permisos)}
-        ${field('Guía', d.guia)}
-        ${field('Coste estancia', d.coste_estancia)}
-      </div>
-      ${field('Reseña', d.resena ? `“${d.resena}”` : '')}
-      ${photosHtml(d)}
-    </div>
-  `;
-  byId('detail-title').textContent = title;
-  byId('detail-content').innerHTML = html;
-}
-
-function openDetailSheet(d, coords, opts = { push: true }){
-  const el = ensureDetailSheet();
-  renderDetail(d);
-  el.classList.remove('hidden');
-
-  // Padding del mapa con el ancho real del sheet (ya visible)
-  const sa = getSafeAreas();
-  map.easeTo({ padding: sa, duration: 200 });
-
-  // Autopan para “enfrentar” el punto al panel
-  if (coords) autopanToFitPoint(map, coords, { duration: 350 });
-
-  // pushState (deep-link)
-  if (opts.push) {
-    const url = new URL(location.href);
-    url.searchParams.set('place', d.slug || getSlugFor(d));
-    history.pushState({}, '', url);
-  }
-}
-
-function closeDetailSheet({ fromHistory = false } = {}){
-  const el = getDetailSheetEl();
-  if (!el || el.classList.contains('hidden')) return;
-  el.classList.add('hidden');
-
-  // Recalcular padding sin el sheet
-  const sa = getSafeAreas();
-  map.easeTo({ padding: sa, duration: 150 });
-
-  // Cerrar popup si sigue abierto (opcional)
-  try { __activePopup?.remove?.(); } catch {}
-
-  // Limpiar ?place si el cierre es por UI (no por back)
-  if (!fromHistory) {
-    const url = new URL(location.href);
-    url.searchParams.delete('place');
-    history.pushState({}, '', url);
-  }
-}
-
-// Delegación: CTA dentro del popup abre el sheet
-let __detailHandlerInstalled = false;
-function installGlobalDetailHandler(){
-  if (__detailHandlerInstalled) return;
-  __detailHandlerInstalled = true;
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest?.('[data-action="open-detail"]');
-    if (!btn) return;
-    e.preventDefault();
-    const slug = btn.getAttribute('data-slug');
-    const d = slug ? bySlug.get(slug) : __lastFeatureProps;
-    const coords = __lastFeatureCoords;
-    if (!d) return;
-    try { __activePopup?.remove?.(); } catch {}
-    openDetailSheet(d, coords, { push: true });
-  });
-}
-
-// Abrir detalle si URL ya venía con ?place=...
-function maybeOpenFromURL(){
-  const slug = new URL(location.href).searchParams.get('place');
-  if (!slug) return;
-  const d = bySlug.get(slug);
-  if (!d) return;
-  openDetailSheet(d, [d.coords[1], d.coords[0]], { push: false });
-}
 
 /* ---- Inicializa paneles (si el DOM ya está listo, corre ya) ---- */
 function ready(fn){
