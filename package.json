@@ -4,5 +4,6 @@
   "type": "module",
   "scripts": {
     "build": "node build.js"
+    "add:hikes": "node scripts/update-destinos-hike.cjs"
   }
 }
