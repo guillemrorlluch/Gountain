@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "node build.js"
-    "add:hikes": "node scripts/update-destinos-hike.cjs"
+    "build": "node build.js",
+    "add:hikes": "node update-destinos-hike.cjs"
   }
 }
