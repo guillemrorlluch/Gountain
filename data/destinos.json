@@ -4029,7 +4029,7 @@
   {
     "id": "pacific_crest_trail",
     "nombre": "Pacific Crest Trail",
-    "coords": null,
+    "coords": [40.75, -121.5],
     "pais": "Estados Unidos / Canadá",
     "continente": "América del Norte",
     "tipo": "Travesía larga distancia",
@@ -4245,7 +4245,7 @@
   {
     "id": "spite_highway",
     "nombre": "Spite Highway",
-    "coords": null,
+    "coords": [41.33, -124.06],
     "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Travesía",
@@ -4317,7 +4317,7 @@
   {
     "id": "appalachian_trail",
     "nombre": "Appalachian Trail",
-    "coords": null,
+    "coords": [39.5, -77.5],
     "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Travesía larga distancia",
