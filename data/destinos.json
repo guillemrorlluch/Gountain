@@ -42,7 +42,7 @@
       63.07,
       -151.01
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Pico",
     "altitud_m": 6190,
@@ -481,7 +481,7 @@
       46.85,
       -121.76
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Pico",
     "altitud_m": 4392,
@@ -932,7 +932,7 @@
       44.6,
       -110.5
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Travesía",
     "altitud_m": 2400,
@@ -968,7 +968,7 @@
       43.74,
       -110.8
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Pico",
     "altitud_m": 4197,
@@ -1043,7 +1043,7 @@
       43.16,
       -109.65
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Travesía",
     "altitud_m": 4000,
@@ -1586,8 +1586,8 @@
     "link": null
   },
   {
-    "id": "musala",
-    "nombre": "Musala (Rila)",
+    "id": "mEstados Unidosla",
+    "nombre": "MEstados Unidosla (Rila)",
     "coords": [
       42.179,
       23.585
@@ -1628,7 +1628,7 @@
       41.5,
       -120.0
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Travesía",
     "altitud_m": 4000,
@@ -1665,7 +1665,7 @@
       41.41,
       -122.19
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Pico",
     "altitud_m": 4321,
@@ -1702,7 +1702,7 @@
       40.26,
       -105.61
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Pico",
     "altitud_m": 4346,
@@ -1810,7 +1810,7 @@
       37.7459,
       -119.533
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Pico/Travesía",
     "altitud_m": 2695,
@@ -1846,7 +1846,7 @@
       37.73,
       -119.57
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Travesía",
     "altitud_m": 4200,
@@ -1882,7 +1882,7 @@
       36.5785,
       -118.2923
     ],
-    "pais": "USA",
+    "pais": "Estados Unidos",
     "continente": "América del Norte",
     "tipo": "Pico",
     "altitud_m": 4421,
@@ -3541,7 +3541,7 @@
     "permisos": "No",
     "guia": "Recomendable",
     "coste_estancia": "Medio",
-    "resena": "Volcán glaciar en la frontera georgio-rusa; rutas técnicas y ambiente alpino clásico.",
+    "resena": "Volcán glaciar en la frontera georgio-rEstados Unidos; rutas técnicas y ambiente alpino clásico.",
     "id_orden": 98,
     "google_search": "https://www.google.com/search?q=Monte+Kazbek+Georgia",
     "link": null
@@ -4669,7 +4669,7 @@
     "permisos": "Sí (Parque Estatal da Serra do Mar)",
     "guia": "Recomendado",
     "coste_estancia": "Bajo",
-    "resena": "Sendero colonial usado en el transporte del oro, rodeado de selva atlántica.",
+    "resena": "Sendero colonial Estados Unidosdo en el transporte del oro, rodeado de selva atlántica.",
     "id_orden": 145,
     "google_search": "https://www.google.com/search?q=Trilho+do+Ouro+Brasil",
     "link": null
