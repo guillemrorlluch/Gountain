@@ -94,20 +94,35 @@ function buildStyleSwitcher() {
   const host = document.getElementById('basemap-switcher');
   if (!host) return;
 
+  // Toggle botón Layers
+  const toggleBtn = document.getElementById('layers-toggle');
+  const setPressed = (v) => toggleBtn?.setAttribute('aria-pressed', String(v));
+  toggleBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    host.classList.toggle('hidden');
+    setPressed(!host.classList.contains('hidden'));
+  });
+
+  // Auto-ocultar al interactuar con el mapa
+  const hideSwitcher = () => { host.classList.add('hidden'); setPressed(false); };
+  map.on('click', hideSwitcher);
+  map.on('dragstart', hideSwitcher);
+  map.on('zoomstart', hideSwitcher);
+  host.addEventListener('click', (e) => e.stopPropagation()); // no cerrar por clicks internos
+
+  // Botones del switcher
   const buttons = [
     ['Standard','standard'],
     ['Satellite','satellite'],
     ['Hybrid','hybrid'],
-    ['3D','standard'] // 3D = pitch/bearing toggle
+    ['3D','standard']
   ];
-
   host.innerHTML = '';
   buttons.forEach(([label, key]) => {
     const btn = document.createElement('button');
-    btn.textContent = label;
-
+   btn.textContent = label;
     btn.addEventListener('click', () => {
-      if (label === '3D') { toggle3D(); setActive(btn); return; }
+      if (label === '3D') { toggle3D(); setActive(btn); hideSwitcher(); return; }
       const newStyle = STYLES[key];
       map.setStyle(newStyle);
       map.once('style.load', () => {
@@ -115,12 +130,12 @@ function buildStyleSwitcher() {
         reattachSourcesAndLayers();
       });
       setActive(btn);
+      hideSwitcher();
     });
-
     host.appendChild(btn);
   });
 
-  function setActive(activeBtn) {
+  function setActive(activeBtn){
     [...host.children].forEach(b => b.classList.toggle('active', b === activeBtn));
   }
   if (host.firstChild) host.firstChild.classList.add('active');
