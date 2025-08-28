@@ -146,170 +146,142 @@
 
   <noscript>Esta app necesita JavaScript para funcionar.</noscript>
 
-  <!-- UI Filters -->
+  <!-- Filters UI -->
   <script>
-  // =======================
-  // Gountain – UI filters v2
-  // =======================
-  (() => {
-    const $  = (s, r = document) => r.querySelector(s);
-    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+/* ============ Gountain – Filters UI (v14 fix) ============ */
+(() => {
+  if (window.__FILTERS_UI_WIRED__) return;           // evita doble wiring
+  window.__FILTERS_UI_WIRED__ = true;
 
-    // ---- Elementos
-    const btnMenu   = $('#btnMenu');
-    const btnInfo   = $('#btnInfo');
-    const sidebar   = $('#sidebar');
-    const glossary  = $('#glossary');
-    const select    = $('#continent-select');
-    const clearBtn  = $('#clearFilters');
-    const altMin    = $('#alt-min');
-    const altMax    = $('#alt-max');
-    const altChipBox= $('#altitude-chip');
+  const $  = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
 
-    // ---- Abrir/cerrar paneles
-    btnMenu?.addEventListener('click', () => sidebar?.classList.toggle('hidden'));
-    btnInfo?.addEventListener('click', () => glossary?.classList.toggle('hidden'));
+  // Elementos fijos
+  const sidebar  = $('#sidebar');
+  const select   = $('#continent-select');
+  const clearBtn = $('#clearFilters');
+  const altMin   = $('#alt-min');
+  const altMax   = $('#alt-max');
 
-    // ---- Opciones por defecto (sobrescribibles con window.__FILTER_OPTIONS__)
-    const FILTER_OPTIONS = Object.assign({
-      dificultad: ['F','PD','AD','D'],
-      botas: [
-        'Cualquiera','Depende','Bestard Teix Lady GTX','Scarpa Ribelle Lite HD',
-        'Scarpa Zodiac Tech LT GTX','La Sportiva Aequilibrium ST GTX',
-        'La Sportiva Nepal Cube GTX','Nepal (doble bota técnica de alta montaña)'
-      ],
-      tipo: ['Travesía','Ascensión','Circular','Lineal','Alpinismo','Scrambling'],
-      season: ['Invierno','Primavera','Verano','Otoño']
-    }, window.__FILTER_OPTIONS__ || {});
+  // Estado único y exportable
+  const S = (window.__FILTERS__ = window.__FILTERS__ || {
+    continent: '',
+    dificultad: new Set(),
+    botas: new Set(),
+    tipo: new Set(),
+    season: new Set(),
+    altMin: null,
+    altMax: null
+  });
 
-    // ---- Estado
-    const state = {
-      continent: '',
-      dificultad: new Set(),
-      botas: new Set(),
-      tipo: new Set(),
-      season: new Set(),
-      altMin: null,
-      altMax: null
+  // Opciones (sobrescribibles)
+  const OPT = Object.assign({
+    dificultad: ['F','PD','AD','D'],
+    botas: [
+      'Cualquiera','Depende','Bestard Teix Lady GTX','Scarpa Ribelle Lite HD',
+      'Scarpa Zodiac Tech LT GTX','La Sportiva Aequilibrium ST GTX',
+      'La Sportiva Nepal Cube GTX','Nepal (doble bota técnica de alta montaña)'
+    ],
+    tipo: ['Travesía','Ascensión','Circular','Lineal','Alpinismo','Scrambling'],
+    season: ['Invierno','Primavera','Verano','Otoño']
+  }, window.__FILTER_OPTIONS__ || {});
+
+  // Render de chips idempotente
+  function renderChips(containerId, options, key) {
+    const host = document.getElementById(containerId);
+    if (!host) return;
+    host.innerHTML = '';
+    options.forEach(opt => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip';
+      b.textContent = opt;
+      b.dataset.key = key;
+      b.dataset.value = opt;
+      b.setAttribute('aria-pressed','false');
+      host.appendChild(b);
+    });
+  }
+  renderChips('filter-dificultad', OPT.dificultad, 'dificultad');
+  renderChips('filter-botas',      OPT.botas,      'botas');
+  renderChips('filter-tipo',       OPT.tipo,       'tipo');
+  renderChips('filter-season',     OPT.season,     'season');
+
+  // Emisión a map.js
+  function emit() {
+    const payload = {
+      continent: S.continent || '',
+      dificultad: Array.from(S.dificultad),
+      botas: Array.from(S.botas),
+      tipo: Array.from(S.tipo),
+      season: Array.from(S.season),
+      altMin: S.altMin,
+      altMax: S.altMax
     };
+    window.dispatchEvent(new CustomEvent('gountain:filters-changed', { detail: payload }));
+  }
 
-    // ---- Render chips
-    function renderChips(containerId, options, key) {
-      const el = document.getElementById(containerId);
-      if (!el) return;
-      el.innerHTML = '';
-      options.forEach(opt => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'chip';
-        b.textContent = opt;
-        b.dataset.key = key;
-        b.dataset.value = opt;
-        b.setAttribute('aria-pressed', 'false');
-        el.appendChild(b);
-      });
+  // Delegación de clicks en chips (un solo listener)
+  document.body.addEventListener('click', (e) => {
+    const b = e.target.closest('.chip');
+    if (!b || !sidebar?.contains(b)) return;
+
+    const key = b.dataset.key;     // dificultad | botas | tipo | season
+    const val = b.dataset.value;
+    const set = S[key];
+    if (!(set instanceof Set)) return;
+
+    if (set.has(val)) {
+      set.delete(val);
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed','false');
+    } else {
+      set.add(val);
+      b.classList.add('active');
+      b.setAttribute('aria-pressed','true');
     }
-    renderChips('filter-dificultad', FILTER_OPTIONS.dificultad, 'dificultad');
-    renderChips('filter-botas',      FILTER_OPTIONS.botas,      'botas');
-    renderChips('filter-tipo',       FILTER_OPTIONS.tipo,       'tipo');
-    renderChips('filter-season',     FILTER_OPTIONS.season,     'season');
-
-    // ---- Emitir evento para map.js
-    function emit() {
-      const payload = {
-        continent: state.continent,
-        dificultad: Array.from(state.dificultad),
-        botas: Array.from(state.botas),
-        tipo: Array.from(state.tipo),
-        season: Array.from(state.season),
-        altMin: state.altMin,
-        altMax: state.altMax
-      };
-      window.dispatchEvent(new CustomEvent('gountain:filters-changed', { detail: payload }));
-    }
-
-    // ---- Delegación de clicks en chips
-    document.body.addEventListener('click', (e) => {
-      const b = e.target.closest('.chip');
-      if (!b) return;
-      const key = b.dataset.key;
-      const val = b.dataset.value;
-      const set = state[key];
-      if (!(set instanceof Set)) return;
-
-      if (set.has(val)) {
-        set.delete(val);
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      } else {
-        set.add(val);
-        b.classList.add('active');
-        b.setAttribute('aria-pressed', 'true');
-      }
-      emit();
-    });
-
-    // ---- Altitud con debounce + chip removible
-    function renderAltChip() {
-      if (!altChipBox) return;
-      altChipBox.innerHTML = '';
-      const { altMin:mn, altMax:mx } = state;
-      if (mn != null || mx != null) {
-        const c = document.createElement('button');
-        c.type = 'button';
-        c.className = 'chip active';
-        c.title = 'Quitar filtro de altitud';
-        c.textContent = `${mn != null ? mn : '–'}–${mx != null ? mx : '–'} m`;
-        c.addEventListener('click', () => {
-          state.altMin = state.altMax = null;
-          if (altMin) altMin.value = '';
-          if (altMax) altMax.value = '';
-          renderAltChip(); emit();
-        });
-        altChipBox.appendChild(c);
-      }
-    }
-
-    let altTimer;
-    function onAltChange() {
-      clearTimeout(altTimer);
-      altTimer = setTimeout(() => {
-        state.altMin = altMin?.value !== '' ? Number(altMin.value) : null;
-        state.altMax = altMax?.value !== '' ? Number(altMax.value) : null;
-        renderAltChip(); emit();
-      }, 180);
-    }
-    altMin?.addEventListener('input', onAltChange);
-    altMax?.addEventListener('input', onAltChange);
-
-    // ---- Select de continente
-    select?.addEventListener('change', () => {
-      state.continent = select.value || '';
-      emit();
-    });
-
-    // ---- Limpiar filtros
-    clearBtn?.addEventListener('click', () => {
-      state.dificultad.clear();
-      state.botas.clear();
-      state.tipo.clear();
-      state.season.clear();
-      state.altMin = state.altMax = null;
-
-      $$('#sidebar .chip.active').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      if (altMin) altMin.value = '';
-      if (altMax) altMax.value = '';
-      renderAltChip();
-      emit();
-    });
-
-    // ---- Primer render/emisión
-    renderAltChip();
     emit();
-  })();
-  </script>
+  });
+
+  // Altitud con debounce + chip sintético
+  let altTimer = null;
+  function onAltChange() {
+    clearTimeout(altTimer);
+    altTimer = setTimeout(() => {
+      S.altMin = altMin?.value !== '' ? Number(altMin.value) : null;
+      S.altMax = altMax?.value !== '' ? Number(altMax.value) : null;
+      emit();
+    }, 180);
+  }
+  altMin?.addEventListener('input', onAltChange);
+  altMax?.addEventListener('input', onAltChange);
+
+  // Continente
+  select?.addEventListener('change', () => {
+    S.continent = select.value || '';
+    emit();
+  });
+
+  // Limpiar filtros
+  clearBtn?.addEventListener('click', () => {
+    S.dificultad.clear();
+    S.botas.clear();
+    S.tipo.clear();
+    S.season.clear();
+    S.altMin = S.altMax = null;
+
+    $$('#sidebar .chip.active').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed','false');
+    });
+    if (altMin) altMin.value = '';
+    if (altMax) altMax.value = '';
+    emit();
+  });
+
+  // Primer disparo para sincronizar mapa al cargar
+  emit();
+})();
+</script>
 </body>
 </html>

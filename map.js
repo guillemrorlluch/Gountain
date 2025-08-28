@@ -610,12 +610,24 @@ function onClusterClick(e) {
 // =====================================================
 // Filters + fit
 // =====================================================
-function onFiltersChanged() {
-  const c = (window.__FILTERS__ && window.__FILTERS__.continent) || '';
-  const visible = allDestinations.filter(d => !c || d.continente === c);
-  updateMapWith(visible);
-  fitToList(visible);
+function onFiltersChanged(ev) {
+  const detail = ev?.detail || {};
+  // sincroniza estado global por compatibilidad
+  window.__FILTERS__ = Object.assign(window.__FILTERS__ || {}, {
+    continent: detail.continent ?? '',
+    filters: {
+      dificultad: detail.dificultad || [],
+      botas: detail.botas || [],
+      tipo: detail.tipo || [],
+      meses: detail.season || [],
+      altMin: detail.altMin ?? null,
+      altMax: detail.altMax ?? null
+    }
+  });
+
+  applyFilters();
 }
+window.removeEventListener('gountain:filters-changed', onFiltersChanged);
 window.addEventListener('gountain:filters-changed', onFiltersChanged);
 
 function passContinent(d){
@@ -727,41 +739,27 @@ function setupPanelToggles() {
 // =====================================================
 // Filtros básicos integrados (extend passContinent)
 // =====================================================
-state.filters = state.filters || {};
-const __passContinentBase = passContinent;
+const __base = passContinent;
 passContinent = function(d){
-  if (!__passContinentBase(d)) return false;
+  if (!__base(d)) return false;
 
-  const f = state.filters || {};
-  if (f.dificultad?.length && !f.dificultad.some(tag => (d.dificultad || '').includes(tag))) return false;
+  const G = window.__FILTERS__ || {};
+  const F = G.filters || {};
 
-  if (f.botas?.length) {
-    const boots = Array.isArray(d.botas) ? d.botas : [];
-    if (!boots.some(b => f.botas.includes(b))) return false;
+  if (F.dificultad?.length && !F.dificultad.some(tag => (d?.dificultad || '').includes(tag))) return false;
+  if (F.botas?.length) {
+    const boots = Array.isArray(d?.botas) ? d.botas : [];
+    if (!boots.some(b => F.botas.includes(b))) return false;
   }
-
-  if (f.tipo?.length && !f.tipo.includes(d.tipo)) return false;
-
-  if (f.meses?.length) {
-    const m = String(d.meses || '');
-    if (!f.meses.some(x => m.includes(x))) return false;
+  if (F.tipo?.length && !F.tipo.includes(d?.tipo)) return false;
+  if (F.meses?.length) {
+    const m = String(d?.meses || '');
+    if (!F.meses.some(x => m.includes(x))) return false;
   }
-
-  const minI = byId('alt-min'); const maxI = byId('alt-max');
-  const min = minI?.value ? Number(minI.value) : -Infinity;
-  const max = maxI?.value ? Number(maxI.value) :  Infinity;
-  const alt = Number(d.altitud_m ?? d.altitud ?? NaN);
+  const alt = Number(d?.altitud_m ?? d?.altitud ?? NaN);
+  const min = Number.isFinite(F.altMin) ? F.altMin : -Infinity;
+  const max = Number.isFinite(F.altMax) ? F.altMax :  Infinity;
   if (!Number.isNaN(alt) && !(alt >= min && alt <= max)) return false;
 
   return true;
 };
-
-// ---- Hook select continente (topbar)
-(function hookContinentSelect(){
-  const sel = byId('continent-select');
-  if (!sel) return;
-  sel.addEventListener('change', () => {
-    state.continent = sel.value || '';
-    applyFilters();
-  });
-})();
