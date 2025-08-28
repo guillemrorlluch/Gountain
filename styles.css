@@ -41,7 +41,7 @@ body{
 .hamburger{
   width:2.5rem; height:2.25rem;
   display:inline-flex; align-items:center; justify-content:center;
-  border-radius:.625rem; border:1px solid #017C9B;
+  border-radius:.625rem; border:1px solid #3158a7;
   background:#1f2937; color:inherit; cursor:pointer;
 }
 .hamburger .bars,
