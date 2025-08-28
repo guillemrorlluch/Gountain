@@ -83,7 +83,17 @@
     <!-- Mapa -->
     <section id="map-container">
       <div id="map"></div>
-      <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
+      <!-- Botón Layers -->
+      <button id="layers-toggle" class="layers-btn" aria-label="Mostrar estilos de mapa" aria-pressed="false">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true" class="icon">
+          <polygon points="12 3 20 8 12 13 4 8"></polygon>
+          <path d="M20 12L12 17 4 12"></path>
+        </svg>
+        <span class="label">Layers</span>
+      </button>
+
+      <!-- Switcher oculto por defecto -->
+      <div id="basemap-switcher" class="basemap-switcher hidden" aria-label="Map style"></div>
       <div id="dest-chips" class="destination-chips" aria-label="Destinations"></div>
       <div id="map-error" class="hidden" role="alert"></div>
     </section>

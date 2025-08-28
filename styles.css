@@ -254,3 +254,16 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 #layout #sidebar{ background:rgba(255,0,0,.18)!important; }
 #map-container{ background:rgba(0,128,255,.18)!important; }
 */
+
+.basemap-switcher.hidden{display:none!important;}
+.layers-btn{
+  position:absolute; top:calc(var(--navbar-height) + 0.75rem); right:0.75rem;
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.5rem .65rem; border-radius:.625rem;
+  background:#111827d0; border:1px solid var(--border);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  color:#fff; cursor:pointer; z-index:1002; font-size:.9rem;
+}
+.layers-btn:hover{box-shadow:0 0 0 1px #ffffff22 inset;}
+.layers-btn .icon{width:20px;height:20px;color:#fff;display:block;}
+@media (max-width:480px){ .layers-btn .label{display:none;} }
