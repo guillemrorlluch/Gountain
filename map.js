@@ -52,13 +52,15 @@ async function initMapOnce(){
     enableTerrainAndSky(map);
     buildStyleSwitcher();
     loadDestinos();
-    setupPanelToggles();
   });
 
   map.on('style.load', () => enableTerrainAndSky(map));
 }
 
-document.addEventListener('DOMContentLoaded', initMapOnce);
+document.addEventListener('DOMContentLoaded', () => {
+  setupPanelToggles();
+  initMapOnce();
+});
 
 // =====================================================
 // TERRAIN + SKY
