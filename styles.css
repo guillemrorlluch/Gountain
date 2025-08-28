@@ -259,8 +259,8 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 .layers-btn{
   position:absolute;
   left:.75rem;
-  top:.25rem;                /* ya arriba */
-  margin-bottom:1rem;       /* ← espacio extra respecto al basemap-switcher */
+  top:.25rem;
+  margin-bottom:1rem;        /* espacio claro sobre los switchers */
   display:inline-flex;
   align-items:center;
   gap:.5rem;
