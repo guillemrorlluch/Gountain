@@ -258,8 +258,8 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 .basemap-switcher.hidden{display:none!important;}
 .layers-btn{
   position:absolute;
-  top:calc(var(--navbar-height) + 0.5rem); /* justo debajo de la topbar */
-  left:0.75rem;                            /* esquina izquierda */
+  left:.75rem;                             /* mismo alineado horizontal que los switcher */
+  top:.25rem;                              /* un poco más arriba */
   display:inline-flex;
   align-items:center;
   gap:.5rem;
@@ -270,10 +270,9 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   color:#fff;
   font-size:.9rem;
   cursor:pointer;
-  z-index:1003;
+  z-index:1003;                            /* por encima de los switcher */
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
 }
 .layers-btn .icon{width:20px;height:20px;display:block;color:#fff;}
 .layers-btn:hover{box-shadow:0 0 0 1px #ffffff22 inset;}
 @media (max-width:480px){ .layers-btn .label{display:none;} }
-
