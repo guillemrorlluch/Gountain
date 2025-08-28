@@ -258,8 +258,9 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 .basemap-switcher.hidden{display:none!important;}
 .layers-btn{
   position:absolute;
-  left:.75rem;                             /* mismo alineado horizontal que los switcher */
-  top:.25rem;                              /* un poco más arriba */
+  left:.75rem;
+  top:.25rem;                /* ya arriba */
+  margin-bottom:.5rem;       /* ← espacio extra respecto al basemap-switcher */
   display:inline-flex;
   align-items:center;
   gap:.5rem;
@@ -270,7 +271,7 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   color:#fff;
   font-size:.9rem;
   cursor:pointer;
-  z-index:1003;                            /* por encima de los switcher */
+  z-index:1003;
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
 }
 .layers-btn .icon{width:20px;height:20px;display:block;color:#fff;}
