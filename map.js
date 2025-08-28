@@ -1,4 +1,4 @@
-// map.js — v13 (popup inteligente + safe areas móvil)
+// map.js — v14 (sidebar toggle fix, no re-render panels)
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 
 /* global mapboxgl */
@@ -28,16 +28,8 @@ async function initMapOnce(){
   __MAPBOX_MOUNTED__ = true;
 
   const token = MAPBOX_TOKEN;
-  if (!token) {
-    setHealth('No token');
-    alert('Map cannot load (token missing).');
-    return;
-  }
-  if (typeof mapboxgl === 'undefined') {
-    setHealth('Mapbox not loaded');
-    alert('Mapbox GL JS failed to load.');
-    return;
-  }
+  if (!token) { setHealth('No token'); alert('Map cannot load (token missing).'); return; }
+  if (typeof mapboxgl === 'undefined') { setHealth('Mapbox not loaded'); alert('Mapbox GL JS failed to load.'); return; }
 
   setHealth('Token OK');
   mapboxgl.accessToken = token;
@@ -48,8 +40,6 @@ async function initMapOnce(){
     center: [0, 0],
     zoom: 2
   });
-
-  map.on('click', ev => console.log('map click', ev.point));
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
   map.addControl(new mapboxgl.GeolocateControl({
@@ -62,11 +52,10 @@ async function initMapOnce(){
     enableTerrainAndSky(map);
     buildStyleSwitcher();
     loadDestinos();
+    setupPanelToggles();     // ← mover aquí: ya existe el DOM
   });
 
-  map.on('style.load', () => {
-    enableTerrainAndSky(map);
-  });
+  map.on('style.load', () => enableTerrainAndSky(map));
 }
 
 document.addEventListener('DOMContentLoaded', initMapOnce);
@@ -118,16 +107,12 @@ function buildStyleSwitcher() {
     btn.textContent = label;
 
     btn.addEventListener('click', () => {
-      if (label === '3D') {
-        toggle3D();
-        setActive(btn);
-        return;
-      }
+      if (label === '3D') { toggle3D(); setActive(btn); return; }
       const newStyle = STYLES[key];
       map.setStyle(newStyle);
       map.once('style.load', () => {
         enableTerrainAndSky(map);
-        reattachSourcesAndLayers(); // recrea sources/layers/events
+        reattachSourcesAndLayers();
       });
       setActive(btn);
     });
@@ -151,30 +136,22 @@ function toggle3D(){
 }
 
 // =====================================================
-// SAFE AREAS + AUTOPAN (helpers)
+// SAFE AREAS + AUTOPAN
 // =====================================================
+const $ = s => document.querySelector(s);
+const byId = s => document.getElementById(s);
+const isVisible = el => el && getComputedStyle(el).display !== 'none' && !el.classList.contains('hidden');
 
-// Helpers DOM
-function $(sel) { return document.querySelector(sel); }
-function byId(id) { return document.getElementById(id); }
-function isVisible(el) {
-  if (!el) return false;
-  const cs = getComputedStyle(el);
-  return cs.display !== 'none' && !el.classList.contains('hidden') && cs.visibility !== 'hidden';
-}
+const isMobile = () => matchMedia('(max-width: 640px)').matches;
+const getMarkerGap = () => isMobile() ? 24 : 16;
 
-// Responsive helpers
-function isMobile(){ return window.matchMedia('(max-width: 640px)').matches; }
-function getMarkerGap(){ return isMobile() ? 24 : 16; }  // separación punto-card
-
-/** Márgenes útiles (px) según UI visible */
 function getSafeAreas() {
   const topbar   = $('.topbar');
   const sidebar  = byId('sidebar');
   const glossary = byId('glossary');
   const chipbar  = $('.chip-bar') || byId('dest-chips');
 
-  const base = isMobile() ? 28 : 16; // más aire en móvil
+  const base = isMobile() ? 28 : 16;
 
   const top    = (topbar?.offsetHeight || 0) + base;
   const left   = (isVisible(sidebar)  ? sidebar.offsetWidth  : 0) + base;
@@ -186,7 +163,6 @@ function getSafeAreas() {
   return { top, right, bottom, left };
 }
 
-/** Autopan rápido para encajar un punto dentro del rectángulo útil */
 function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
   const sa = getSafeAreas();
   const { clientWidth: W, clientHeight: H } = mapInstance.getContainer();
@@ -203,7 +179,7 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
   if (p.y < topBound)         dy = topBound - p.y;
   else if (p.y > bottomBound) dy = bottomBound - p.y;
 
-  if (dx !== 0 || dy !== 0) {
+  if (dx || dy) {
     mapInstance.easeTo({
       center: mapInstance.unproject([p.x + dx, p.y + dy]),
       padding: sa,
@@ -216,11 +192,9 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
 }
 
 // =====================================================
-// Popup inteligente: medida + anclaje + bbox
+// Popup inteligente
 // =====================================================
-const POPUP_CFG = {
-  maxWidthPx: 420,   // igual que tu CSS (26.25rem)
-};
+const POPUP_CFG = { maxWidthPx: 420 };
 
 function getPopupMeasureEl() {
   let el = document.getElementById('popup-measure');
@@ -255,24 +229,21 @@ function choosePopupAnchor(p, size, sa, W, H, gap = getMarkerGap()) {
     top:    p.y - sa.top   - gap,
     bottom: (H - sa.bottom) - p.y - gap
   };
-  if (space.right >= size.w) return 'left';   // card a la derecha del punto
-  if (space.left  >= size.w) return 'right';  // card a la izquierda del punto
+  if (space.right >= size.w) return 'left';
+  if (space.left  >= size.w) return 'right';
   if (space.top    >= size.h) return 'bottom';
   if (space.bottom >= size.h) return 'top';
-  const entries = Object.entries(space).sort((a,b)=>b[1]-a[1]);
-  const best = entries[0][0];
-  return (best === 'right') ? 'left' :
-         (best === 'left')  ? 'right' :
-         (best === 'top')   ? 'bottom' : 'top';
+  const best = Object.entries(space).sort((a,b)=>b[1]-a[1])[0][0];
+  return (best === 'right') ? 'left' : (best === 'left') ? 'right' : (best === 'top') ? 'bottom' : 'top';
 }
 
 function computePopupBounding(p, size, anchor, gap = getMarkerGap()) {
   switch (anchor) {
-    case 'left':   return { x: p.x + gap,            y: p.y - size.h/2, w: size.w, h: size.h };
-    case 'right':  return { x: p.x - gap - size.w,   y: p.y - size.h/2, w: size.w, h: size.h };
-    case 'top':    return { x: p.x - size.w/2,       y: p.y - gap - size.h,       w: size.w, h: size.h };
-    case 'bottom': return { x: p.x - size.w/2,       y: p.y + gap,                w: size.w, h: size.h };
-    default:       return { x: p.x + gap,            y: p.y - size.h/2, w: size.w, h: size.h };
+    case 'left':   return { x: p.x + gap,          y: p.y - size.h/2, w: size.w, h: size.h };
+    case 'right':  return { x: p.x - gap - size.w, y: p.y - size.h/2, w: size.w, h: size.h };
+    case 'top':    return { x: p.x - size.w/2,     y: p.y - gap - size.h,       w: size.w, h: size.h };
+    case 'bottom': return { x: p.x - size.w/2,     y: p.y + gap,                w: size.w, h: size.h };
+    default:       return { x: p.x + gap,          y: p.y - size.h/2, w: size.w, h: size.h };
   }
 }
 
@@ -288,7 +259,7 @@ function boundingExcess(b, sa, W, H) {
 }
 
 // =====================================================
-// POPUP HTML
+// POPUP HTML (igual que v13)
 // =====================================================
 function asPill(t){ return `<span class="pill">${t}</span>`; }
 function field(label,val){
@@ -300,9 +271,8 @@ function field(label,val){
 
 function normalizePhotos(d){
   const c = [d.fotos, d.photos, d.images, d.photo];
-  const a = c
-    .flatMap(x => Array.isArray(x) ? x : (x ? [x] : []))
-    .filter(u => typeof u === 'string' && u.trim());
+  const a = c.flatMap(x => Array.isArray(x) ? x : (x ? [x] : []))
+             .filter(u => typeof u === 'string' && u.trim());
   return Array.from(new Set(a));
 }
 
@@ -413,7 +383,6 @@ function buildGeo(list){
     type: 'FeatureCollection',
     features: list.map(d => {
       const properties = { ...d, color: markerColor(d), html: popupHtml(d) };
-      console.assert(properties.html, 'Missing popup HTML for', d);
       return {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
@@ -515,7 +484,7 @@ function reattachSourcesAndLayers() {
 }
 
 // =====================================================
-// openPopupAt (anclaje + altura máxima + scroll)
+// openPopupAt
 // =====================================================
 let __activePopup = null;
 
@@ -536,7 +505,6 @@ function openPopupAt(coords, html, anchor = 'auto') {
     .setHTML(html)
     .addTo(map);
 
-  // Limitar altura del contenido según viewport y safe areas
   const sa = getSafeAreas();
   const maxH = Math.floor(window.innerHeight - sa.top - sa.bottom - gap);
   const content = popup.getElement().querySelector('.mapboxgl-popup-content');
@@ -549,7 +517,7 @@ function openPopupAt(coords, html, anchor = 'auto') {
 }
 
 // =====================================================
-// Click en punto: medir → anclar → autopan → abrir
+// Click handlers
 // =====================================================
 function onUnclusteredClick(e) {
   const f = e.features && e.features[0];
@@ -558,31 +526,23 @@ function onUnclusteredClick(e) {
   const coords = f.geometry.coordinates.slice();
   const html   = f.properties.html || '';
 
-  // 1) Medir popup con HTML real (máx. ancho responsive)
   const sa  = getSafeAreas();
   const gap = getMarkerGap();
   let size = measurePopupSize(html);
-  // altura permitida en viewport
+
   const allowedH = Math.max(120, window.innerHeight - sa.top - sa.bottom - gap);
   size.h = Math.min(size.h, allowedH);
 
-  // 2) Elegir anclaje según aire disponible
   const { clientWidth: W, clientHeight: H } = map.getContainer();
   const p = map.project(coords);
   const anchor = choosePopupAnchor(p, size, sa, W, H, gap);
 
-  // 3) Calcular bbox del popup y ver si se sale. Si sí, autopan mínimo.
   const bbox = computePopupBounding(p, size, anchor, gap);
   const { dx, dy } = boundingExcess(bbox, sa, W, H);
 
   if (dx || dy) {
     const newCenter = map.unproject([p.x + dx, p.y + dy]);
-    map.easeTo({
-      center: newCenter,
-      padding: sa,
-      duration: 450,
-      easing: t => t * (2 - t)
-    });
+    map.easeTo({ center: newCenter, padding: sa, duration: 450, easing: t => t * (2 - t) });
     map.once('moveend', () => openPopupAt(coords, html, anchor));
   } else {
     openPopupAt(coords, html, anchor);
@@ -642,228 +602,118 @@ async function loadDestinos(){
 }
 
 // =====================================================
-// Panels (Sidebar filters & Glossary) + Filters logic
+// Panels (toggles) — usa el HTML existente, no renderiza
 // =====================================================
 function setupPanelToggles() {
-  const btnMenu  = document.getElementById('btnMenu');
-  const btnInfo  = document.getElementById('btnInfo');
-  const sidebar  = document.getElementById('sidebar');
-  const glossary = document.getElementById('glossary');
+  const btnMenu  = byId('btnMenu');
+  const btnInfo  = byId('btnInfo');
+  const sidebar  = byId('sidebar');
+  const glossary = byId('glossary');
 
-  console.debug('[UI] wiring panel toggles', { btnMenu: !!btnMenu, btnInfo: !!btnInfo, sidebar: !!sidebar, glossary: !!glossary });
-
-  if (btnMenu && sidebar) {
-    btnMenu.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      sidebar.classList.toggle('hidden');
-      if (!sidebar.classList.contains('hidden') && glossary) glossary.classList.add('hidden');
-    });
-  }
-
-  if (btnInfo && glossary) {
-    btnInfo.addEventListener('click', (e) => {
-      e.preventDefault(); e.stopPropagation();
-      glossary.classList.toggle('hidden');
-      if (!glossary.classList.contains('hidden') && sidebar) sidebar.classList.add('hidden');
-    });
-  }
-
-  // Fallback (delegación)
-  document.body.addEventListener('click', (e) => {
-    const m = e.target.closest && e.target.closest('#btnMenu');
-    const i = e.target.closest && e.target.closest('#btnInfo');
-    if (m && sidebar) {
-      e.preventDefault(); e.stopPropagation();
-      sidebar.classList.toggle('hidden');
-      if (!sidebar.classList.contains('hidden') && glossary) glossary.classList.add('hidden');
+  const closeSidebar = () => {
+    if (!sidebar) return;
+    if (!sidebar.classList.contains('hidden')) {
+      sidebar.classList.add('hidden');
+      sidebar.setAttribute('inert','');
+      btnMenu?.setAttribute('aria-expanded','false');
+      map?.resize();
     }
-    if (i && glossary) {
-      e.preventDefault(); e.stopPropagation();
-      glossary.classList.toggle('hidden');
-      if (!glossary.classList.contains('hidden') && sidebar) sidebar.classList.add('hidden');
+  };
+
+  const openSidebar = () => {
+    if (!sidebar) return;
+    sidebar.classList.remove('hidden');
+    sidebar.removeAttribute('inert');
+    btnMenu?.setAttribute('aria-expanded','true');
+    // cierra glossary si está abierto
+    if (glossary && !glossary.classList.contains('hidden')) {
+      glossary.classList.add('hidden'); glossary.setAttribute('inert','');
     }
+    map?.resize();
+  };
+
+  const toggleSidebar = () => (sidebar?.classList.contains('hidden') ? openSidebar() : closeSidebar());
+
+  const closeGlossary = () => {
+    if (!glossary) return;
+    if (!glossary.classList.contains('hidden')) {
+      glossary.classList.add('hidden');
+      glossary.setAttribute('inert','');
+      btnInfo?.setAttribute('aria-expanded','false');
+      map?.resize();
+    }
+  };
+
+  const openGlossary = () => {
+    if (!glossary) return;
+    glossary.classList.remove('hidden');
+    glossary.removeAttribute('inert');
+    btnInfo?.setAttribute('aria-expanded','true');
+    // cierra sidebar si está abierto
+    closeSidebar();
+    map?.resize();
+  };
+
+  const toggleGlossary = () => (glossary?.classList.contains('hidden') ? openGlossary() : closeGlossary());
+
+  btnMenu?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleSidebar(); });
+  btnInfo?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleGlossary(); });
+
+  // Cerrar con ESC el panel abierto
+  window.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (glossary && !glossary.classList.contains('hidden')) { closeGlossary(); return; }
+    if (sidebar && !sidebar.classList.contains('hidden')) { closeSidebar(); return; }
   });
+
+  // Reajustar mapa si cambia el tamaño del sidebar (responsive)
+  const ro = new ResizeObserver(() => map?.resize());
+  sidebar && ro.observe(sidebar);
+  glossary && ro.observe(glossary);
+
+  // Estado inicial ARIA/inert
+  if (sidebar?.classList.contains('hidden')) { sidebar.setAttribute('inert',''); btnMenu?.setAttribute('aria-expanded','false'); }
+  if (glossary?.classList.contains('hidden')) { glossary.setAttribute('inert',''); btnInfo?.setAttribute('aria-expanded','false'); }
 }
 
-function renderSidebarPanel() {
-  const el = document.getElementById('sidebar');
-  if (!el) return;
-  el.innerHTML = `
-    <div class="panel-section">
-      <h2>Filtros</h2>
-
-      <details open>
-        <summary>Dificultad</summary>
-        <div id="filter-dificultad" class="chips"></div>
-      </details>
-
-      <details>
-        <summary>Botas</summary>
-        <div id="filter-botas" class="chips"></div>
-      </details>
-
-      <details>
-        <summary>Tipo</summary>
-        <div id="filter-tipo" class="chips"></div>
-      </details>
-
-      <details>
-        <summary>Altitud (m)</summary>
-        <div class="altitude-inputs">
-          <label for="alt-min">Min</label>
-          <input id="alt-min" class="input" type="number" inputmode="numeric" placeholder="0">
-          <label for="alt-max">Max</label>
-          <input id="alt-max" class="input" type="number" inputmode="numeric" placeholder="9000">
-        </div>
-      </details>
-
-      <details>
-        <summary>Temporada</summary>
-        <div id="filter-season" class="chips"></div>
-      </details>
-
-      <button id="clearFilters" class="btn">Limpiar filtros</button>
-    </div>
-  `;
-
-  putChips('filter-dificultad', ['F','PD','AD','D'], v => toggleFilter('dificultad', v));
-  putChips('filter-botas', [
-    'Bestard Teix Lady GTX','Scarpa Ribelle Lite HD','Scarpa Zodiac Tech LT GTX',
-    'La Sportiva Aequilibrium ST GTX','La Sportiva Nepal Cube GTX','Nepal (doble bota técnica de alta montaña)',
-    'Botas triple capa (8000 m+)','Cualquiera','Depende','Otras ligeras (para trekking no técnico)'
-  ], v => toggleFilter('botas', v));
-  putChips('filter-tipo', ['Pico','Travesía','Volcán','Glaciar'], v => toggleFilter('tipo', v));
-  putChips('filter-season', ['Jan–Mar','Apr–Jun','Jul–Sep','Oct–Dec'], v => toggleFilter('meses', v));
-
-  const minI = document.getElementById('alt-min');
-  const maxI = document.getElementById('alt-max');
-  [minI, maxI].forEach(i => i && i.addEventListener('change', applyFilters));
-
-  const clear = document.getElementById('clearFilters');
-  clear && clear.addEventListener('click', () => {
-    state.filters = {};
-    if (minI) minI.value = '';
-    if (maxI) maxI.value = '';
-    document.querySelectorAll('#sidebar .chip.active').forEach(c => c.classList.remove('active'));
-    applyFilters();
-  });
-}
-
-function renderGlossaryPanel() {
-  const el = document.getElementById('glossary');
-  if (!el) return;
-  el.innerHTML = `
-    <div class="panel-section">
-      <h2>Glosario</h2>
-
-      <details open>
-        <summary>Siglas</summary>
-        <ul>
-          <li><b>PN</b>: Parque Nacional</li>
-          <li><b>UIAA</b>: Escala de dificultad</li>
-          <li><b>F</b> Fácil · <b>PD</b> Poco Difícil · <b>AD</b> Bastante Difícil · <b>D</b> Difícil</li>
-          <li><b>Vivac</b>: pernocta ligera</li>
-          <li><b>Scrambling</b>: progresión sin ser deportiva</li>
-        </ul>
-      </details>
-
-      <details open>
-        <summary>Leyenda de botas</summary>
-        <ul id="legend-botas"></ul>
-      </details>
-    </div>
-  `;
-
-  const ul = el.querySelector('#legend-botas');
-  if (ul && typeof BOOT_COLORS === 'object') {
-    ul.innerHTML = Object.entries(BOOT_COLORS)
-      .map(([name, color]) =>
-        `<li style="display:flex;align-items:center;gap:8px;margin:6px 0">
-           <span style="width:14px;height:14px;border-radius:3px;background:${color};display:inline-block;border:1px solid #00000022"></span>
-           <span>${name}</span>
-         </li>`
-      ).join('');
-  }
-}
-
-// ---- helpers de chips/filtros ----
+// =====================================================
+// Filtros básicos integrados (extend passContinent)
+// =====================================================
 state.filters = state.filters || {};
-
-function putChips(hostId, values, onClick){
-  const host = document.getElementById(hostId);
-  if (!host) return;
-  host.innerHTML = '';
-  values.forEach(v => {
-    const c = document.createElement('button');
-    c.className = 'chip';
-    c.type = 'button';
-    c.textContent = v;
-    c.addEventListener('click', () => {
-      c.classList.toggle('active');
-      onClick && onClick(v);
-      applyFilters();
-    });
-    host.appendChild(c);
-  });
-}
-
-function toggleFilter(key, value){
-  const s = new Set(state.filters[key] || []);
-  if (s.has(value)) s.delete(value); else s.add(value);
-  state.filters[key] = [...s];
-}
-
-// ---- Extiende passContinent con filtros básicos ----
 const __passContinentBase = passContinent;
 passContinent = function(d){
   if (!__passContinentBase(d)) return false;
 
   const f = state.filters || {};
+  if (f.dificultad?.length && !f.dificultad.some(tag => (d.dificultad || '').includes(tag))) return false;
 
-  if (f.dificultad?.length) {
-    if (!f.dificultad.some(tag => (d.dificultad || '').includes(tag))) return false;
-  }
   if (f.botas?.length) {
     const boots = Array.isArray(d.botas) ? d.botas : [];
     if (!boots.some(b => f.botas.includes(b))) return false;
   }
-  if (f.tipo?.length) {
-    if (!f.tipo.includes(d.tipo)) return false;
-  }
+
+  if (f.tipo?.length && !f.tipo.includes(d.tipo)) return false;
+
   if (f.meses?.length) {
     const m = String(d.meses || '');
     if (!f.meses.some(x => m.includes(x))) return false;
   }
-  const minI = document.getElementById('alt-min');
-  const maxI = document.getElementById('alt-max');
+
+  const minI = byId('alt-min'); const maxI = byId('alt-max');
   const min = minI?.value ? Number(minI.value) : -Infinity;
-  const max = maxI?.value ? Number(maxI.value) : Infinity;
+  const max = maxI?.value ? Number(maxI.value) :  Infinity;
   const alt = Number(d.altitud_m ?? d.altitud ?? NaN);
   if (!Number.isNaN(alt) && !(alt >= min && alt <= max)) return false;
 
   return true;
 };
 
-// ---- Select de continente (topbar) ----
+// ---- Hook select continente (topbar)
 (function hookContinentSelect(){
-  const sel = document.getElementById('continent-select');
+  const sel = byId('continent-select');
   if (!sel) return;
   sel.addEventListener('change', () => {
     state.continent = sel.value || '';
     applyFilters();
   });
 })();
-
-// ---- Inicializa paneles (si el DOM ya está listo, corre ya) ----
-function ready(fn){
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', fn, { once:true });
-  } else {
-    fn();
-  }
-}
-ready(() => {
-  setupPanelToggles();
-  renderSidebarPanel();
-  renderGlossaryPanel();
-});
