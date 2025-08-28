@@ -275,7 +275,7 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 .basemap-switcher{
   position:absolute;
   left:.75rem;
-  top:3.5rem;                   /* ⟵ ajusta la separación real */
+  top:3rem;                   /* ⟵ ajusta la separación real */
   display:flex; gap:.375rem; flex-wrap:wrap;
   padding:.5rem; max-width:calc(100% - 1.5rem);
   background:#111827d0; border:1px solid var(--border); border-radius:.625rem;
