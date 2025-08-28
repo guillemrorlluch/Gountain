@@ -648,7 +648,7 @@ function setupPanelToggles() {
       sidebar.classList.add('hidden');
       sidebar.setAttribute('inert','');
       btnMenu?.setAttribute('aria-expanded','false');
-      map?.resize();
+      scheduleRecenter();           // ← reajusta mapa con padding y centro visual
     }
   };
 
@@ -657,14 +657,16 @@ function setupPanelToggles() {
     sidebar.classList.remove('hidden');
     sidebar.removeAttribute('inert');
     btnMenu?.setAttribute('aria-expanded','true');
-    // cierra glossary si está abierto
     if (glossary && !glossary.classList.contains('hidden')) {
-      glossary.classList.add('hidden'); glossary.setAttribute('inert','');
+      glossary.classList.add('hidden');
+      glossary.setAttribute('inert','');
+      btnInfo?.setAttribute('aria-expanded','false');
     }
-    map?.resize();
+    scheduleRecenter();            // ← recentra mapa
   };
 
-  const toggleSidebar = () => (sidebar?.classList.contains('hidden') ? openSidebar() : closeSidebar());
+  const toggleSidebar = () =>
+    sidebar?.classList.contains('hidden') ? openSidebar() : closeSidebar();
 
   const closeGlossary = () => {
     if (!glossary) return;
@@ -672,7 +674,7 @@ function setupPanelToggles() {
       glossary.classList.add('hidden');
       glossary.setAttribute('inert','');
       btnInfo?.setAttribute('aria-expanded','false');
-      map?.resize();
+      scheduleRecenter();
     }
   };
 
@@ -681,29 +683,30 @@ function setupPanelToggles() {
     glossary.classList.remove('hidden');
     glossary.removeAttribute('inert');
     btnInfo?.setAttribute('aria-expanded','true');
-    // cierra sidebar si está abierto
-    closeSidebar();
-    map?.resize();
+    closeSidebar();                // solo un panel abierto a la vez
+    scheduleRecenter();
   };
 
-  const toggleGlossary = () => (glossary?.classList.contains('hidden') ? openGlossary() : closeGlossary());
+  const toggleGlossary = () =>
+    glossary?.classList.contains('hidden') ? openGlossary() : closeGlossary();
 
+  // Clicks en los botones
   btnMenu?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleSidebar(); });
   btnInfo?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleGlossary(); });
 
-  // Cerrar con ESC el panel abierto
+  // Cerrar con ESC el panel visible
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (glossary && !glossary.classList.contains('hidden')) { closeGlossary(); return; }
     if (sidebar && !sidebar.classList.contains('hidden')) { closeSidebar(); return; }
   });
 
-  // Reajustar mapa si cambia el tamaño del sidebar (responsive)
+  // Reajustar mapa si el panel cambia de tamaño (responsive)
   const ro = new ResizeObserver(() => map?.resize());
   sidebar && ro.observe(sidebar);
   glossary && ro.observe(glossary);
 
-  // Estado inicial ARIA/inert
+  // Estado inicial ARIA / inert
   if (sidebar?.classList.contains('hidden')) { sidebar.setAttribute('inert',''); btnMenu?.setAttribute('aria-expanded','false'); }
   if (glossary?.classList.contains('hidden')) { glossary.setAttribute('inert',''); btnInfo?.setAttribute('aria-expanded','false'); }
 }
