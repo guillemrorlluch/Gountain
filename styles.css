@@ -267,7 +267,7 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   padding:.5rem .65rem;
   border-radius:.625rem;
   background:#111827d0;
-  border:1rem solid var(--border);
+  border:1px solid var(--border);
   color:#fff;
   font-size:.9rem;
   cursor:pointer;
