@@ -45,14 +45,12 @@
     <button id="btnInfo" class="info-btn" aria-label="Open glossary">ℹ️</button>
   </header>
 
-  <!-- Basemap switcher (alineado a la izquierda bajo la topbar) -->
-  <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
-
-  <!-- Paneles -->
-  <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
-    <div class="panel-section">
-      <h2>Filtros</h2>
-      <details>
+  <div id="layout">
+    <!-- Paneles -->
+    <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
+      <div class="panel-section">
+        <h2>Filtros</h2>
+        <details>
         <summary>Dificultad</summary>
         <div id="filter-dificultad" class="chips"></div>
       </details>
@@ -81,6 +79,16 @@
       <button id="clearFilters" class="btn">Limpiar filtros</button>
     </div>
   </aside>
+
+    <!-- Mapa -->
+    <section id="map-container">
+      <div id="map"></div>
+      <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
+      <div id="dest-chips" class="destination-chips" aria-label="Destinations"></div>
+      <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
+      <div id="map-error" class="hidden" role="alert"></div>
+    </section>
+  </div>
 
   <aside id="glossary" class="panel hidden" aria-label="Glosario">
     <div class="panel-section">
@@ -113,16 +121,6 @@
       </details>
     </div>
   </aside>
-
-  <!-- Mapa -->
-  <div id="map"></div>
-
-  <!-- Barra de chips de destinos -->
-  <div id="dest-chips" class="destination-chips" aria-label="Destinations"></div>
-
-  <!-- Health / errores -->
-  <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
-  <div id="map-error" class="hidden" role="alert"></div>
 
   <!-- JS de tu app -->
   <script type="module" src="/dist/app.bundle.js?v=13"></script>

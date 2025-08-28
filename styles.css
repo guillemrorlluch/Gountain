@@ -2,6 +2,7 @@
    THEME / RESETS
 ========================= */
 :root{
+  --navbar-height:3.5rem;
   --bg:#0b1220;
   --panel:#0f172a;
   --text:#f8fafc;
@@ -14,7 +15,7 @@
   --danger:#b91c1c;
 }
 *{box-sizing:border-box}
-html, body, #app, #map { height:100%; margin:0; }
+html, body { height:100%; margin:0; }
 body{
   background:var(--bg);
   color:var(--text);
@@ -27,7 +28,7 @@ body{
    LAYOUT: TOPBAR
 ========================= */
 .topbar{
-  position:fixed; left:0; right:0; top:0; height:3.5rem; /* 56px */
+  position:fixed; left:0; right:0; top:0; height:var(--navbar-height); /* 56px */
   display:flex; align-items:center; gap:0.625rem; /* 10px */
   padding:0 0.75rem; /* 12px */
   background:#111827d0;
@@ -75,16 +76,45 @@ body{
 .hamburger .bars::after{ position:absolute; top:0.375rem }   /* 6px */
 
 /* =========================
+   LAYOUT: SIDEBAR + MAP
+========================= */
+#layout{
+  display:flex;
+  height:calc(100vh - var(--navbar-height));
+  margin-top:var(--navbar-height);
+}
+#layout #sidebar{
+  flex:1;
+  overflow-y:auto;
+  position:relative;
+  top:auto; bottom:auto; width:auto; z-index:auto;
+}
+#map-container{
+  flex:2;
+  position:relative;
+  min-width:0;
+}
+#map{
+  position:absolute; top:0; left:0; right:0; bottom:0;
+  background:#0b1220; z-index:0; pointer-events:auto;
+}
+
+@media (max-width:48rem){ /* 768px */
+  #layout #sidebar{ flex:2; }
+  #map-container{ flex:1; }
+}
+
+/* =========================
    BASEMAP SWITCHER
 ========================= */
 .basemap-switcher{
-  position:fixed; left:0.75rem; top:3.5rem; /* 12px, 56px */
+  position:absolute; left:0.75rem; top:0.75rem; /* 12px */
   display:flex; gap:0.375rem; flex-wrap:wrap; /* 6px */
   padding:0.5rem; /* 8px */
   background:#111827d0; border:0.0625rem solid var(--border); border-radius:0.625rem;
   backdrop-filter:blur(0.5rem); -webkit-backdrop-filter:blur(0.5rem);
   z-index:1001;
-  max-width:calc(100vw - 1.5rem); /* 24px */
+  max-width:calc(100% - 1.5rem); /* 24px */
   pointer-events:none;
 }
 .basemap-switcher button{
@@ -100,26 +130,17 @@ body{
 }
 
 /* Controles Mapbox */
-.mapboxgl-ctrl-top-right{ top:3.5rem; } /* 56px */
-.mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{ margin-top:4rem; } /* 64px */
+.mapboxgl-ctrl-top-right{ top:0.75rem; right:0.75rem; }
 
-/* =========================
-   MAP CONTAINER
-========================= */
-#map{
-  position:fixed; top:3.5rem; left:0; right:0; bottom:0; /* 56px */
-  background:#0b1220; z-index:0;
-  pointer-events:auto;
-}
+/* Mapbox canvas and overlays */
 .mapboxgl-canvas{ pointer-events:auto; }
-
 .map-health{
-  position:fixed;bottom:0.625rem;right:0.625rem; /* 10px */
+  position:absolute;bottom:0.625rem;right:0.625rem; /* 10px */
   background:#111827d0;color:var(--text);
   padding:0.25rem 0.5rem; border-radius:0.375rem; font-size:0.75rem; z-index:1000; /* 4px 8px 6px 12px */
 }
 #map-error{
-  position:fixed;top:4rem;left:50%;transform:translateX(-50%); /* 64px */
+  position:absolute;top:0.75rem;left:50%;transform:translateX(-50%);
   background:var(--danger);color:#fff;padding:0.375rem 0.625rem;border-radius:0.375rem;z-index:2000;font-size:0.875rem; /* 6px 10px 6px 14px */
 }
 
@@ -127,7 +148,7 @@ body{
    PANELS
 ========================= */
 .panel{
-  position:fixed; top:3.5rem; bottom:0; width:20rem; background:var(--panel); /* 320px */
+  position:fixed; top:var(--navbar-height); bottom:0; width:20rem; background:var(--panel); /* 320px */
   border-right:0.0625rem solid var(--border); z-index:1001; overflow:auto;
 }
 #sidebar{left:0}
@@ -273,11 +294,7 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   .basemap-switcher{left:0.625rem;max-width:calc(100vw - 1.25rem)} /* 10px 20px */
 }
 @media (max-width:37.5rem){ /* 600px */
-  .topbar{height:3.25rem} /* 52px */
-  #map{top:3.25rem}
-  .basemap-switcher{top:3.25rem}
-  .mapboxgl-ctrl-top-right{top:3.25rem}
-  .mapboxgl-ctrl-top-right .mapboxgl-ctrl-group{margin-top:3.75rem} /* 60px */
+  :root{ --navbar-height:3.25rem; }
   .mapboxgl-popup{ max-width:min(92vw, 26.25rem); } /* 420px */
   .panel{width:100%}
 }
