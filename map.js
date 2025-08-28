@@ -4,7 +4,7 @@ import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
 /* global mapboxgl */
 let map;
 const healthEl = document.getElementById('map-health');
-function setHealth(t){ if (healthEl) healthEl.textContent = t; }
+function setHealth(t){ /* noop, oculto */ }
 
 let __MAPBOX_MOUNTED__ = false;
 let listenersAttached = false;
