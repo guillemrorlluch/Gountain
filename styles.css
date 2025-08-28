@@ -260,7 +260,7 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   position:absolute;
   left:.75rem;
   top:.25rem;                /* ya arriba */
-  margin-bottom:.5rem;       /* ← espacio extra respecto al basemap-switcher */
+  margin-bottom:1rem;       /* ← espacio extra respecto al basemap-switcher */
   display:inline-flex;
   align-items:center;
   gap:.5rem;
