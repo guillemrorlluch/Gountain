@@ -3,7 +3,7 @@
 ========================= */
 :root{
   --navbar-height:3.5rem;        /* ~56px */
-  --bg: linear-gradient(90deg, #017C9B 100%, #017C9B 50%, #00BDF1 50%, #00BDF1 100%);
+  --bg:#3158a7;
   --panel:#0f172a;
   --text:#f8fafc;
   --muted:#cbd5e1;
@@ -41,7 +41,7 @@ body{
 .hamburger{
   width:2.5rem; height:2.25rem;
   display:inline-flex; align-items:center; justify-content:center;
-  border-radius:.625rem; border:1px solid #374151;
+  border-radius:.625rem; border:1px solid #017C9B;
   background:#1f2937; color:inherit; cursor:pointer;
 }
 .hamburger .bars,
