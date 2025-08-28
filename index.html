@@ -45,14 +45,12 @@
     <button id="btnInfo" class="info-btn" aria-label="Open glossary">ℹ️</button>
   </header>
 
-  <!-- Basemap switcher (alineado a la izquierda bajo la topbar) -->
-  <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
-
-  <!-- Paneles -->
-  <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
-    <div class="panel-section">
-      <h2>Filtros</h2>
-      <details>
+  <div id="layout">
+    <!-- Paneles -->
+    <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
+      <div class="panel-section">
+        <h2>Filtros</h2>
+        <details>
         <summary>Dificultad</summary>
         <div id="filter-dificultad" class="chips"></div>
       </details>
@@ -82,47 +80,47 @@
     </div>
   </aside>
 
-  <aside id="glossary" class="panel hidden" aria-label="Glosario">
-    <div class="panel-section">
-      <h2>Glosario</h2>
-      <details open>
-        <summary>Siglas</summary>
-        <ul>
-          <li><b>PN</b>: Parque Nacional (normas de acampada y gas)</li>
-          <li><b>UIAA</b>: Escala internacional de dificultad</li>
-          <li><b>F</b>: Fácil</li>
-          <li><b>PD</b>: Poco Difícil</li>
-          <li><b>AD</b>: Bastante Difícil</li>
-          <li><b>D</b>: Difícil</li>
-          <li><b>Vivac</b>: Pernocta con tienda ligera (montar al atardecer, recoger al amanecer)</li>
-          <li><b>Scrambling</b>: Progresión con manos/pies en roca sin ser escalada deportiva</li>
-        </ul>
-      </details>
-      <details id="boots-legend" open>
-        <summary>Leyenda de botas</summary>
-        <ul id="legend-botas">
-          <li>Cualquiera</li>
-          <li>Depende</li>
-          <li>Bestard Teix Lady GTX</li>
-          <li>Scarpa Ribelle Lite HD</li>
-          <li>Scarpa Zodiac Tech LT GTX</li>
-          <li>La Sportiva Aequilibrium ST GTX</li>
-          <li>La Sportiva Nepal Cube GTX</li>
-          <li>Nepal (doble bota técnica de alta montaña)</li>
-        </ul>
-      </details>
-    </div>
-  </aside>
+    <!-- Mapa -->
+    <section id="map-container">
+      <div id="map"></div>
+      <div id="basemap-switcher" class="basemap-switcher" aria-label="Map style"></div>
+      <div id="dest-chips" class="destination-chips" aria-label="Destinations"></div>
+      <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
+      <div id="map-error" class="hidden" role="alert"></div>
+    </section>
 
-  <!-- Mapa -->
-  <div id="map"></div>
-
-  <!-- Barra de chips de destinos -->
-  <div id="dest-chips" class="destination-chips" aria-label="Destinations"></div>
-
-  <!-- Health / errores -->
-  <div id="map-health" class="map-health" aria-live="polite">Loading map...</div>
-  <div id="map-error" class="hidden" role="alert"></div>
+    <aside id="glossary" class="panel hidden" aria-label="Glosario">
+      <div class="panel-section">
+        <h2>Glosario</h2>
+        <details open>
+          <summary>Siglas</summary>
+          <ul>
+            <li><b>PN</b>: Parque Nacional (normas de acampada y gas)</li>
+            <li><b>UIAA</b>: Escala internacional de dificultad</li>
+            <li><b>F</b>: Fácil</li>
+            <li><b>PD</b>: Poco Difícil</li>
+            <li><b>AD</b>: Bastante Difícil</li>
+            <li><b>D</b>: Difícil</li>
+            <li><b>Vivac</b>: Pernocta con tienda ligera (montar al atardecer, recoger al amanecer)</li>
+            <li><b>Scrambling</b>: Progresión con manos/pies en roca sin ser escalada deportiva</li>
+          </ul>
+        </details>
+        <details id="boots-legend" open>
+          <summary>Leyenda de botas</summary>
+          <ul id="legend-botas">
+            <li>Cualquiera</li>
+            <li>Depende</li>
+            <li>Bestard Teix Lady GTX</li>
+            <li>Scarpa Ribelle Lite HD</li>
+            <li>Scarpa Zodiac Tech LT GTX</li>
+            <li>La Sportiva Aequilibrium ST GTX</li>
+            <li>La Sportiva Nepal Cube GTX</li>
+            <li>Nepal (doble bota técnica de alta montaña)</li>
+          </ul>
+        </details>
+      </div>
+    </aside>
+  </div>
 
   <!-- JS de tu app -->
   <script type="module" src="/dist/app.bundle.js?v=13"></script>
