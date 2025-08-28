@@ -256,24 +256,29 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 */
 
 .basemap-switcher.hidden{display:none!important;}
+/* Botón Layers arriba-izquierda */
 .layers-btn{
   position:absolute;
   left:.75rem;
-  top:.25rem;
-  margin-bottom:1rem;        /* espacio claro sobre los switchers */
-  display:inline-flex;
-  align-items:center;
-  gap:.5rem;
-  padding:.5rem .65rem;
-  border-radius:.625rem;
-  background:#111827d0;
-  border:1px solid var(--border);
-  color:#fff;
-  font-size:.9rem;
-  cursor:pointer;
-  z-index:1003;
-  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  top:.25rem;                   /* botón más arriba */
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.5rem .65rem; border-radius:.625rem;
+  background:#111827d0; border:1px solid var(--border);
+  color:#fff; font-size:.9rem; cursor:pointer;
+  z-index:1003; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
 }
 .layers-btn .icon{width:20px;height:20px;display:block;color:#fff;}
 .layers-btn:hover{box-shadow:0 0 0 1px #ffffff22 inset;}
 @media (max-width:480px){ .layers-btn .label{display:none;} }
+
+/* Switcher debajo del botón (separado) */
+.basemap-switcher{
+  position:absolute;
+  left:.75rem;
+  top:3.5rem;                   /* ⟵ ajusta la separación real */
+  display:flex; gap:.375rem; flex-wrap:wrap;
+  padding:.5rem; max-width:calc(100% - 1.5rem);
+  background:#111827d0; border:1px solid var(--border); border-radius:.625rem;
+  backdrop-filter:blur(.5rem); -webkit-backdrop-filter:blur(.5rem);
+  z-index:1002; pointer-events:auto!important;
+}
