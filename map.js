@@ -52,7 +52,7 @@ async function initMapOnce(){
     enableTerrainAndSky(map);
     buildStyleSwitcher();
     loadDestinos();
-    setupPanelToggles();     // ← mover aquí: ya existe el DOM
+    setupPanelToggles();
   });
 
   map.on('style.load', () => enableTerrainAndSky(map));
@@ -168,9 +168,7 @@ function easeToRespectingSafeAreas() {
   if (!map) return;
   const sa = getSafeAreas();
 
-  // Centro actual en píxeles
   const p = map.project(map.getCenter());
-  // Desplazamiento: cuando hay padding L/R/T/B, el "centro visual" se mueve (L-R)/2, (T-B)/2
   const dx = (sa.left - sa.right) / 2;
   const dy = (sa.top  - sa.bottom) / 2;
 
@@ -187,10 +185,8 @@ function easeToRespectingSafeAreas() {
 // Ejecuta resize y luego recentra tras el cambio de layout
 function scheduleRecenter() {
   if (!map) return;
-  // Espera a que el DOM aplique el cambio de ancho del sidebar
   requestAnimationFrame(() => {
     map.resize();
-    // Un rAF extra para asegurarnos en móviles/iOS
     requestAnimationFrame(() => easeToRespectingSafeAreas());
   });
 }
@@ -648,7 +644,7 @@ function setupPanelToggles() {
       sidebar.classList.add('hidden');
       sidebar.setAttribute('inert','');
       btnMenu?.setAttribute('aria-expanded','false');
-      scheduleRecenter();           // ← reajusta mapa con padding y centro visual
+      scheduleRecenter();
     }
   };
 
@@ -662,7 +658,7 @@ function setupPanelToggles() {
       glossary.setAttribute('inert','');
       btnInfo?.setAttribute('aria-expanded','false');
     }
-    scheduleRecenter();            // ← recentra mapa
+    scheduleRecenter();
   };
 
   const toggleSidebar = () =>
@@ -683,30 +679,26 @@ function setupPanelToggles() {
     glossary.classList.remove('hidden');
     glossary.removeAttribute('inert');
     btnInfo?.setAttribute('aria-expanded','true');
-    closeSidebar();                // solo un panel abierto a la vez
+    closeSidebar();
     scheduleRecenter();
   };
 
   const toggleGlossary = () =>
     glossary?.classList.contains('hidden') ? openGlossary() : closeGlossary();
 
-  // Clicks en los botones
   btnMenu?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleSidebar(); });
   btnInfo?.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleGlossary(); });
 
-  // Cerrar con ESC el panel visible
   window.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (glossary && !glossary.classList.contains('hidden')) { closeGlossary(); return; }
     if (sidebar && !sidebar.classList.contains('hidden')) { closeSidebar(); return; }
   });
 
-  // Reajustar mapa si el panel cambia de tamaño (responsive)
   const ro = new ResizeObserver(() => map?.resize());
   sidebar && ro.observe(sidebar);
   glossary && ro.observe(glossary);
 
-  // Estado inicial ARIA / inert
   if (sidebar?.classList.contains('hidden')) { sidebar.setAttribute('inert',''); btnMenu?.setAttribute('aria-expanded','false'); }
   if (glossary?.classList.contains('hidden')) { glossary.setAttribute('inert',''); btnInfo?.setAttribute('aria-expanded','false'); }
 }
