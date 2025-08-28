@@ -32,7 +32,7 @@ body{
   height:var(--navbar-height);
   display:flex; align-items:center; gap:.625rem;
   padding:0 .75rem;
-  background:#111827d0;
+  background:#017C9B;
   border-bottom:1px solid var(--border);
   backdrop-filter:blur(.5rem); -webkit-backdrop-filter:blur(.5rem);
   z-index:1000;
@@ -41,7 +41,7 @@ body{
 .hamburger{
   width:2.5rem; height:2.25rem;
   display:inline-flex; align-items:center; justify-content:center;
-  border-radius:.625rem; border:1px solid #3158a7;
+  border-radius:.625rem; border:1px solid #00BDF1;
   background:#1f2937; color:inherit; cursor:pointer;
 }
 .hamburger .bars,
@@ -57,7 +57,7 @@ body{
   margin-left:auto;
   appearance:none;
   background:#1f2937; color:var(--text);
-  border:1px solid #374151;
+  border:1px solid #017C9B;
   border-radius:.625rem;
   padding:.375rem .625rem;
   min-height:2.25rem;
@@ -65,7 +65,7 @@ body{
 .info-btn{
   margin-left:.375rem;
   min-width:2.25rem; min-height:2.25rem;
-  border-radius:.625rem; border:1px solid #374151;
+  border-radius:.625rem; border:1px solid #017C9B;
   background:#1f2937; color:var(--text); cursor:pointer;
 }
 
@@ -166,7 +166,7 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
   pointer-events:auto!important;
 }
 .basemap-switcher button{
-  border:1px solid #374151; border-radius:999px;
+  border:1px solid #00BDF1; border-radius:999px;
   background:#1f2937; color:var(--text);
   padding:.375rem .625rem; font-size:.8125rem; cursor:pointer;
   min-height:2rem; pointer-events:auto;
