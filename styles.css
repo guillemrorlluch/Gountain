@@ -239,7 +239,7 @@ button:focus-visible, a:focus-visible, select:focus-visible{
    RESPONSIVE TWEAKS
 ========================= */
 @media (max-width:50rem){ .basemap-switcher{ left:.625rem; max-width:calc(100vw - 1.25rem); } }
-@media (max-width:37.5rem){ #glossary.panel{ width:100%; } .mapboxgl-popup{ max-width:min(92vw,26.25rem); } }
+@media (max-width:37.5rem){ #glossary.panel{ width:66.666vw; max-width:none; } .mapboxgl-popup{ max-width:min(92vw,26.25rem); } }
 @media (max-width:26.25rem){ .popup .grid{ grid-template-columns:1fr; } .gallery img{ height:5.625rem; } }
 
 /* =========================
