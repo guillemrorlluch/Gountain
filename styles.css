@@ -162,8 +162,8 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
   padding:.5rem;
   background:#111827d0; border:1px solid var(--border); border-radius:.625rem;
   backdrop-filter:blur(.5rem); -webkit-backdrop-filter:blur(.5rem);
-  z-index:1001; max-width:calc(100% - 1.5rem);
-  pointer-events:none;
+  z-index:1002; max-width:calc(100% - 1.5rem);
+  pointer-events:auto!important;
 }
 .basemap-switcher button{
   border:1px solid #374151; border-radius:999px;
@@ -257,13 +257,22 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 
 .basemap-switcher.hidden{display:none!important;}
 .layers-btn{
-  position:absolute; top:calc(var(--navbar-height) + 0.75rem); right:0.75rem;
-  display:inline-flex; align-items:center; gap:.5rem;
-  padding:.5rem .65rem; border-radius:.625rem;
-  background:#111827d0; border:1px solid var(--border);
+  position:absolute;
+  top:calc(var(--navbar-height) + 0.5rem);
+  right:0.75rem;            /* esquina superior derecha del mapa */
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  padding:.5rem .65rem;
+  border-radius:.625rem;
+  background:#111827d0;
+  border:1px solid var(--border);
+  color:#fff;
+  font-size:.9rem;
+  cursor:pointer;
+  z-index:1003;             /* por encima de controles Mapbox */
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-  color:#fff; cursor:pointer; z-index:1002; font-size:.9rem;
 }
+.layers-btn .icon{width:20px;height:20px;display:block;color:#fff;}
 .layers-btn:hover{box-shadow:0 0 0 1px #ffffff22 inset;}
-.layers-btn .icon{width:20px;height:20px;color:#fff;display:block;}
 @media (max-width:480px){ .layers-btn .label{display:none;} }

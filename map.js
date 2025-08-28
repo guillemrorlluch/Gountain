@@ -94,7 +94,38 @@ function buildStyleSwitcher() {
   const host = document.getElementById('basemap-switcher');
   if (!host) return;
 
-  // Toggle botón Layers
+  // Construir botones (Standard, Satellite, Hybrid, 3D)
+  const defs = [
+    ['Standard','standard'],
+    ['Satellite','satellite'],
+    ['Hybrid','hybrid'],
+    ['3D','standard'] // 3D = toggle de pitch/bearing
+  ];
+  host.innerHTML = '';
+  defs.forEach(([label, key]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    b.addEventListener('click', () => {
+      if (label === '3D') { toggle3D(); setActive(b); return; } // <-- NO ocultar
+      const styleId = STYLES[key];
+      if (!styleId) return;
+      map.setStyle(styleId);
+      map.once('style.load', () => {
+        enableTerrainAndSky(map);
+        reattachSourcesAndLayers();
+      });
+      setActive(b); // <-- NO ocultar switcher aquí
+    });
+    host.appendChild(b);
+  });
+
+  function setActive(btn){
+    [...host.children].forEach(x => x.classList.toggle('active', x === btn));
+  }
+  if (host.firstChild) host.firstChild.classList.add('active');
+
+  // Toggle botón Layers (mostrar/ocultar)
   const toggleBtn = document.getElementById('layers-toggle');
   const setPressed = (v) => toggleBtn?.setAttribute('aria-pressed', String(v));
   toggleBtn?.addEventListener('click', (e) => {
@@ -103,42 +134,17 @@ function buildStyleSwitcher() {
     setPressed(!host.classList.contains('hidden'));
   });
 
-  // Auto-ocultar al interactuar con el mapa
+  // No cerrar por clicks dentro del switcher
+  host.addEventListener('click', (e) => e.stopPropagation());
+
+  // Auto-ocultar SOLO cuando interactúo con el mapa
   const hideSwitcher = () => { host.classList.add('hidden'); setPressed(false); };
-  map.on('click', hideSwitcher);
+  map.on('mousedown', hideSwitcher);
   map.on('dragstart', hideSwitcher);
   map.on('zoomstart', hideSwitcher);
-  host.addEventListener('click', (e) => e.stopPropagation()); // no cerrar por clicks internos
-
-  // Botones del switcher
-  const buttons = [
-    ['Standard','standard'],
-    ['Satellite','satellite'],
-    ['Hybrid','hybrid'],
-    ['3D','standard']
-  ];
-  host.innerHTML = '';
-  buttons.forEach(([label, key]) => {
-    const btn = document.createElement('button');
-   btn.textContent = label;
-    btn.addEventListener('click', () => {
-      if (label === '3D') { toggle3D(); setActive(btn); hideSwitcher(); return; }
-      const newStyle = STYLES[key];
-      map.setStyle(newStyle);
-      map.once('style.load', () => {
-        enableTerrainAndSky(map);
-        reattachSourcesAndLayers();
-      });
-      setActive(btn);
-      hideSwitcher();
-    });
-    host.appendChild(btn);
-  });
-
-  function setActive(activeBtn){
-    [...host.children].forEach(b => b.classList.toggle('active', b === activeBtn));
-  }
-  if (host.firstChild) host.firstChild.classList.add('active');
+  map.on('rotate', hideSwitcher);
+  map.on('pitchstart', hideSwitcher);
+  map.on('click', hideSwitcher);
 }
 
 function toggle3D(){
