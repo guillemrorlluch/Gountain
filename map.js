@@ -163,6 +163,38 @@ function getSafeAreas() {
   return { top, right, bottom, left };
 }
 
+// Recentrar el mapa considerando el padding real que deja la UI
+function easeToRespectingSafeAreas() {
+  if (!map) return;
+  const sa = getSafeAreas();
+
+  // Centro actual en píxeles
+  const p = map.project(map.getCenter());
+  // Desplazamiento: cuando hay padding L/R/T/B, el "centro visual" se mueve (L-R)/2, (T-B)/2
+  const dx = (sa.left - sa.right) / 2;
+  const dy = (sa.top  - sa.bottom) / 2;
+
+  const newCenter = map.unproject([p.x + dx, p.y + dy]);
+
+  map.easeTo({
+    center: newCenter,
+    padding: sa,
+    duration: 450,
+    easing: t => t * (2 - t)
+  });
+}
+
+// Ejecuta resize y luego recentra tras el cambio de layout
+function scheduleRecenter() {
+  if (!map) return;
+  // Espera a que el DOM aplique el cambio de ancho del sidebar
+  requestAnimationFrame(() => {
+    map.resize();
+    // Un rAF extra para asegurarnos en móviles/iOS
+    requestAnimationFrame(() => easeToRespectingSafeAreas());
+  });
+}
+
 function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
   const sa = getSafeAreas();
   const { clientWidth: W, clientHeight: H } = mapInstance.getContainer();
