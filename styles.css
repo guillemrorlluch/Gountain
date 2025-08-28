@@ -3,7 +3,7 @@
 ========================= */
 :root{
   --navbar-height:3.5rem;        /* ~56px */
-  --bg:#0b1220;
+  --bg: linear-gradient(90deg, #017C9B 0%, #017C9B 50%, #00BDF1 50%, #00BDF1 100%);
   --panel:#0f172a;
   --text:#f8fafc;
   --muted:#cbd5e1;
