@@ -136,7 +136,7 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
 
 .input{
   width:5rem; padding:.375rem; border-radius:.5rem;
-  border:1px solid #334155; background:#0b1326; color:#e5e7eb;
+  border:1px solid #334155; background:#0000003d; color:#e5e7eb;
 }
 .altitude-inputs{ display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
 
