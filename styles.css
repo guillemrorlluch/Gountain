@@ -117,7 +117,7 @@ body{
 .panel-section{ padding:.75rem; }
 .panel-section h2{ margin:.5rem 0 .375rem; font-size:.875rem; }
 details{
-  background:#0b1326; border:1px solid #1f2a44; border-radius:.625rem;
+  background:#017C9B; border:1px solid #1f2a44; border-radius:.625rem;
   padding:.5rem .625rem; margin:.625rem 0;
 }
 summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
