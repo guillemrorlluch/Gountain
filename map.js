@@ -15,10 +15,79 @@ const STYLES = {
   hybrid:   'mapbox://styles/mapbox/satellite-streets-v12'
 };
 
-const state = (window.__FILTERS__ = window.__FILTERS__ || {});
-state.continent = state.continent || '';
-
 let allDestinations = [];
+let visibleDestinations = [];
+let filtersInitialized = false;
+
+// ---- Global Filters State ----
+const filtersState = {
+  continente: '',
+  dificultad: new Set(),
+  tipo: new Set(),
+  botas: new Set(),
+  temporada: new Set(),
+  altitud: { min: null, max: null }
+};
+
+const norm = v => (v ?? '').toString().trim().toLowerCase();
+
+const toArray = (value) => {
+  if (Array.isArray(value)) return value.filter(v => v != null && String(v).trim());
+  if (value == null) return [];
+  return String(value)
+    .split(',')
+    .map(v => v.trim())
+    .filter(Boolean);
+};
+
+const getFilterValues = (set) => Array.from(set).map(norm).filter(Boolean);
+
+const anyInValues = (arrayExpr, values) => {
+  if (!values.length) return null;
+  if (values.length === 1) return ['in', values[0], arrayExpr];
+  return ['any', ...values.map(v => ['in', v, arrayExpr])];
+};
+
+function buildMapboxFilter(state = filtersState){
+  const clauses = ['all'];
+
+  const cont = norm(state.continente);
+  if (cont && cont !== 'todos') {
+    clauses.push(['==', ['coalesce', ['get','continente_norm'], ''], cont]);
+  }
+
+  const difVals = getFilterValues(state.dificultad);
+  if (difVals.length) {
+    clauses.push(['in', ['coalesce', ['get','dificultad_norm'], ''], ['literal', difVals]]);
+  }
+
+  const tipoVals = getFilterValues(state.tipo);
+  if (tipoVals.length) {
+    const expr = anyInValues(['coalesce', ['get','tipo_norm'], ['literal', []]], tipoVals);
+    if (expr) clauses.push(expr);
+  }
+
+  const bootVals = getFilterValues(state.botas);
+  if (bootVals.length) {
+    const expr = anyInValues(['coalesce', ['get','botas_norm'], ['literal', []]], bootVals);
+    if (expr) clauses.push(expr);
+  }
+
+  const seasonVals = getFilterValues(state.temporada);
+  if (seasonVals.length) {
+    const expr = anyInValues(['coalesce', ['get','temporada_norm'], ['literal', []]], seasonVals);
+    if (expr) clauses.push(expr);
+  }
+
+  const { min, max } = state.altitud || {};
+  if (Number.isFinite(min)) clauses.push(['>=', ['coalesce', ['get','altitud_val'], -Infinity], min]);
+  if (Number.isFinite(max)) clauses.push(['<=', ['coalesce', ['get','altitud_val'], Infinity], max]);
+
+  return clauses;
+}
+
+function toggleSet(set, value, isOn){ if (isOn) set.add(value); else set.delete(value); }
+const debounce = (fn, ms = 200) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; };
 
 // =====================================================
 // BOOT / MAP INIT
@@ -26,6 +95,8 @@ let allDestinations = [];
 async function initMapOnce(){
   if (__MAPBOX_MOUNTED__) return;
   __MAPBOX_MOUNTED__ = true;
+
+  setupFiltersUI();
 
   const token = MAPBOX_TOKEN;
   if (!token) { setHealth('No token'); alert('Map cannot load (token missing).'); return; }
@@ -40,6 +111,14 @@ async function initMapOnce(){
     center: [0, 0],
     zoom: 2
   });
+
+  const mobileViewport = matchMedia('(max-width: 768px)').matches;
+  if (mobileViewport){
+    map.dragRotate.disable();
+    map.touchZoomRotate.enable();
+    map.touchZoomRotate.disableRotation();
+    map.setPitch(0);
+  }
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
   map.addControl(new mapboxgl.GeolocateControl({
@@ -56,6 +135,14 @@ async function initMapOnce(){
   });
 
   map.on('style.load', () => enableTerrainAndSky(map));
+
+  let lastMove = 0;
+  map.on('move', () => {
+    const now = performance.now();
+    if (now - lastMove < 120) return;
+    lastMove = now;
+    // placeholder for heavy handlers if needed
+  });
 }
 
 document.addEventListener('DOMContentLoaded', initMapOnce);
@@ -243,70 +330,6 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
 // =====================================================
 // Popup inteligente
 // =====================================================
-const POPUP_CFG = { maxWidthPx: 420 };
-
-function getPopupMeasureEl() {
-  let el = document.getElementById('popup-measure');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'popup-measure';
-    el.style.position = 'fixed';
-    el.style.left = '-9999px';
-    el.style.top = '-9999px';
-    el.style.opacity = '0';
-    el.style.pointerEvents = 'none';
-    document.body.appendChild(el);
-  }
-  return el;
-}
-
-function measurePopupSize(html) {
-  const maxW = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
-  const holder = getPopupMeasureEl();
-  holder.style.maxWidth = maxW + 'px';
-  holder.innerHTML = `<div class="mapboxgl-popup-content">${html}</div>`;
-  const rect = holder.firstChild.getBoundingClientRect();
-  const size = { w: Math.ceil(rect.width), h: Math.ceil(rect.height) };
-  holder.innerHTML = '';
-  return size;
-}
-
-function choosePopupAnchor(p, size, sa, W, H, gap = getMarkerGap()) {
-  const space = {
-    left:   p.x - sa.left  - gap,
-    right:  (W - sa.right) - p.x - gap,
-    top:    p.y - sa.top   - gap,
-    bottom: (H - sa.bottom) - p.y - gap
-  };
-  if (space.right >= size.w) return 'left';
-  if (space.left  >= size.w) return 'right';
-  if (space.top    >= size.h) return 'bottom';
-  if (space.bottom >= size.h) return 'top';
-  const best = Object.entries(space).sort((a,b)=>b[1]-a[1])[0][0];
-  return (best === 'right') ? 'left' : (best === 'left') ? 'right' : (best === 'top') ? 'bottom' : 'top';
-}
-
-function computePopupBounding(p, size, anchor, gap = getMarkerGap()) {
-  switch (anchor) {
-    case 'left':   return { x: p.x + gap,          y: p.y - size.h/2, w: size.w, h: size.h };
-    case 'right':  return { x: p.x - gap - size.w, y: p.y - size.h/2, w: size.w, h: size.h };
-    case 'top':    return { x: p.x - size.w/2,     y: p.y - gap - size.h,       w: size.w, h: size.h };
-    case 'bottom': return { x: p.x - size.w/2,     y: p.y + gap,                w: size.w, h: size.h };
-    default:       return { x: p.x + gap,          y: p.y - size.h/2, w: size.w, h: size.h };
-  }
-}
-
-function boundingExcess(b, sa, W, H) {
-  const leftBound = sa.left, rightBound = W - sa.right;
-  const topBound  = sa.top,  bottomBound = H - sa.bottom;
-  let dx = 0, dy = 0;
-  if (b.x < leftBound)             dx = leftBound - b.x;
-  else if (b.x + b.w > rightBound) dx = rightBound - (b.x + b.w);
-  if (b.y < topBound)              dy = topBound - b.y;
-  else if (b.y + b.h > bottomBound)dy = bottomBound - (b.y + b.h);
-  return { dx, dy };
-}
-
 // =====================================================
 // POPUP HTML (igual que v13)
 // =====================================================
@@ -377,6 +400,38 @@ function popupHtml(d){
   </div>`;
 }
 
+function renderHikeHTML(props = {}){
+  if (!props) return '';
+  return props.html || popupHtml(props);
+}
+
+function showHikePopup(feature, lngLat){
+  const html = renderHikeHTML(feature?.properties || {});
+  const isMobileViewport = window.matchMedia('(max-width: 768px)').matches;
+
+  try { __activePopup?.remove?.(); } catch {}
+
+  __activePopup = new mapboxgl.Popup({
+    closeButton: true,
+    closeOnClick: true,
+    closeOnMove: false,
+    anchor: isMobileViewport ? 'bottom' : 'auto',
+    maxWidth: isMobileViewport ? '90vw' : '400px'
+  })
+    .setLngLat(lngLat)
+    .setHTML(html)
+    .addTo(map);
+
+  if (isMobileViewport){
+    map.easeTo({
+      center: lngLat,
+      offset: [0, 120],
+      duration: 500,
+      essential: true
+    });
+  }
+}
+
 // =====================================================
 // COLORS + GEO
 // =====================================================
@@ -427,57 +482,80 @@ function normalizeContinent(d){
   return d;
 }
 
-function buildGeo(list){
+function prepareDestination(raw){
+  const base = normalizeContinent({ ...raw });
+  const botas = toArray(base.botas);
+  const tipo = toArray(base.tipo);
+  const seasonSources = [
+    base.temporada,
+    base.temporadas,
+    base.temporada_recomendada,
+    base.temporada_optima,
+    base.temporada_ideal,
+    base.season,
+    base.seasons
+  ];
+  let season = [];
+  for (const src of seasonSources) {
+    if (season.length) break;
+    season = toArray(src);
+  }
+
+  const altRaw = base.altitud_m ?? base.altitud ?? null;
+  const altNum = Number(altRaw);
+  const altitudVal = Number.isFinite(altNum) ? altNum : null;
+
   return {
-    type: 'FeatureCollection',
-    features: list.map(d => {
-      const properties = { ...d, color: markerColor(d), html: popupHtml(d) };
-      return {
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
-        properties
-      };
-    })
+    ...base,
+    color: markerColor(base),
+    html: popupHtml(base),
+    continente_norm: norm(base.continente),
+    dificultad_norm: norm(base.dificultad),
+    tipo_norm: tipo.map(norm).filter(Boolean),
+    botas_norm: botas.map(norm).filter(Boolean),
+    temporada_norm: season.map(norm).filter(Boolean),
+    altitud_val: altitudVal
   };
 }
 
-function updateMapWith(list){
-  const geo = buildGeo(list);
-  const src = map.getSource('destinos');
-  if (src) {
-    src.setData(geo);
-  } else {
-    allDestinations = list;
-    reattachSourcesAndLayers();
-  }
+function buildGeo(list){
+  return {
+    type: 'FeatureCollection',
+    features: list.map(d => ({
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [d.coords[1], d.coords[0]] },
+      properties: { ...d }
+    }))
+  };
 }
 
 // =====================================================
 // SOURCES + LAYERS (clusters, points, labels)
 // =====================================================
 function reattachSourcesAndLayers() {
-  const data = buildGeo(allDestinations.filter(passContinent));
+  const data = buildGeo(visibleDestinations.length ? visibleDestinations : allDestinations);
 
-  if (map.getSource('destinos')) {
-    if (map.getLayer('cluster-count')) map.removeLayer('cluster-count');
-    if (map.getLayer('clusters')) map.removeLayer('clusters');
-    if (map.getLayer('unclustered-point')) map.removeLayer('unclustered-point');
-    if (map.getLayer('destino-labels')) map.removeLayer('destino-labels');
-    map.removeSource('destinos');
+  if (map.getSource('hikes')) {
+    if (map.getLayer('hikes-cluster-count')) map.removeLayer('hikes-cluster-count');
+    if (map.getLayer('hikes-clusters')) map.removeLayer('hikes-clusters');
+    if (map.getLayer('hikes-tap-hit')) map.removeLayer('hikes-tap-hit');
+    if (map.getLayer('hikes-points')) map.removeLayer('hikes-points');
+    if (map.getLayer('hikes-labels')) map.removeLayer('hikes-labels');
+    map.removeSource('hikes');
   }
 
-  map.addSource('destinos', {
+  map.addSource('hikes', {
     type: 'geojson',
     data,
     cluster: true,
     clusterRadius: 50,
-    clusterMaxZoom: 9
+    clusterMaxZoom: 10
   });
 
   map.addLayer({
-    id: 'clusters',
+    id: 'hikes-clusters',
     type: 'circle',
-    source: 'destinos',
+    source: 'hikes',
     filter: ['has','point_count'],
     paint: {
       'circle-color': '#2b6cb0',
@@ -488,18 +566,18 @@ function reattachSourcesAndLayers() {
   });
 
   map.addLayer({
-    id: 'cluster-count',
+    id: 'hikes-cluster-count',
     type: 'symbol',
-    source: 'destinos',
+    source: 'hikes',
     filter: ['has','point_count'],
     layout: { 'text-field':['get','point_count_abbreviated'], 'text-size':14 },
     paint: { 'text-color':'#ffffff' }
   });
 
   map.addLayer({
-    id: 'unclustered-point',
+    id: 'hikes-points',
     type: 'circle',
-    source: 'destinos',
+    source: 'hikes',
     filter: ['!',['has','point_count']],
     paint: {
       'circle-radius': 6,
@@ -510,9 +588,20 @@ function reattachSourcesAndLayers() {
   });
 
   map.addLayer({
-    id: 'destino-labels',
+    id: 'hikes-tap-hit',
+    type: 'circle',
+    source: 'hikes',
+    filter: ['!',['has','point_count']],
+    paint: {
+      'circle-radius': ['interpolate', ['linear'], ['zoom'], 2, 8, 8, 18],
+      'circle-color': 'rgba(0,0,0,0)'
+    }
+  });
+
+  map.addLayer({
+    id: 'hikes-labels',
     type: 'symbol',
-    source: 'destinos',
+    source: 'hikes',
     filter: ['!',['has','point_count']],
     layout: {
       'text-field': ['get','nombre'],
@@ -524,84 +613,31 @@ function reattachSourcesAndLayers() {
   });
 
   if (!listenersAttached) {
-    map.on('click', 'unclustered-point', onUnclusteredClick);
-    map.on('click', 'clusters', onClusterClick);
-    map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
-    map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+    map.on('click', 'hikes-tap-hit', (e) => {
+      const feature = e.features?.[0];
+      if (!feature) return;
+      showHikePopup(feature, e.lngLat);
+    });
+    map.on('click', 'hikes-clusters', onClusterClick);
+    map.on('mouseenter', 'hikes-points', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'hikes-points', () => map.getCanvas().style.cursor = '');
+    map.on('mouseenter', 'hikes-clusters', () => map.getCanvas().style.cursor = 'pointer');
+    map.on('mouseleave', 'hikes-clusters', () => map.getCanvas().style.cursor = '');
     listenersAttached = true;
   }
+
+  applyFilters({ fit: false });
 }
 
 // =====================================================
-// openPopupAt
+// POPUP STATE
 // =====================================================
 let __activePopup = null;
 
-function openPopupAt(coords, html, anchor = 'auto') {
-  const maxW = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
-  const gap  = getMarkerGap();
-
-  try { __activePopup?.remove?.(); } catch {}
-
-  const popup = new mapboxgl.Popup({
-    closeOnMove: true,
-    offset: gap,
-    anchor,
-    maxWidth: `${maxW}px`,
-    className: 'gountain-popup',
-  })
-    .setLngLat(coords)
-    .setHTML(html)
-    .addTo(map);
-
-  const sa = getSafeAreas();
-  const maxH = Math.floor(window.innerHeight - sa.top - sa.bottom - gap);
-  const content = popup.getElement().querySelector('.mapboxgl-popup-content');
-  if (content) {
-    content.style.maxHeight = `${Math.max(120, maxH)}px`;
-    content.style.overflowY = 'auto';
-  }
-
-  __activePopup = popup;
-}
-
-// =====================================================
-// Click handlers
-// =====================================================
-function onUnclusteredClick(e) {
-  const f = e.features && e.features[0];
-  if (!f) return;
-
-  const coords = f.geometry.coordinates.slice();
-  const html   = f.properties.html || '';
-
-  const sa  = getSafeAreas();
-  const gap = getMarkerGap();
-  let size = measurePopupSize(html);
-
-  const allowedH = Math.max(120, window.innerHeight - sa.top - sa.bottom - gap);
-  size.h = Math.min(size.h, allowedH);
-
-  const { clientWidth: W, clientHeight: H } = map.getContainer();
-  const p = map.project(coords);
-  const anchor = choosePopupAnchor(p, size, sa, W, H, gap);
-
-  const bbox = computePopupBounding(p, size, anchor, gap);
-  const { dx, dy } = boundingExcess(bbox, sa, W, H);
-
-  if (dx || dy) {
-    const newCenter = map.unproject([p.x + dx, p.y + dy]);
-    map.easeTo({ center: newCenter, padding: sa, duration: 450, easing: t => t * (2 - t) });
-    map.once('moveend', () => openPopupAt(coords, html, anchor));
-  } else {
-    openPopupAt(coords, html, anchor);
-  }
-}
-
 function onClusterClick(e) {
-  const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+  const features = map.queryRenderedFeatures(e.point, { layers: ['hikes-clusters'] });
   const clusterId = features[0].properties.cluster_id;
-  map.getSource('destinos').getClusterExpansionZoom(clusterId, (err, zoom) => {
+  map.getSource('hikes').getClusterExpansionZoom(clusterId, (err, zoom) => {
     if (err) return;
     map.easeTo({ center: features[0].geometry.coordinates, zoom });
   });
@@ -610,21 +646,42 @@ function onClusterClick(e) {
 // =====================================================
 // Filters + fit
 // =====================================================
-function onFiltersChanged() {
-  const c = (window.__FILTERS__ && window.__FILTERS__.continent) || '';
-  const visible = allDestinations.filter(d => !c || d.continente === c);
-  updateMapWith(visible);
-  fitToList(visible);
-}
-window.addEventListener('gountain:filters-changed', onFiltersChanged);
 
-function passContinent(d){
-  if (!state.continent) return true;
-  return d.continente === state.continent;
+function matchesFilters(item, state = filtersState){
+  const cont = norm(state.continente);
+  if (cont && cont !== 'todos' && item.continente_norm !== cont) return false;
+
+  const difVals = getFilterValues(state.dificultad);
+  if (difVals.length && (!item.dificultad_norm || !difVals.includes(item.dificultad_norm))) return false;
+
+  const tipoVals = getFilterValues(state.tipo);
+  if (tipoVals.length) {
+    const tipos = item.tipo_norm || [];
+    if (!tipos.some(v => tipoVals.includes(v))) return false;
+  }
+
+  const bootVals = getFilterValues(state.botas);
+  if (bootVals.length) {
+    const botas = item.botas_norm || [];
+    if (!botas.some(v => bootVals.includes(v))) return false;
+  }
+
+  const seasonVals = getFilterValues(state.temporada);
+  if (seasonVals.length) {
+    const seasons = item.temporada_norm || [];
+    if (!seasons.some(v => seasonVals.includes(v))) return false;
+  }
+
+  const { min, max } = state.altitud || {};
+  const alt = item.altitud_val;
+  if (Number.isFinite(min) && !(alt != null && alt >= min)) return false;
+  if (Number.isFinite(max) && !(alt != null && alt <= max)) return false;
+
+  return true;
 }
 
 function fitToList(list){
-  if (!list || !list.length) return;
+  if (!map || !list || !list.length) return;
   const west = Math.min(...list.map(d => d.coords[1]));
   const east = Math.max(...list.map(d => d.coords[1]));
   const south = Math.min(...list.map(d => d.coords[0]));
@@ -633,18 +690,159 @@ function fitToList(list){
   map.fitBounds([[west, south], [east, north]], { padding: 64, duration: 900, maxZoom: 7.5 });
 }
 
-function applyFilters(){
-  const visible = allDestinations.filter(passContinent);
-  updateMapWith(visible);
-  fitToList(visible);
+function applyFilters({ fit = true } = {}){
+  const filtered = allDestinations.filter(d => matchesFilters(d));
+  visibleDestinations = filtered;
+
+  if (!map) return;
+
+  const filterExpr = buildMapboxFilter();
+  if (map.getLayer('hikes-points')) map.setFilter('hikes-points', filterExpr);
+  if (map.getLayer('hikes-labels')) map.setFilter('hikes-labels', filterExpr);
+  if (map.getLayer('hikes-tap-hit')) map.setFilter('hikes-tap-hit', filterExpr);
+  if (map.getLayer('hikes-clusters')) map.setFilter('hikes-clusters', ['has','point_count']);
+  if (map.getLayer('hikes-cluster-count')) map.setFilter('hikes-cluster-count', ['has','point_count']);
+
+  if (map.getSource('hikes')) {
+    map.getSource('hikes').setData(buildGeo(filtered));
+  }
+
+  if (fit) fitToList(filtered);
+}
+
+function setupFiltersUI(){
+  if (filtersInitialized) return;
+  filtersInitialized = true;
+
+  const FILTER_OPTIONS = Object.assign({
+    dificultad: ['F','PD','AD','D'],
+    botas: [
+      'Cualquiera','Depende','Bestard Teix Lady GTX','Scarpa Ribelle Lite HD',
+      'Scarpa Zodiac Tech LT GTX','La Sportiva Aequilibrium ST GTX',
+      'La Sportiva Nepal Cube GTX','Nepal (doble bota técnica de alta montaña)'
+    ],
+    tipo: ['Travesía','Ascensión','Circular','Lineal','Alpinismo','Scrambling'],
+    temporada: ['Invierno','Primavera','Verano','Otoño']
+  }, window.__FILTER_OPTIONS__ || {});
+
+  const renderChips = (containerId, options = [], key) => {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chip';
+      btn.dataset.value = opt;
+      btn.dataset.key = key;
+      btn.textContent = opt;
+      btn.setAttribute('aria-pressed', 'false');
+      el.appendChild(btn);
+    });
+  };
+
+  renderChips('filter-dificultad', FILTER_OPTIONS.dificultad, 'dificultad');
+  renderChips('filter-botas', FILTER_OPTIONS.botas, 'botas');
+  renderChips('filter-tipo', FILTER_OPTIONS.tipo, 'tipo');
+  const seasonOptions = FILTER_OPTIONS.temporada || FILTER_OPTIONS.season || [];
+  renderChips('filter-season', seasonOptions, 'temporada');
+
+  const bindChipToggle = (selector, set) => {
+    const container = document.querySelector(selector);
+    container?.addEventListener('click', (e) => {
+      const btn = e.target.closest('.chip');
+      if (!btn) return;
+      const val = btn.dataset.value;
+      const nowActive = !btn.classList.contains('is-active');
+      btn.classList.toggle('is-active', nowActive);
+      btn.setAttribute('aria-pressed', nowActive ? 'true' : 'false');
+      toggleSet(set, val, nowActive);
+      applyFilters();
+    });
+  };
+
+  bindChipToggle('#filter-dificultad', filtersState.dificultad);
+  bindChipToggle('#filter-tipo', filtersState.tipo);
+  bindChipToggle('#filter-botas', filtersState.botas);
+  bindChipToggle('#filter-season', filtersState.temporada);
+
+  const altMin = document.getElementById('alt-min');
+  const altMax = document.getElementById('alt-max');
+  const altChipBox = document.getElementById('altitude-chip');
+
+  const renderAltChip = () => {
+    if (!altChipBox) return;
+    altChipBox.innerHTML = '';
+    const { min, max } = filtersState.altitud || {};
+    const hasValues = Number.isFinite(min) || Number.isFinite(max);
+    if (!hasValues) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chip is-active';
+    btn.textContent = `${Number.isFinite(min) ? min : '–'}–${Number.isFinite(max) ? max : '–'} m`;
+    btn.title = 'Quitar filtro de altitud';
+    btn.setAttribute('aria-pressed', 'true');
+    btn.addEventListener('click', () => {
+      filtersState.altitud = { min: null, max: null };
+      if (altMin) altMin.value = '';
+      if (altMax) altMax.value = '';
+      renderAltChip();
+      applyFilters();
+    });
+    altChipBox.appendChild(btn);
+  };
+
+  const updateAlt = debounce(() => {
+    const minVal = altMin?.value !== '' ? Number(altMin.value) : null;
+    const maxVal = altMax?.value !== '' ? Number(altMax.value) : null;
+    const min = Number.isFinite(minVal) ? minVal : null;
+    const max = Number.isFinite(maxVal) ? maxVal : null;
+    filtersState.altitud = { min, max };
+    renderAltChip();
+    applyFilters();
+  }, 250);
+
+  altMin?.addEventListener('input', updateAlt);
+  altMax?.addEventListener('input', updateAlt);
+
+  const selCont = document.getElementById('continent-select');
+  selCont?.addEventListener('change', (e) => {
+    filtersState.continente = e.target.value || '';
+    applyFilters();
+  });
+
+  const clearBtn = document.getElementById('clearFilters');
+  clearBtn?.addEventListener('click', () => {
+    filtersState.continente = '';
+    filtersState.dificultad.clear();
+    filtersState.tipo.clear();
+    filtersState.botas.clear();
+    filtersState.temporada.clear();
+    filtersState.altitud = { min: null, max: null };
+
+    document.querySelectorAll('#sidebar .chip.is-active').forEach(btn => {
+      btn.classList.remove('is-active');
+      btn.setAttribute('aria-pressed', 'false');
+    });
+
+    if (altMin) altMin.value = '';
+    if (altMax) altMax.value = '';
+    if (selCont) selCont.value = '';
+    renderAltChip();
+    applyFilters();
+  });
+
+  renderAltChip();
 }
 
 async function loadDestinos(){
   try {
     const res = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
     const data = await res.json();
-    allDestinations = data.map(normalizeContinent);
-    applyFilters();
+    allDestinations = data.map(prepareDestination);
+    visibleDestinations = [...allDestinations];
+    reattachSourcesAndLayers();
+    applyFilters({ fit: true });
   } catch(err){
     console.error('Error loading destinos:', err);
   }
@@ -724,44 +922,3 @@ function setupPanelToggles() {
   if (glossary?.classList.contains('hidden')) { glossary.setAttribute('inert',''); btnInfo?.setAttribute('aria-expanded','false'); }
 }
 
-// =====================================================
-// Filtros básicos integrados (extend passContinent)
-// =====================================================
-state.filters = state.filters || {};
-const __passContinentBase = passContinent;
-passContinent = function(d){
-  if (!__passContinentBase(d)) return false;
-
-  const f = state.filters || {};
-  if (f.dificultad?.length && !f.dificultad.some(tag => (d.dificultad || '').includes(tag))) return false;
-
-  if (f.botas?.length) {
-    const boots = Array.isArray(d.botas) ? d.botas : [];
-    if (!boots.some(b => f.botas.includes(b))) return false;
-  }
-
-  if (f.tipo?.length && !f.tipo.includes(d.tipo)) return false;
-
-  if (f.meses?.length) {
-    const m = String(d.meses || '');
-    if (!f.meses.some(x => m.includes(x))) return false;
-  }
-
-  const minI = byId('alt-min'); const maxI = byId('alt-max');
-  const min = minI?.value ? Number(minI.value) : -Infinity;
-  const max = maxI?.value ? Number(maxI.value) :  Infinity;
-  const alt = Number(d.altitud_m ?? d.altitud ?? NaN);
-  if (!Number.isNaN(alt) && !(alt >= min && alt <= max)) return false;
-
-  return true;
-};
-
-// ---- Hook select continente (topbar)
-(function hookContinentSelect(){
-  const sel = byId('continent-select');
-  if (!sel) return;
-  sel.addEventListener('change', () => {
-    state.continent = sel.value || '';
-    applyFilters();
-  });
-})();
