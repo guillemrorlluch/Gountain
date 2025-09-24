@@ -533,7 +533,7 @@ function reattachSourcesAndLayers() {
 }
 
 // =====================================================
-// openPopupAt (móvil compacto, sin mover el mapa)
+// openPopupAt (mobile-aware con auto–reencuadre por panBy)
 // =====================================================
 let __activePopup = null;
 
@@ -541,19 +541,17 @@ function openPopupAt(coords, html, anchor = 'auto') {
   const isMobile = matchMedia('(max-width: 768px)').matches
     || document.body.classList.contains('is-mobile');
 
-  // Desktop: como siempre; Móvil: más estrecho (coincide con el CSS)
   const desktopMaxPx = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
   const maxW = isMobile ? '78vw' : `${desktopMaxPx}px`;
 
-  // En móvil anclamos abajo y usamos offset pequeño; en desktop, lo de siempre
   const resolvedAnchor = isMobile ? 'bottom' : anchor;
   const gap = getMarkerGap();
-  const resolvedOffset = isMobile ? 8 : gap;  // 👈 offset corto en móvil
+  const resolvedOffset = isMobile ? 8 : gap; // un pelín más de aire
 
   try { __activePopup?.remove?.(); } catch {}
 
   const popup = new mapboxgl.Popup({
-    closeOnMove: true,              // ahora no movemos el mapa → puede volver a true
+    closeOnMove: isMobile ? false : true,      // importante: false mientras panBy
     offset: resolvedOffset,
     anchor: resolvedAnchor,
     maxWidth: maxW,
@@ -563,19 +561,46 @@ function openPopupAt(coords, html, anchor = 'auto') {
     .setHTML(html)
     .addTo(map);
 
-  // Dimensionado interno seguro (tu lógica existente)
+  // Dimensionado interno seguro
   const sa = getSafeAreas(); // { top, bottom }
-  const maxH = Math.floor(
-    window.innerHeight - sa.top - sa.bottom - (isMobile ? 8 : resolvedOffset)
-  );
   const content = popup.getElement().querySelector('.mapboxgl-popup-content');
   if (content) {
-    // En móvil lo capamos aún más via CSS; aquí sólo garantizamos que no desborde
+    const maxH = Math.floor(
+      window.innerHeight - sa.top - sa.bottom - (isMobile ? 8 : resolvedOffset)
+    );
     content.style.maxHeight = `${Math.max(120, maxH)}px`;
     content.style.overflowY = 'auto';
   }
 
   __activePopup = popup;
+
+  // --- SOLO MÓVIL: panear en píxeles para que el popup quepa completo ---
+  if (isMobile) {
+    // Espera un frame para tener el layout correcto
+    requestAnimationFrame(() => {
+      const el = popup.getElement();
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      const topbarH = (document.querySelector('.topbar')?.offsetHeight || 0);
+      const safeTop = topbarH + 8;                            // margen superior
+      const safeBottom = window.innerHeight - (sa.bottom || 0) - 8; // margen inferior
+
+      let dy = 0;
+      if (rect.top < safeTop) {
+        // popup demasiado alto → bajamos el contenido
+        dy = safeTop - rect.top;               // panBy positivo mueve el contenido hacia abajo
+      } else if (rect.bottom > safeBottom) {
+        // popup se sale por abajo → subimos el contenido
+        dy = -(rect.bottom - safeBottom);      // panBy negativo mueve el contenido hacia arriba
+      }
+
+      if (dy !== 0) {
+        map.panBy([0, dy], { duration: 300, essential: true });
+      }
+    });
+  }
+
   return popup;
 }
 
