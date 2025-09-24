@@ -311,5 +311,34 @@
     emit();
   })();
   </script>
+
+  <!-- Mobile/Desktop toggler -->
+  <script>
+    // =======================
+    // Device toggle + popup fixes
+    // =======================
+
+    // Detect if mobile
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      document.body.classList.add("is-mobile");
+    } else {
+      document.body.classList.add("is-desktop");
+    }
+
+    // Override Mapbox popup for better mobile handling
+    const origSetLngLat = mapboxgl.Popup.prototype.setLngLat;
+    mapboxgl.Popup.prototype.setLngLat = function (lngLat) {
+      const popup = origSetLngLat.call(this, lngLat);
+      if (document.body.classList.contains("is-mobile")) {
+        const el = popup._container;
+        if (el) {
+          el.style.maxWidth = "90vw";
+          el.style.maxHeight = "60vh";
+          el.style.overflowY = "auto";
+        }
+      }
+      return popup;
+    };
+  </script>
 </body>
 </html>
