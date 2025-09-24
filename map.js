@@ -533,7 +533,7 @@ function reattachSourcesAndLayers() {
 }
 
 // =====================================================
-// openPopupAt (mobile-aware, sin autocierre)
+// openPopupAt (mobile-aware, sin offset extra en móvil)
 // =====================================================
 let __activePopup = null;
 
@@ -541,18 +541,19 @@ function openPopupAt(coords, html, anchor = 'auto') {
   const isMobile = matchMedia('(max-width: 768px)').matches
     || document.body.classList.contains('is-mobile');
 
+  // Desktop: tu límite actual; Móvil: 90vw (CSS acepta 'vw' en maxWidth de Mapbox)
   const desktopMaxPx = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
   const maxW = isMobile ? '90vw' : `${desktopMaxPx}px`;
 
+  // 👇 CLAVE: en móvil anclar abajo y NO aplicar offset extra
   const resolvedAnchor = isMobile ? 'bottom' : anchor;
   const gap = getMarkerGap();
 
   try { __activePopup?.remove?.(); } catch {}
 
   const popup = new mapboxgl.Popup({
-    // 👇 CLAVE: NO cerrar en movimiento si vamos a mover el mapa
-    closeOnMove: isMobile ? false : true,
-    offset: gap,
+    closeOnMove: isMobile ? false : true,     // si vamos a mover el mapa, no lo cierres
+    offset: isMobile ? 0 : gap,               // 👈 SIN offset en móvil
     anchor: resolvedAnchor,
     maxWidth: maxW,
     className: 'gountain-popup',
@@ -561,29 +562,35 @@ function openPopupAt(coords, html, anchor = 'auto') {
     .setHTML(html)
     .addTo(map);
 
-  // Ajuste de altura segura (tu lógica existente)
-  const sa = getSafeAreas();
-  const maxH = Math.floor(window.innerHeight - sa.top - sa.bottom - gap);
-  const content = popup.getElement().querySelector('.mapboxgl-popup-content');
-  if (content) {
-    content.style.maxHeight = `${Math.max(120, maxH)}px`;
-    content.style.overflowY = 'auto';
+  // Dimensiones seguras del contenido
+  const sa = getSafeAreas(); // {top, bottom} ya lo tienes
+  const contentEl = popup.getElement().querySelector('.mapboxgl-popup-content');
+
+  if (contentEl) {
+    // Altura máxima del contenedor del popup
+    const maxH = Math.floor(window.innerHeight - sa.top - sa.bottom - (isMobile ? 8 : gap));
+    contentEl.style.maxHeight = `${Math.max(120, maxH)}px`;
+    contentEl.style.overflowY = 'auto';
   }
 
   __activePopup = popup;
 
-  // --- Autoposicionar para que NO se corte en móvil ---
+  // --- Recolocar el mapa para que el popup no se corte en móvil ---
   if (isMobile) {
     const topbar = document.querySelector('.topbar');
-    const topPad = (topbar?.offsetHeight || 0) + 12; // respiro
-    const bottomPad = 120 + (sa.bottom || 0);
+    const topPad = (topbar?.offsetHeight || 0) + 12;
 
-    // Pequeño defer para asegurar que el popup ya está en el DOM
+    // Calcula cuánto “aire” abajo según la altura real del popup (limitado)
+    const popupH = contentEl ? contentEl.offsetHeight : 240;
+    // Limita el padding inferior para no separar demasiado el popup del punto
+    const bottomPad = Math.min(popupH + 24, Math.floor(window.innerHeight * 0.55)) + (sa.bottom || 0);
+
+    // Mueve el mapa un frame después para no pelearse con el layout del popup
     requestAnimationFrame(() => {
       map.easeTo({
         center: coords,
         padding: { top: topPad, right: 12, bottom: bottomPad, left: 12 },
-        duration: 450,
+        duration: 400,
         essential: true
       });
     });
