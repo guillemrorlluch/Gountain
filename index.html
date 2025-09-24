@@ -314,31 +314,71 @@
 
   <!-- Mobile/Desktop toggler -->
   <script>
-    // =======================
-    // Device toggle + popup fixes
-    // =======================
+  (function () {
+    const mq = matchMedia('(max-width: 768px)');
+    const flag = () => {
+      document.body.classList.toggle('is-mobile',  mq.matches);
+      document.body.classList.toggle('is-desktop', !mq.matches);
+    };
+    flag();
+    (mq.addEventListener ? mq.addEventListener('change', flag) : mq.addListener(flag));
 
-    // Detect if mobile
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-      document.body.classList.add("is-mobile");
-    } else {
-      document.body.classList.add("is-desktop");
-    }
+    const px = (v) => Number(String(v).replace('px','')) || 0;
+    const getTopbarH = () => (document.querySelector('.topbar')?.offsetHeight || 0);
+    const getSafeBottom = () =>
+      px(getComputedStyle(document.documentElement).getPropertyValue('padding-bottom')) ||
+      px(getComputedStyle(document.documentElement).getPropertyValue('--sat')) ||
+      0;
 
-    // Override Mapbox popup for better mobile handling
-    const origSetLngLat = mapboxgl.Popup.prototype.setLngLat;
-    mapboxgl.Popup.prototype.setLngLat = function (lngLat) {
-      const popup = origSetLngLat.call(this, lngLat);
-      if (document.body.classList.contains("is-mobile")) {
-        const el = popup._container;
-        if (el) {
-          el.style.maxWidth = "90vw";
-          el.style.maxHeight = "60vh";
-          el.style.overflowY = "auto";
-        }
+    window.showHikePopup = function showHikePopup(feature, lngLat) {
+      const props = feature.properties || {};
+      const html = (window.renderHikeHTML ? renderHikeHTML(props) : `<div>${props?.title || ''}</div>`);
+
+      const isMobile = document.body.classList.contains('is-mobile');
+
+      const popup = new mapboxgl.Popup({
+        closeButton: true,
+        closeOnClick: true,
+        closeOnMove: false,
+        anchor: isMobile ? 'bottom' : 'auto',
+        maxWidth: isMobile ? '90vw' : '420px'
+      })
+        .setLngLat(lngLat)
+        .setHTML(html)
+        .addTo(map);
+
+      if (isMobile) {
+        const topPad = getTopbarH() + 12;
+        const bottomPad = 120 + getSafeBottom();
+        map.easeTo({
+          center: lngLat,
+          padding: { top: topPad, right: 12, bottom: bottomPad, left: 12 },
+          duration: 450,
+          essential: true
+        });
       }
+
       return popup;
     };
+
+    function mobileTuning() {
+      const isMobile = document.body.classList.contains('is-mobile');
+      if (!map) return;
+      try {
+        if (isMobile) {
+          map.dragRotate?.disable();
+          map.touchZoomRotate?.enable();
+          map.touchZoomRotate?.disableRotation();
+        } else {
+          map.dragRotate?.enable();
+        }
+      } catch (_) {}
+    }
+    if (window.map) {
+      map.on ? map.on('load', mobileTuning) : mobileTuning();
+      (mq.addEventListener ? mq.addEventListener('change', mobileTuning) : mq.addListener(mobileTuning));
+    }
+  })();
   </script>
 </body>
 </html>
