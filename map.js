@@ -548,7 +548,7 @@ function openPopupAt(coords, html, anchor = 'auto') {
   // En móvil anclamos abajo y usamos offset pequeño; en desktop, lo de siempre
   const resolvedAnchor = isMobile ? 'bottom' : anchor;
   const gap = getMarkerGap();
-  const resolvedOffset = isMobile ? 6 : gap;  // 👈 offset corto en móvil
+  const resolvedOffset = isMobile ? 8 : gap;  // 👈 offset corto en móvil
 
   try { __activePopup?.remove?.(); } catch {}
 
