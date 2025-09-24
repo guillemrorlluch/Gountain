@@ -533,27 +533,38 @@ function reattachSourcesAndLayers() {
 }
 
 // =====================================================
-// openPopupAt
+// openPopupAt (mobile-aware)
 // =====================================================
 let __activePopup = null;
 
 function openPopupAt(coords, html, anchor = 'auto') {
-  const maxW = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
-  const gap  = getMarkerGap();
+  // Detect mobile by viewport (no UA). También funciona si ya pones body.is-mobile.
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+    || document.body.classList.contains('is-mobile');
+
+  // Desktop conserva tu estética; móvil usa ancho seguro
+  const desktopMax = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
+  const maxW = isMobile ? '90vw' : `${desktopMax}px`;
+
+  // En móvil anclamos abajo; en desktop respetamos el anchor recibido
+  const resolvedAnchor = isMobile ? 'bottom' : anchor;
+
+  const gap = getMarkerGap();
 
   try { __activePopup?.remove?.(); } catch {}
 
   const popup = new mapboxgl.Popup({
     closeOnMove: true,
     offset: gap,
-    anchor,
-    maxWidth: `${maxW}px`,
+    anchor: resolvedAnchor,
+    maxWidth: maxW,
     className: 'gountain-popup',
   })
     .setLngLat(coords)
     .setHTML(html)
     .addTo(map);
 
+  // Altura segura del contenido (tus safe areas ya existentes)
   const sa = getSafeAreas();
   const maxH = Math.floor(window.innerHeight - sa.top - sa.bottom - gap);
   const content = popup.getElement().querySelector('.mapboxgl-popup-content');
@@ -563,6 +574,40 @@ function openPopupAt(coords, html, anchor = 'auto') {
   }
 
   __activePopup = popup;
+
+  // --- Autoposicionamiento para que NO se corte en móvil ---
+  if (isMobile) {
+    const topbar = document.querySelector('.topbar');
+    const topPad = (topbar?.offsetHeight || 0) + 12;   // margen respira
+    const bottomPad = 120 + (sa.bottom || 0);          // sitio para leer final
+    map.easeTo({
+      center: coords,
+      padding: { top: topPad, right: 12, bottom: bottomPad, left: 12 },
+      duration: 450,
+      essential: true
+    });
+  }
+}
+
+// Safe popup opener: usa showHikePopup si existe; si no, usa tu popup de siempre.
+function openHikePopup(feature, lngLat) {
+  try {
+    if (window.showHikePopup) {
+      return window.showHikePopup(feature, lngLat);
+    }
+  } catch (_) {
+    // si algo falla, cae al fallback
+  }
+
+  // Fallback: tu popup clásico (AJÚSTALO si usas otra plantilla)
+  const html = window.renderHikeHTML
+    ? renderHikeHTML(feature?.properties || {})
+    : `<div>${feature?.properties?.title || ''}</div>`;
+
+  return new mapboxgl.Popup()
+    .setLngLat(lngLat)
+    .setHTML(html)
+    .addTo(map);
 }
 
 // =====================================================
