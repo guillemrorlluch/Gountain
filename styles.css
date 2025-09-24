@@ -282,3 +282,12 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   backdrop-filter:blur(.5rem); -webkit-backdrop-filter:blur(.5rem);
   z-index:1002; pointer-events:auto!important;
 }
+
+/* === Mobile/Desktop overrides === */
+@media (max-width: 768px) {
+  body.is-mobile .mapboxgl-popup-content {
+    max-width: 90vw;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
