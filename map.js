@@ -533,28 +533,25 @@ function reattachSourcesAndLayers() {
 }
 
 // =====================================================
-// openPopupAt (mobile-aware)
+// openPopupAt (mobile-aware, sin autocierre)
 // =====================================================
 let __activePopup = null;
 
 function openPopupAt(coords, html, anchor = 'auto') {
-  // Detect mobile by viewport (no UA). También funciona si ya pones body.is-mobile.
-  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  const isMobile = matchMedia('(max-width: 768px)').matches
     || document.body.classList.contains('is-mobile');
 
-  // Desktop conserva tu estética; móvil usa ancho seguro
-  const desktopMax = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
-  const maxW = isMobile ? '90vw' : `${desktopMax}px`;
+  const desktopMaxPx = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
+  const maxW = isMobile ? '90vw' : `${desktopMaxPx}px`;
 
-  // En móvil anclamos abajo; en desktop respetamos el anchor recibido
   const resolvedAnchor = isMobile ? 'bottom' : anchor;
-
   const gap = getMarkerGap();
 
   try { __activePopup?.remove?.(); } catch {}
 
   const popup = new mapboxgl.Popup({
-    closeOnMove: true,
+    // 👇 CLAVE: NO cerrar en movimiento si vamos a mover el mapa
+    closeOnMove: isMobile ? false : true,
     offset: gap,
     anchor: resolvedAnchor,
     maxWidth: maxW,
@@ -564,7 +561,7 @@ function openPopupAt(coords, html, anchor = 'auto') {
     .setHTML(html)
     .addTo(map);
 
-  // Altura segura del contenido (tus safe areas ya existentes)
+  // Ajuste de altura segura (tu lógica existente)
   const sa = getSafeAreas();
   const maxH = Math.floor(window.innerHeight - sa.top - sa.bottom - gap);
   const content = popup.getElement().querySelector('.mapboxgl-popup-content');
@@ -575,18 +572,24 @@ function openPopupAt(coords, html, anchor = 'auto') {
 
   __activePopup = popup;
 
-  // --- Autoposicionamiento para que NO se corte en móvil ---
+  // --- Autoposicionar para que NO se corte en móvil ---
   if (isMobile) {
     const topbar = document.querySelector('.topbar');
-    const topPad = (topbar?.offsetHeight || 0) + 12;   // margen respira
-    const bottomPad = 120 + (sa.bottom || 0);          // sitio para leer final
-    map.easeTo({
-      center: coords,
-      padding: { top: topPad, right: 12, bottom: bottomPad, left: 12 },
-      duration: 450,
-      essential: true
+    const topPad = (topbar?.offsetHeight || 0) + 12; // respiro
+    const bottomPad = 120 + (sa.bottom || 0);
+
+    // Pequeño defer para asegurar que el popup ya está en el DOM
+    requestAnimationFrame(() => {
+      map.easeTo({
+        center: coords,
+        padding: { top: topPad, right: 12, bottom: bottomPad, left: 12 },
+        duration: 450,
+        essential: true
+      });
     });
   }
+
+  return popup;
 }
 
 // Safe popup opener: usa showHikePopup si existe; si no, usa tu popup de siempre.
