@@ -177,6 +177,45 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
 #sidebar.panel{ position:static; width:auto; }
 
 /* =========================
+   GLOSSARY EXTRA BOX
+========================= */
+.glossary-box{
+  background:#017C9B;
+  border:1px solid #1f2a44;
+  border-radius:.75rem;
+  padding:.75rem;
+  margin-top:1rem;
+}
+
+.glossary-box h2{
+  margin:0 0 .5rem;
+  font-size:1rem;
+  font-weight:700;
+}
+
+.glossary-box h3{
+  margin:.75rem 0 .25rem;
+  font-size:.9rem;
+  font-weight:600;
+}
+
+.glossary-box p{
+  margin:.25rem 0 .5rem;
+  font-size:.85rem;
+  line-height:1.4;
+}
+
+.glossary-box ul{
+  margin:.25rem 0 0;
+  padding-left:1.25rem;
+}
+
+.glossary-box li{
+  margin:.25rem 0;
+  font-size:.85rem;
+}
+
+/* =========================
    BASEMAP SWITCHER / CHIP BAR
 ========================= */
 .basemap-switcher{
