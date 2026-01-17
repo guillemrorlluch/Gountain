@@ -38,6 +38,15 @@ body{
   display:none;
 }
 
+/* Optional hardening: avoid any layout flash */
+#layout{
+  display:none;
+}
+
+html:not(.no-js) #layout{
+  display:flex;
+}
+
 /* =========================
    TOPBAR (FIJO)
 ========================= */
