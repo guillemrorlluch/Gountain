@@ -31,6 +31,9 @@ body{
   display:none;
   padding:calc(var(--navbar-height) + 1rem) 1rem 2rem;
 }
+#glossary #static-intro{
+  display:block;
+}
 .no-js #static-intro{
   display:block;
 }
