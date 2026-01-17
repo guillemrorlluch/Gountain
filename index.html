@@ -45,6 +45,45 @@
     <button id="btnInfo" class="info-btn" aria-label="Open glossary">ℹ️</button>
   </header>
 
+  <!-- ========================= -->
+<!-- Static content (no-JS)   -->
+<!-- ========================= -->
+<main id="static-intro">
+  <section class="intro">
+    <h2>¿Qué es Gountain?</h2>
+    <p>
+      Gountain es un mapa interactivo de rutas de montaña y alpinismo.
+      Permite explorar travesías y ascensiones filtrando por dificultad,
+      altitud, temporada y tipo de bota recomendada.
+    </p>
+  </section>
+
+  <section class="features">
+    <h2>Qué puedes hacer</h2>
+    <ul>
+      <li>Explorar rutas por continente</li>
+      <li>Comparar dificultad y desnivel</li>
+      <li>Planificar actividades con contexto técnico</li>
+    </ul>
+  </section>
+
+  <section id="routes-fallback">
+    <h2>Rutas destacadas</h2>
+    <ul>
+      <li>GR20 — Córcega</li>
+      <li>Tour du Mont Blanc</li>
+      <li>Aneto</li>
+    </ul>
+  </section>
+
+  <noscript>
+    <p>
+      El mapa interactivo requiere JavaScript.
+      La información principal sobre Gountain se muestra arriba.
+    </p>
+  </noscript>
+</main>
+
   <div id="layout">
     <!-- Paneles -->
     <aside id="sidebar" class="panel hidden" aria-label="Panel de filtros">
