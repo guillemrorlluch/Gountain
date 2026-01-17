@@ -189,6 +189,9 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
   padding:.75rem;
   margin-top:1rem;
 }
+#glossary #static-intro.glossary-box{
+  margin-top:0;
+}
 
 .glossary-box h2{
   margin:0 0 .5rem;
