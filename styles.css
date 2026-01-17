@@ -25,6 +25,20 @@ body{
 }
 
 /* =========================
+   NO-JS FALLBACK
+========================= */
+#static-intro{
+  display:none;
+  padding:calc(var(--navbar-height) + 1rem) 1rem 2rem;
+}
+.no-js #static-intro{
+  display:block;
+}
+.no-js #layout{
+  display:none;
+}
+
+/* =========================
    TOPBAR (FIJO)
 ========================= */
 .topbar{

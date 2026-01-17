@@ -108,13 +108,6 @@ function renderBootLegend() {
   });
 }
 
-function hideStaticIntro() {
-  const staticIntro = document.getElementById('static-intro');
-  if (staticIntro) {
-    staticIntro.style.display = 'none';
-  }
-}
-
 if (typeof window !== 'undefined') {
   // Info panel toggle
   const btnInfo = document.getElementById('btnInfo');
@@ -133,7 +126,6 @@ if (typeof window !== 'undefined') {
   // DOM ready hooks
   document.addEventListener('DOMContentLoaded', () => {
     renderBootLegend();
-    hideStaticIntro();
   });
 }
 
