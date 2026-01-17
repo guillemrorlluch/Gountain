@@ -142,6 +142,23 @@ html:not(.no-js) #layout{
 ========================= */
 .panel-section{ padding:.75rem; }
 .panel-section h2{ margin:.5rem 0 .375rem; font-size:.875rem; }
+
+/* =========================
+   GLOSSARY ORDER & SPACING FIX
+========================= */
+#glossary .panel-section > h2{
+  margin-bottom:.25rem;
+}
+
+#glossary #static-intro.glossary-box{
+  margin-top:0;
+  margin-bottom:.75rem;
+}
+
+#glossary details:first-of-type{
+  margin-top:0;
+}
+
 details{
   background:#017C9B; border:1px solid #1f2a44; border-radius:.625rem;
   padding:.5rem .625rem; margin:.625rem 0;
