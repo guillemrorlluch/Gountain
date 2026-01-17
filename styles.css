@@ -29,7 +29,7 @@ body{
 ========================= */
 #static-intro{
   display:none;
-  padding:calc(var(--navbar-height) + 1rem) 1rem 2rem;
+  padding:.5rem .625rem;
 }
 #glossary #static-intro{
   display:block;
