@@ -108,6 +108,13 @@ function renderBootLegend() {
   });
 }
 
+function hideStaticIntro() {
+  const staticIntro = document.getElementById('static-intro');
+  if (staticIntro) {
+    staticIntro.style.display = 'none';
+  }
+}
+
 if (typeof window !== 'undefined') {
   // Info panel toggle
   const btnInfo = document.getElementById('btnInfo');
@@ -123,8 +130,11 @@ if (typeof window !== 'undefined') {
     btnMenu.addEventListener('click', () => sidebar.classList.toggle('hidden'));
   }
 
-  // Populate boots legend when DOM is ready
-  document.addEventListener('DOMContentLoaded', renderBootLegend);
+  // DOM ready hooks
+  document.addEventListener('DOMContentLoaded', () => {
+    renderBootLegend();
+    hideStaticIntro();
+  });
 }
 
 // Keep named + default export for prior imports
