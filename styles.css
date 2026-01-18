@@ -141,7 +141,7 @@ html:not(.no-js) #layout{
    SIDEBAR CONTENT
 ========================= */
 .panel-section{ padding:.75rem; }
-.panel-section h2{ margin:.5rem 0 .375rem; font-size:.875rem; }
+.panel-section h2{ margin:.5rem 0 .375rem; font-size:1rem; }
 
 /* =========================
    GLOSSARY ORDER & SPACING FIX
