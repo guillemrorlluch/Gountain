@@ -675,6 +675,7 @@ function onFiltersChanged() {
   const visible = allDestinations.filter(d => !c || d.continente === c);
   updateMapWith(visible);
   fitToList(visible);
+  syncAvailableDestinations(visible);
 }
 window.addEventListener('gountain:filters-changed', onFiltersChanged);
 
@@ -697,6 +698,13 @@ function applyFilters(){
   const visible = allDestinations.filter(passContinent);
   updateMapWith(visible);
   fitToList(visible);
+  syncAvailableDestinations(visible);
+}
+
+function syncAvailableDestinations(list){
+  if (typeof window === 'undefined') return;
+  window.__AVAILABLE_DESTINATIONS__ = list;
+  window.dispatchEvent(new CustomEvent('gountain:destinations-updated', { detail: list }));
 }
 
 async function loadDestinos(){

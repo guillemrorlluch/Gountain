@@ -124,6 +124,7 @@
 
     <!-- Mapa -->
     <section id="map-container">
+      <div id="react-ui" class="app-ui-root"></div>
       <div id="map"></div>
       <!-- Botón Layers -->
       <button id="layers-toggle" class="layers-btn" aria-label="Mostrar estilos de mapa" aria-pressed="false">
@@ -193,91 +194,10 @@
   </div>
   </aside>
 
-  <nav class="bottom-nav" aria-label="Bottom navigation">
-    <div class="bottom-nav__list" role="tablist">
-      <button class="bottom-nav__item is-active" type="button" aria-pressed="true">
-        <span class="bottom-nav__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-              d="M4 10.5L12 4l8 6.5v8a1 1 0 0 1-1 1h-4.5a1 1 0 0 1-1-1v-4.5h-3V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8Z"
-              fill="currentColor"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </span>
-        <span class="bottom-nav__label">Inicio</span>
-      </button>
-      <button class="bottom-nav__item" type="button" aria-pressed="false">
-        <span class="bottom-nav__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <circle
-              cx="11"
-              cy="11"
-              r="6"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-            />
-            <path
-              d="M16.5 16.5 20 20"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-            />
-          </svg>
-        </span>
-        <span class="bottom-nav__label">Explorar</span>
-      </button>
-      <button class="bottom-nav__item" type="button" aria-pressed="false">
-        <span class="bottom-nav__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-              d="M6.5 9.5a5.5 5.5 0 1 1 11 0v4.2c0 .6.24 1.18.66 1.6l1.34 1.35H4.5l1.34-1.35c.42-.42.66-1 .66-1.6V9.5Z"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M9.5 19a2.5 2.5 0 0 0 5 0"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-            />
-          </svg>
-        </span>
-        <span class="bottom-nav__label">Alertas</span>
-      </button>
-      <button class="bottom-nav__item" type="button" aria-pressed="false">
-        <span class="bottom-nav__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <circle
-              cx="12"
-              cy="8"
-              r="3.5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-            />
-            <path
-              d="M4.5 19.5c1.9-3.2 4.6-4.8 7.5-4.8s5.6 1.6 7.5 4.8"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.6"
-              stroke-linecap="round"
-            />
-          </svg>
-        </span>
-        <span class="bottom-nav__label">Perfil</span>
-      </button>
-    </div>
-  </nav>
-
   <!-- JS de tu app -->
   <script type="module" src="/dist/app.bundle.js?v=13"></script>
   <script type="module" src="/map.js?v=13"></script>
+  <script type="module" src="/main.jsx?v=13"></script>
 
   <!-- SW -->
   <script>
