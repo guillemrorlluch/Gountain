@@ -69,11 +69,14 @@ export function getBuildId(){ return BUILD_ID; }`;
 
 // copy site to Vercel static output
 copyDir(path.join(ROOT, "assets"), path.join(OUT, "assets"));
+copyDir(path.join(ROOT, "components"), path.join(OUT, "components"));
 copyDir(path.join(ROOT, "data"),   path.join(OUT, "data"));
 copyDir(path.join(ROOT, "dist"),   path.join(OUT, "dist"));
 copyDir(path.join(ROOT, "public"), OUT);
 
+copy(path.join(ROOT, "App.jsx"),    path.join(OUT, "App.jsx"));
 copy(path.join(ROOT, "map.js"),    path.join(OUT, "map.js"));
+copy(path.join(ROOT, "main.jsx"),  path.join(OUT, "main.jsx"));
 copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
 copy(path.join(ROOT, 'sw-v13.js'), path.join(OUT, 'sw-v13.js'));
