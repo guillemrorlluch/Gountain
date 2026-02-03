@@ -184,6 +184,122 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
 .altitude-inputs{ display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
 
 /* =========================
+   SEARCH BAR (React component)
+========================= */
+.search-bar{
+  width:min(100%, 40rem);
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+}
+.search-bar__field{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  height:3.25rem;
+  padding:0 1rem;
+  border-radius:999px;
+  background:#ffffff;
+  border:1px solid #e2e8f0;
+  box-shadow:0 8px 20px rgba(15, 23, 42, 0.08);
+  transition:border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+.search-bar.is-focused .search-bar__field{
+  border-color:#38bdf8;
+  box-shadow:0 0 0 3px rgba(56, 189, 248, 0.25), 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+.search-bar.is-typing .search-bar__field{
+  background:#f8fafc;
+}
+.search-bar__icon{
+  width:1.25rem;
+  height:1.25rem;
+  color:#0f172a;
+  flex-shrink:0;
+}
+.search-bar__input{
+  border:none;
+  outline:none;
+  background:transparent;
+  color:#0f172a;
+  font-size:1rem;
+  flex:1;
+  min-width:0;
+}
+.search-bar__input::placeholder{
+  color:#64748b;
+}
+.search-bar__action{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:2.25rem;
+  height:2.25rem;
+  border-radius:999px;
+  border:none;
+  background:#e2e8f0;
+  color:#0f172a;
+  cursor:pointer;
+  transition:background-color .2s ease, transform .1s ease;
+}
+.search-bar__action:active{
+  transform:scale(0.97);
+}
+.search-bar__action-icon{
+  width:1.25rem;
+  height:1.25rem;
+}
+.search-bar__results{
+  background:#ffffff;
+  border:1px solid #e2e8f0;
+  border-radius:1rem;
+  padding:.5rem;
+  box-shadow:0 12px 24px rgba(15, 23, 42, 0.12);
+  max-height:14rem;
+  overflow:auto;
+}
+.search-bar__result{
+  width:100%;
+  text-align:left;
+  padding:.625rem .75rem;
+  border-radius:.75rem;
+  border:none;
+  background:transparent;
+  color:#0f172a;
+  cursor:pointer;
+  font-size:.95rem;
+  transition:background-color .2s ease;
+}
+.search-bar__result:hover,
+.search-bar__result:focus{
+  background:#f1f5f9;
+  outline:none;
+}
+.search-bar__match{
+  color:#0f172a;
+  background:#fde68a;
+  border-radius:.25rem;
+  padding:0 .15rem;
+}
+.search-bar__empty{
+  padding:.75rem;
+  color:#64748b;
+  font-size:.9rem;
+}
+
+@media (max-width:640px){
+  .search-bar{
+    width:100%;
+  }
+  .search-bar__field{
+    height:3.5rem;
+    padding:0 1.25rem;
+  }
+}
+
+/* =========================
    GLOSSARY PANEL (overlay fijo)
 ========================= */
 #glossary.panel{
