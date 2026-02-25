@@ -2,3 +2,7 @@ node_modules/
 dist/
 
 .env.local
+
+# Allow widget build output
+!widgets/route-readiness-model/dist/
+!widgets/route-readiness-model/dist/**
