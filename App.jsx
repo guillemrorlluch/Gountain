@@ -59,6 +59,15 @@ export default function App({ destinations = [], onSelectDestination }) {
   }, []);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!selectedDestination) {
+      console.debug('[RouteReadiness] selectedDestination cleared');
+      return;
+    }
+    console.debug('[RouteReadiness] selectedDestination updated', selectedDestination);
+  }, [selectedDestination]);
+
+  useEffect(() => {
     saveCurrentUserProfile(userProfile);
   }, [userProfile]);
 
