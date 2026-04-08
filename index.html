@@ -268,16 +268,37 @@
     // NOTE: panel toggles are handled in map.js (setupPanelToggles),
     // keeping one source of truth avoids double-toggles/regressions.
 
-    // Continente: icon button triggers native select reliably.
+    // Continente: icon trigger with reliable fallback when showPicker is unsupported.
+    const closeContinentSelect = () => select?.classList.remove('is-open');
+
     btnContinent?.addEventListener('click', (e) => {
       e.preventDefault();
       if (!select) return;
-      select.focus({ preventScroll: true });
+
       if (typeof select.showPicker === 'function') {
+        select.focus({ preventScroll: true });
         select.showPicker();
         return;
       }
-      select.click();
+
+      const nextOpen = !select.classList.contains('is-open');
+      select.classList.toggle('is-open', nextOpen);
+      if (nextOpen) {
+        select.focus({ preventScroll: true });
+      }
+    });
+
+    select?.addEventListener('change', closeContinentSelect);
+    select?.addEventListener('blur', () => {
+      window.setTimeout(closeContinentSelect, 90);
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeContinentSelect();
+    });
+    window.addEventListener('click', (e) => {
+      if (!select?.classList.contains('is-open')) return;
+      if (btnContinent?.contains(e.target) || select.contains(e.target)) return;
+      closeContinentSelect();
     });
 
     // ---- Opciones por defecto (sobrescribibles con window.__FILTER_OPTIONS__)

@@ -880,12 +880,24 @@ body{ background:var(--shell-blue); }
 .topbar__select-wrap{ position:relative; }
 .topbar__utility-select{
   position:absolute;
-  width:1px;
-  height:1px;
+  top:calc(100% + .35rem);
+  right:0;
+  min-width:11rem;
+  height:2.35rem;
+  border-radius:.65rem;
+  border:1px solid #cbd5e1;
+  background:#ffffff;
+  color:#0f172a;
+  padding:0 .5rem;
   opacity:0;
   pointer-events:none;
-  overflow:hidden;
-  clip-path:inset(50%);
+  transform:translateY(-4px);
+  transition:opacity .15s ease, transform .15s ease;
+}
+.topbar__utility-select.is-open{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateY(0);
 }
 
 .app-ui-root{
@@ -928,10 +940,10 @@ body{ background:var(--shell-blue); }
   right:1rem;
   left:auto;
   transform:none;
-  top:13.4rem;
+  top:15.75rem;
   bottom:auto;
   width:min(27rem, 34vw);
-  max-height:calc(100dvh - 14.5rem);
+  max-height:calc(100dvh - 16.8rem);
 }
 
 .bottom-nav{ display:none; }
