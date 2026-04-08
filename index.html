@@ -31,7 +31,7 @@
 <body>
   <!-- Topbar -->
   <header class="topbar">
-    <button id="btnMenu" class="hamburger" aria-label="Abrir filtros">
+    <button id="btnMenu" type="button" class="hamburger" aria-label="Abrir filtros" aria-controls="sidebar" aria-expanded="false">
       <span class="bars"></span>
     </button>
     <h1>Gountain</h1>
@@ -45,7 +45,7 @@
       <option value="Oceanía">Oceanía</option>
       <option value="Antártida">Antártida</option>
     </select>
-    <button id="btnInfo" class="info-btn" aria-label="Open glossary">ℹ️</button>
+    <button id="btnInfo" type="button" class="info-btn" aria-label="Open glossary" aria-controls="glossary" aria-expanded="false">ℹ️</button>
   </header>
 
   <!-- ========================= -->
@@ -231,8 +231,8 @@
     const altChipBox= $('#altitude-chip');
 
     // ---- Abrir/cerrar paneles
-    btnMenu?.addEventListener('click', () => sidebar?.classList.toggle('hidden'));
-    btnInfo?.addEventListener('click', () => glossary?.classList.toggle('hidden'));
+    // NOTE: panel toggles are handled in map.js (setupPanelToggles),
+    // keeping one source of truth avoids double-toggles/regressions.
 
     // ---- Opciones por defecto (sobrescribibles con window.__FILTER_OPTIONS__)
     const FILTER_OPTIONS = Object.assign({
