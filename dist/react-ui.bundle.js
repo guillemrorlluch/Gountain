@@ -30,63 +30,63 @@ import { createRoot } from "https://esm.sh/react-dom@19.2.0/client";
 import React5, { useEffect as useEffect2, useMemo as useMemo4, useRef, useState as useState3 } from "https://esm.sh/react@19.2.0";
 
 // components/BottomNavigation.jsx
-import React2, { useMemo, useState } from "https://esm.sh/react@19.2.0";
-var HomeIcon = ({ filled }) => /* @__PURE__ */ React2.createElement("svg", {
+import React, { useMemo, useState } from "https://esm.sh/react@19.2.0";
+var HomeIcon = ({ filled }) => /* @__PURE__ */ React.createElement("svg", {
   viewBox: "0 0 24 24",
   "aria-hidden": "true",
   focusable: "false"
-}, /* @__PURE__ */ React2.createElement("path", {
+}, /* @__PURE__ */ React.createElement("path", {
   d: "M4 10.5L12 4l8 6.5v8a1 1 0 0 1-1 1h-4.5a1 1 0 0 1-1-1v-4.5h-3V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8Z",
   fill: filled ? "currentColor" : "none",
   stroke: "currentColor",
   strokeWidth: "1.6",
   strokeLinejoin: "round"
 }));
-var SearchIcon = ({ filled }) => /* @__PURE__ */ React2.createElement("svg", {
+var SearchIcon = ({ filled }) => /* @__PURE__ */ React.createElement("svg", {
   viewBox: "0 0 24 24",
   "aria-hidden": "true",
   focusable: "false"
-}, /* @__PURE__ */ React2.createElement("circle", {
+}, /* @__PURE__ */ React.createElement("circle", {
   cx: "11",
   cy: "11",
   r: "6",
   fill: filled ? "currentColor" : "none",
   stroke: "currentColor",
   strokeWidth: "1.6"
-}), /* @__PURE__ */ React2.createElement("path", {
+}), /* @__PURE__ */ React.createElement("path", {
   d: "M16.5 16.5 20 20",
   stroke: "currentColor",
   strokeWidth: "1.6",
   strokeLinecap: "round"
 }));
-var BellIcon = ({ filled }) => /* @__PURE__ */ React2.createElement("svg", {
+var BellIcon = ({ filled }) => /* @__PURE__ */ React.createElement("svg", {
   viewBox: "0 0 24 24",
   "aria-hidden": "true",
   focusable: "false"
-}, /* @__PURE__ */ React2.createElement("path", {
+}, /* @__PURE__ */ React.createElement("path", {
   d: "M6.5 9.5a5.5 5.5 0 1 1 11 0v4.2c0 .6.24 1.18.66 1.6l1.34 1.35H4.5l1.34-1.35c.42-.42.66-1 .66-1.6V9.5Z",
   fill: filled ? "currentColor" : "none",
   stroke: "currentColor",
   strokeWidth: "1.6",
   strokeLinejoin: "round"
-}), /* @__PURE__ */ React2.createElement("path", {
+}), /* @__PURE__ */ React.createElement("path", {
   d: "M9.5 19a2.5 2.5 0 0 0 5 0",
   stroke: "currentColor",
   strokeWidth: "1.6",
   strokeLinecap: "round"
 }));
-var UserIcon = ({ filled }) => /* @__PURE__ */ React2.createElement("svg", {
+var UserIcon = ({ filled }) => /* @__PURE__ */ React.createElement("svg", {
   viewBox: "0 0 24 24",
   "aria-hidden": "true",
   focusable: "false"
-}, /* @__PURE__ */ React2.createElement("circle", {
+}, /* @__PURE__ */ React.createElement("circle", {
   cx: "12",
   cy: "8",
   r: "3.5",
   fill: filled ? "currentColor" : "none",
   stroke: "currentColor",
   strokeWidth: "1.6"
-}), /* @__PURE__ */ React2.createElement("path", {
+}), /* @__PURE__ */ React.createElement("path", {
   d: "M4.5 19.5c1.9-3.2 4.6-4.8 7.5-4.8s5.6 1.6 7.5 4.8",
   fill: "none",
   stroke: "currentColor",
@@ -102,15 +102,15 @@ var DEFAULT_ITEMS = [
 function BottomNavigation({ items = DEFAULT_ITEMS, initialActiveId, onChange }) {
   const initialId = useMemo(() => initialActiveId ?? items[0]?.id, [initialActiveId, items]);
   const [activeId, setActiveId] = useState(initialId);
-  return /* @__PURE__ */ React2.createElement("nav", {
+  return /* @__PURE__ */ React.createElement("nav", {
     className: "bottom-nav",
     "aria-label": "Bottom navigation"
-  }, /* @__PURE__ */ React2.createElement("div", {
+  }, /* @__PURE__ */ React.createElement("div", {
     className: "bottom-nav__list",
     role: "tablist"
   }, items.map(({ id, label, Icon }) => {
     const isActive = id === activeId;
-    return /* @__PURE__ */ React2.createElement("button", {
+    return /* @__PURE__ */ React.createElement("button", {
       key: id,
       type: "button",
       className: `bottom-nav__item${isActive ? " is-active" : ""}`,
@@ -119,44 +119,44 @@ function BottomNavigation({ items = DEFAULT_ITEMS, initialActiveId, onChange }) 
         setActiveId(id);
         onChange?.(id);
       }
-    }, /* @__PURE__ */ React2.createElement("span", {
+    }, /* @__PURE__ */ React.createElement("span", {
       className: "bottom-nav__icon",
       "aria-hidden": "true"
-    }, /* @__PURE__ */ React2.createElement(Icon, {
+    }, /* @__PURE__ */ React.createElement(Icon, {
       filled: isActive
-    })), /* @__PURE__ */ React2.createElement("span", {
+    })), /* @__PURE__ */ React.createElement("span", {
       className: "bottom-nav__label"
     }, label));
   })));
 }
 
 // components/SearchBar.jsx
-import React3, { useMemo as useMemo2, useState as useState2 } from "https://esm.sh/react@19.2.0";
+import React2, { useMemo as useMemo2, useState as useState2 } from "https://esm.sh/react@19.2.0";
 var DEFAULT_PLACEHOLDER = "Discover your next expedition.";
-var SearchIcon2 = () => /* @__PURE__ */ React3.createElement("svg", {
+var SearchIcon2 = () => /* @__PURE__ */ React2.createElement("svg", {
   "aria-hidden": "true",
   viewBox: "0 0 24 24",
   focusable: "false",
   className: "search-bar__icon"
-}, /* @__PURE__ */ React3.createElement("circle", {
+}, /* @__PURE__ */ React2.createElement("circle", {
   cx: "11",
   cy: "11",
   r: "7",
   stroke: "currentColor",
   strokeWidth: "2",
   fill: "none"
-}), /* @__PURE__ */ React3.createElement("path", {
+}), /* @__PURE__ */ React2.createElement("path", {
   d: "M16.5 16.5L21 21",
   stroke: "currentColor",
   strokeWidth: "2",
   strokeLinecap: "round"
 }));
-var FilterIcon = () => /* @__PURE__ */ React3.createElement("svg", {
+var FilterIcon = () => /* @__PURE__ */ React2.createElement("svg", {
   "aria-hidden": "true",
   viewBox: "0 0 24 24",
   focusable: "false",
   className: "search-bar__action-icon"
-}, /* @__PURE__ */ React3.createElement("path", {
+}, /* @__PURE__ */ React2.createElement("path", {
   d: "M4 6h16M7 12h10M10 18h4",
   stroke: "currentColor",
   strokeWidth: "2",
@@ -172,7 +172,7 @@ function highlightMatch(label, query) {
   const before = label.slice(0, idx);
   const match = label.slice(idx, idx + query.length);
   const after = label.slice(idx + query.length);
-  return /* @__PURE__ */ React3.createElement(React3.Fragment, null, before, /* @__PURE__ */ React3.createElement("span", {
+  return /* @__PURE__ */ React2.createElement(React2.Fragment, null, before, /* @__PURE__ */ React2.createElement("span", {
     className: "search-bar__match"
   }, match), after);
 }
@@ -198,15 +198,15 @@ function SearchBar({
     }
     setQuery(destination?.name ?? "");
   };
-  return /* @__PURE__ */ React3.createElement("div", {
+  return /* @__PURE__ */ React2.createElement("div", {
     className: [
       "search-bar",
       isFocused ? "is-focused" : "",
       isTyping ? "is-typing" : ""
     ].filter(Boolean).join(" ")
-  }, /* @__PURE__ */ React3.createElement("div", {
+  }, /* @__PURE__ */ React2.createElement("div", {
     className: "search-bar__field"
-  }, /* @__PURE__ */ React3.createElement(SearchIcon2, null), /* @__PURE__ */ React3.createElement("input", {
+  }, /* @__PURE__ */ React2.createElement(SearchIcon2, null), /* @__PURE__ */ React2.createElement("input", {
     type: "search",
     value: query,
     onChange: (event) => setQuery(event.target.value),
@@ -215,21 +215,21 @@ function SearchBar({
     placeholder,
     className: "search-bar__input",
     "aria-label": "Search destinations"
-  }), showActionIcon ? /* @__PURE__ */ React3.createElement("button", {
+  }), showActionIcon ? /* @__PURE__ */ React2.createElement("button", {
     type: "button",
     className: "search-bar__action",
     "aria-label": "Filter destinations",
     onClick: onAction
-  }, /* @__PURE__ */ React3.createElement(FilterIcon, null)) : null), isTyping ? /* @__PURE__ */ React3.createElement("div", {
+  }, /* @__PURE__ */ React2.createElement(FilterIcon, null)) : null), isTyping ? /* @__PURE__ */ React2.createElement("div", {
     className: "search-bar__results",
     role: "listbox"
-  }, filteredResults.map((destination) => /* @__PURE__ */ React3.createElement("button", {
+  }, filteredResults.map((destination) => /* @__PURE__ */ React2.createElement("button", {
     type: "button",
     key: destination.id,
     className: "search-bar__result",
     role: "option",
     onClick: () => handleSelect(destination)
-  }, highlightMatch(destination.name ?? "", normalizedQuery))), filteredResults.length === 0 ? /* @__PURE__ */ React3.createElement("div", {
+  }, highlightMatch(destination.name ?? "", normalizedQuery))), filteredResults.length === 0 ? /* @__PURE__ */ React2.createElement("div", {
     className: "search-bar__empty"
   }, "No matching destinations.") : null) : null);
 }
@@ -1375,6 +1375,7 @@ function buildReadinessExplanation({ readiness, summary, estimateQuality, routeC
 }
 
 // components/ReadinessRefinementForm.jsx
+import React3 from "https://esm.sh/react@19.2.0";
 var REFINEMENT_FIELDS = [
   {
     key: "recent_elevation_capacity",
@@ -1408,30 +1409,30 @@ var REFINEMENT_FIELDS = [
   }
 ];
 function ReadinessRefinementForm({ profile, onChange, completion }) {
-  return /* @__PURE__ */ React.createElement("details", {
+  return /* @__PURE__ */ React3.createElement("details", {
     className: "readiness-refinement",
     "aria-live": "polite"
-  }, /* @__PURE__ */ React.createElement("summary", {
+  }, /* @__PURE__ */ React3.createElement("summary", {
     className: "readiness-refinement__summary-row"
-  }, /* @__PURE__ */ React.createElement("span", null, "Refine estimate"), /* @__PURE__ */ React.createElement("strong", null, completion.percent, "% refined")), /* @__PURE__ */ React.createElement("p", {
+  }, /* @__PURE__ */ React3.createElement("span", null, "Refine estimate"), /* @__PURE__ */ React3.createElement("strong", null, completion.percent, "% refined")), /* @__PURE__ */ React3.createElement("p", {
     className: "readiness-refinement__hint"
-  }, "Keep this secondary: adjust only high-impact fields to refine the decision score."), /* @__PURE__ */ React.createElement("div", {
+  }, "Keep this secondary: adjust only high-impact fields to refine the decision score."), /* @__PURE__ */ React3.createElement("div", {
     className: "readiness-refinement__fields"
   }, REFINEMENT_FIELDS.map((field) => {
     const value = Number(profile?.[field.key] ?? 0);
-    return /* @__PURE__ */ React.createElement("label", {
+    return /* @__PURE__ */ React3.createElement("label", {
       key: field.key,
       className: "readiness-refinement__field"
-    }, /* @__PURE__ */ React.createElement("span", null, field.label), /* @__PURE__ */ React.createElement("small", null, field.helper), /* @__PURE__ */ React.createElement("div", {
+    }, /* @__PURE__ */ React3.createElement("span", null, field.label), /* @__PURE__ */ React3.createElement("small", null, field.helper), /* @__PURE__ */ React3.createElement("div", {
       className: "readiness-refinement__inputs"
-    }, /* @__PURE__ */ React.createElement("input", {
+    }, /* @__PURE__ */ React3.createElement("input", {
       type: "range",
       min: "0",
       max: "100",
       step: "1",
       value,
       onChange: (event) => onChange(field.key, event.target.value)
-    }), /* @__PURE__ */ React.createElement("input", {
+    }), /* @__PURE__ */ React3.createElement("input", {
       type: "number",
       min: "0",
       max: "100",
