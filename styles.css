@@ -620,16 +620,31 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   }
 }
 
-/* Route readiness panel (MVP, read-only) */
-.app-ui__route-panel{
+/* Route readiness + user profile panel */
+.app-ui__readiness-stack{
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 6.25rem;
+  bottom: calc(5.75rem + env(safe-area-inset-bottom));
   width: min(92vw, 24rem);
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  max-height: calc(100dvh - 10.5rem);
   z-index: 1050;
 }
 
+.app-ui__profile-panel,
+.app-ui__route-panel{
+  width: 100%;
+}
+
+.app-ui__profile-panel{
+  max-height: min(42vh, 18.5rem);
+  overflow: auto;
+}
+
+.user-profile,
 .route-readiness{
   background: rgba(15, 23, 42, 0.92);
   color: #e2e8f0;
@@ -640,6 +655,17 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   backdrop-filter: blur(4px);
 }
 
+@media (max-height: 760px){
+  .app-ui__readiness-stack{
+    bottom: calc(5.35rem + env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 9.5rem);
+  }
+
+  .app-ui__profile-panel{
+    max-height: min(36vh, 13.5rem);
+  }
+}
+
 .route-readiness h3{ margin: 0 0 .35rem; font-size: .85rem; color: #f8fafc; }
 .route-readiness__metrics{ display:grid; grid-template-columns:1fr 1fr; gap:.2rem .5rem; }
 .route-readiness__summary{ margin:.45rem 0; color:#cbd5e1; }
@@ -648,3 +674,29 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 .route-readiness__hardstops ul{ margin:.3rem 0; padding-left:1rem; }
 .route-readiness__hardstops{ color:#fecaca; }
 .route-readiness__gaps-empty{ margin:.2rem 0; color:#86efac; }
+
+.user-profile{
+  background: rgba(15, 23, 42, 0.92);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: .75rem;
+  padding: .65rem .75rem;
+  font-size: .74rem;
+  backdrop-filter: blur(4px);
+}
+
+.user-profile h3{ margin: 0 0 .25rem; font-size: .82rem; color: #f8fafc; }
+.user-profile__hint{ margin:0 0 .5rem; color:#cbd5e1; }
+.user-profile__grid{ display:grid; grid-template-columns:1fr 1fr; gap:.4rem .5rem; }
+.user-profile__field{ display:flex; flex-direction:column; gap:.2rem; }
+.user-profile__input-row{ display:flex; align-items:center; gap:.25rem; }
+.user-profile__input-row input[type="range"]{ width:100%; }
+.user-profile__input-row input[type="number"]{
+  width:3.1rem;
+  border-radius:.35rem;
+  border:1px solid rgba(148,163,184,.5);
+  background:rgba(15,23,42,.7);
+  color:#e2e8f0;
+  font-size:.72rem;
+  padding:.15rem .2rem;
+}
