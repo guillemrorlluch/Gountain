@@ -85,8 +85,17 @@ export default function RouteReadinessPanel({
   const completion = useMemo(() => getRefinementCompletion(userProfile), [userProfile]);
   const estimateQuality = useMemo(() => calculateEstimateQuality(completion), [completion]);
   const confidencePresentation = useMemo(
-    () => getConfidencePresentation(readiness?.confidence, completion, destination),
-    [readiness?.confidence, completion, destination]
+    () => {
+      if (!destination || !readiness) {
+        return {
+          displayedConfidence: 0,
+          rawConfidence: 0,
+          detail: 'Confidence is unavailable until a route is selected.'
+        };
+      }
+      return getConfidencePresentation(readiness.confidence, completion, destination);
+    },
+    [destination, readiness, completion]
   );
 
   useEffect(() => {

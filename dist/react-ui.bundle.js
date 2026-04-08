@@ -1341,7 +1341,8 @@ function getConfidencePresentation(rawConfidence, completion = {}, context = {})
     partial: 76,
     strong: 92
   };
-  const isGpxSource = context.sourceType === "gpx_track";
+  const safeContext = context && typeof context === "object" ? context : {};
+  const isGpxSource = safeContext.sourceType === "gpx_track";
   const gpxBonus = isGpxSource ? 4 : 0;
   const displayedConfidence = Math.min(raw, caps[quality.state.id] + gpxBonus);
   const detailByState = {
@@ -1492,7 +1493,16 @@ function RouteReadinessPanel({
   }, [destination, expandedProfile]);
   const completion = useMemo3(() => getRefinementCompletion(userProfile), [userProfile]);
   const estimateQuality = useMemo3(() => calculateEstimateQuality(completion), [completion]);
-  const confidencePresentation = useMemo3(() => getConfidencePresentation(readiness?.confidence, completion, destination), [readiness?.confidence, completion, destination]);
+  const confidencePresentation = useMemo3(() => {
+    if (!destination || !readiness) {
+      return {
+        displayedConfidence: 0,
+        rawConfidence: 0,
+        detail: "Confidence is unavailable until a route is selected."
+      };
+    }
+    return getConfidencePresentation(readiness.confidence, completion, destination);
+  }, [destination, readiness, completion]);
   useEffect(() => {
     if (!destination) {
       console.debug("[RouteReadinessPanel] destination prop is empty");
