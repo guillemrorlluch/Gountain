@@ -1,3 +1,5 @@
+import React from 'https://esm.sh/react@19.2.0';
+
 const REFINEMENT_FIELDS = [
   {
     key: 'recent_elevation_capacity',

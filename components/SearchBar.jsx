@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "https://esm.sh/react@19.2.0";
 
 const DEFAULT_PLACEHOLDER = "Discover your next expedition.";
 

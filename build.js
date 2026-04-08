@@ -2,6 +2,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 // __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -53,6 +54,19 @@ try {
   console.warn("Skip bundle:", e?.message);
 }
 
+// Bundle React UI entry so production does not rely on raw .jsx modules.
+try {
+  const distDir = path.join(ROOT, "dist");
+  ensureDir(distDir);
+  execSync(
+    "bun build main.jsx --outfile dist/react-ui.bundle.js --target browser --jsx-runtime classic",
+    { cwd: ROOT, stdio: "pipe" }
+  );
+  console.log("Bundled React UI to dist/react-ui.bundle.js");
+} catch (e) {
+  console.warn("Skip React UI bundle:", e?.message);
+}
+
 // ✅ Generate /dist/config.js exactly as app.js needs
 try {
   const distDir = path.join(ROOT, "dist");
@@ -86,6 +100,7 @@ copy(path.join(ROOT, "main.jsx"),  path.join(OUT, "main.jsx"));
 copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
 copy(path.join(ROOT, 'sw-v14.js'), path.join(OUT, 'sw-v14.js'));
+copy(path.join(ROOT, 'sw-v15.js'), path.join(OUT, 'sw-v15.js'));
 copy(path.join(ROOT, "manifest.json"), path.join(OUT, "manifest.json"));
 
 console.log("✅ Build Completed in /vercel/output");

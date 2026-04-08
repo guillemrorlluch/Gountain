@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'https://esm.sh/react@19.2.0';
 import BottomNavigation from './components/BottomNavigation.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import RouteReadinessPanel from './components/RouteReadinessPanel.jsx';

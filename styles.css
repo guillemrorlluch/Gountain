@@ -202,6 +202,14 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
   width:100%;
   gap:1.25rem;
 }
+.app-ui-debug{
+  padding:.625rem .875rem;
+  border-radius:.625rem;
+  background:rgba(185, 28, 28, .92);
+  color:#fff;
+  font-size:.875rem;
+  font-weight:600;
+}
 .app-ui__search{
   width:100%;
 }
