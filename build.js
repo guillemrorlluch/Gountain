@@ -43,6 +43,11 @@ try {
     ensureDir(distDir);
     fs.writeFileSync(outPath, min, "utf8");
     console.log(`Bundled to ${outPath} (${min.length} bytes)`);
+
+    const engineSrc = path.join(ROOT, 'engine');
+    const engineOut = path.join(distDir, 'engine');
+    copyDir(engineSrc, engineOut);
+
   }
 } catch (e) {
   console.warn("Skip bundle:", e?.message);
@@ -72,6 +77,7 @@ copyDir(path.join(ROOT, "assets"), path.join(OUT, "assets"));
 copyDir(path.join(ROOT, "components"), path.join(OUT, "components"));
 copyDir(path.join(ROOT, "data"),   path.join(OUT, "data"));
 copyDir(path.join(ROOT, "dist"),   path.join(OUT, "dist"));
+copyDir(path.join(ROOT, "engine"), path.join(OUT, "engine"));
 copyDir(path.join(ROOT, "public"), OUT);
 
 copy(path.join(ROOT, "App.jsx"),    path.join(OUT, "App.jsx"));
@@ -79,7 +85,7 @@ copy(path.join(ROOT, "map.js"),    path.join(OUT, "map.js"));
 copy(path.join(ROOT, "main.jsx"),  path.join(OUT, "main.jsx"));
 copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
-copy(path.join(ROOT, 'sw-v13.js'), path.join(OUT, 'sw-v13.js'));
+copy(path.join(ROOT, 'sw-v14.js'), path.join(OUT, 'sw-v14.js'));
 copy(path.join(ROOT, "manifest.json"), path.join(OUT, "manifest.json"));
 
 console.log("✅ Build Completed in /vercel/output");

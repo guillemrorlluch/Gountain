@@ -619,3 +619,32 @@ button:focus-visible, a:focus-visible, select:focus-visible{
     min-height:3.25rem;
   }
 }
+
+/* Route readiness panel (MVP, read-only) */
+.app-ui__route-panel{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 6.25rem;
+  width: min(92vw, 24rem);
+  z-index: 1050;
+}
+
+.route-readiness{
+  background: rgba(15, 23, 42, 0.92);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: .75rem;
+  padding: .65rem .75rem;
+  font-size: .78rem;
+  backdrop-filter: blur(4px);
+}
+
+.route-readiness h3{ margin: 0 0 .35rem; font-size: .85rem; color: #f8fafc; }
+.route-readiness__metrics{ display:grid; grid-template-columns:1fr 1fr; gap:.2rem .5rem; }
+.route-readiness__summary{ margin:.45rem 0; color:#cbd5e1; }
+.route-readiness__subscores,
+.route-readiness__gaps,
+.route-readiness__hardstops ul{ margin:.3rem 0; padding-left:1rem; }
+.route-readiness__hardstops{ color:#fecaca; }
+.route-readiness__gaps-empty{ margin:.2rem 0; color:#86efac; }

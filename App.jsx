@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import BottomNavigation from './components/BottomNavigation.jsx';
 import SearchBar from './components/SearchBar.jsx';
+import RouteReadinessPanel from './components/RouteReadinessPanel.jsx';
 
 const EVENT_NAME = 'gountain:destinations-updated';
 const SELECT_EVENT = 'gountain:destination-selected';
@@ -12,11 +13,20 @@ const getWindowDestinations = () => {
     : [];
 };
 
+const normalizeDestinationName = (destination) => {
+  if (!destination) return destination;
+  return {
+    ...destination,
+    name: destination.name || destination.nombre || ''
+  };
+};
+
 export default function App({ destinations = [], onSelectDestination }) {
   const [availableDestinations, setAvailableDestinations] = useState(() => {
     const fromWindow = getWindowDestinations();
     return fromWindow.length ? fromWindow : destinations;
   });
+  const [selectedDestination, setSelectedDestination] = useState(null);
 
   useEffect(() => {
     if (destinations.length) {
@@ -27,27 +37,43 @@ export default function App({ destinations = [], onSelectDestination }) {
   useEffect(() => {
     const handleUpdate = (event) => {
       const next = Array.isArray(event.detail) ? event.detail : [];
-      setAvailableDestinations(next);
+      setAvailableDestinations(next.map(normalizeDestinationName));
     };
 
     window.addEventListener(EVENT_NAME, handleUpdate);
     return () => window.removeEventListener(EVENT_NAME, handleUpdate);
   }, []);
 
+  useEffect(() => {
+    const onDestinationSelected = (event) => {
+      setSelectedDestination(normalizeDestinationName(event.detail));
+    };
+    window.addEventListener(SELECT_EVENT, onDestinationSelected);
+    return () => window.removeEventListener(SELECT_EVENT, onDestinationSelected);
+  }, []);
+
   const sanitizedDestinations = useMemo(
     () =>
-      availableDestinations.filter((destination) => destination && destination.name),
+      availableDestinations
+        .map(normalizeDestinationName)
+        .filter((destination) => destination && destination.name),
     [availableDestinations]
   );
 
   const handleSelect = (destination) => {
-    onSelectDestination?.(destination);
+    const normalized = normalizeDestinationName(destination);
+    setSelectedDestination(normalized);
+    onSelectDestination?.(normalized);
     if (typeof window !== 'undefined') {
       window.dispatchEvent(
-        new CustomEvent(SELECT_EVENT, { detail: destination })
+        new CustomEvent(SELECT_EVENT, { detail: normalized })
       );
     }
   };
+
+  const userProfile = typeof window !== 'undefined'
+    ? (window.__CURRENT_USER_PROFILE__ || {})
+    : {};
 
   return (
     <div className="app-ui">
@@ -57,6 +83,9 @@ export default function App({ destinations = [], onSelectDestination }) {
           onSelect={handleSelect}
           showActionIcon
         />
+      </div>
+      <div className="app-ui__route-panel">
+        <RouteReadinessPanel destination={selectedDestination} userProfile={userProfile} />
       </div>
       <BottomNavigation initialActiveId="search" />
     </div>
