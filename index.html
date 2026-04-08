@@ -55,7 +55,7 @@
     <div class="topbar__spacer" aria-hidden="true"></div>
     <div class="topbar__utility-group">
       <div class="topbar__select-wrap">
-        <button type="button" class="topbar__utility" aria-hidden="true" tabindex="-1">
+        <button id="btnContinent" type="button" class="topbar__utility" aria-label="Filter by continent" aria-controls="continent-select" aria-haspopup="listbox">
           <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" class="topbar__utility-icon" focusable="false" aria-hidden="true">
             <rect width="34" height="34" rx="10" fill="#1F2937"/>
             <path d="M17 25.9963C17 26.5506 16.5496 27.0056 15.9978 26.9527C14.9844 26.8555 14.0184 26.6088 13.1 26.2125C11.8833 25.6875 10.825 24.975 9.925 24.075C9.025 23.175 8.3125 22.1167 7.7875 20.9C7.2625 19.6833 7 18.3833 7 17C7 15.6167 7.2625 14.3167 7.7875 13.1C8.3125 11.8833 9.025 10.825 9.925 9.925C10.825 9.025 11.8833 8.3125 13.1 7.7875C14.3167 7.2625 15.6167 7 17 7C19.4333 7 21.5625 7.7625 23.3875 9.2875C24.8817 10.5361 25.9151 12.0444 26.4876 13.8126C26.6875 14.4301 26.1964 15.025 25.5473 15.025C25.0777 15.025 24.6741 14.7051 24.5127 14.2641C24.1783 13.3503 23.6865 12.5164 23.0375 11.7625C22.2125 10.8042 21.2 10.0833 20 9.6V10C20 10.55 19.8042 11.0208 19.4125 11.4125C19.0208 11.8042 18.55 12 18 12H16V14C16 14.2833 15.9042 14.5208 15.7125 14.7125C15.5208 14.9042 15.2833 15 15 15H13V17H15V20H14L9.2 15.2C9.15 15.5 9.10417 15.8 9.0625 16.1C9.02083 16.4 9 16.7 9 17C9 19.1833 9.76667 21.0583 11.3 22.625C12.6036 23.9569 14.1722 24.7287 16.0058 24.9403C16.5536 25.0035 17 25.4449 17 25.9963ZM26.8 25.8C26.4134 26.1866 25.7866 26.1866 25.4 25.8L22.9 23.3C22.55 23.5 22.175 23.6667 21.775 23.8C21.375 23.9333 20.95 24 20.5 24C19.25 24 18.1875 23.5625 17.3125 22.6875C16.4375 21.8125 16 20.75 16 19.5C16 18.25 16.4375 17.1875 17.3125 16.3125C18.1875 15.4375 19.25 15 20.5 15C21.75 15 22.8125 15.4375 23.6875 16.3125C24.5625 17.1875 25 18.25 25 19.5C25 19.95 24.9333 20.375 24.8 20.775C24.6667 21.175 24.5 21.55 24.3 21.9L26.8 24.4C27.1866 24.7866 27.1866 25.4134 26.8 25.8ZM20.5 22C21.2 22 21.7917 21.7583 22.275 21.275C22.7583 20.7917 23 20.2 23 19.5C23 18.8 22.7583 18.2083 22.275 17.725C21.7917 17.2417 21.2 17 20.5 17C19.8 17 19.2083 17.2417 18.725 17.725C18.2417 18.2083 18 18.8 18 19.5C18 20.2 18.2417 20.7917 18.725 21.275C19.2083 21.7583 19.8 22 20.5 22Z" fill="white"/>
@@ -255,6 +255,7 @@
     // ---- Elementos
     const btnMenu   = $('#btnMenu');
     const btnInfo   = $('#btnInfo');
+    const btnContinent = $('#btnContinent');
     const sidebar   = $('#sidebar');
     const glossary  = $('#glossary');
     const select    = $('#continent-select');
@@ -266,6 +267,18 @@
     // ---- Abrir/cerrar paneles
     // NOTE: panel toggles are handled in map.js (setupPanelToggles),
     // keeping one source of truth avoids double-toggles/regressions.
+
+    // Continente: icon button triggers native select reliably.
+    btnContinent?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!select) return;
+      select.focus({ preventScroll: true });
+      if (typeof select.showPicker === 'function') {
+        select.showPicker();
+        return;
+      }
+      select.click();
+    });
 
     // ---- Opciones por defecto (sobrescribibles con window.__FILTER_OPTIONS__)
     const FILTER_OPTIONS = Object.assign({
