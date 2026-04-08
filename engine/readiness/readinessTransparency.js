@@ -102,7 +102,7 @@ export function getConfidencePresentation(rawConfidence, completion = {}, contex
   };
 }
 
-export function buildReadinessExplanation({ readiness, summary, estimateQuality }) {
+export function buildReadinessExplanation({ readiness, summary, estimateQuality, routeContext }) {
   const demands = readiness?.derived || {};
   const routeDifficulty = [
     ['Physical demand', demands.derived_core_physical_demand_score],
@@ -112,10 +112,16 @@ export function buildReadinessExplanation({ readiness, summary, estimateQuality 
     .filter(([, value]) => typeof value === 'number')
     .sort((a, b) => b[1] - a[1])[0];
 
+  const highlights = routeContext?.routeDemand?.insights?.highlights || [];
+  const technicalWhy = highlights.length
+    ? highlights.slice(0, 2).join('; ')
+    : 'Technical demand is inferred from gradient profile, terrain transitions, and altitude context.';
+
   return {
     routeDriven: routeDifficulty
       ? `${routeDifficulty[0]} is currently the strongest route-driven limiter (${Math.round(routeDifficulty[1])}/100).`
       : 'Route-driven difficulty is estimated from terrain, altitude, and route constraints.',
+    technicalWhy,
     userGap: summary?.gaps?.length
       ? `Top user-specific gap: ${summary.gaps[0]}.`
       : 'No major user-specific gaps are currently flagged.',

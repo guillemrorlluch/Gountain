@@ -15,6 +15,7 @@ export function routeDemandTo847Input(routeDemand = {}) {
   const durationHours = Number(routeDemand.physical?.duration_estimate) || 0;
   const maxAltitude = Number(routeDemand.environmental?.altitude?.max) || 0;
   const complexity = Number(routeDemand.technical?.terrain_complexity) || 50;
+  const exposureScore = Number(routeDemand.technical?.exposure_score);
   const remoteness = Number(routeDemand.environmental?.remoteness) || 35;
   const commitment = Number(routeDemand.logistics?.commitment) || 45;
   const bailoutDifficulty = Number(routeDemand.logistics?.bailout_difficulty) || 45;
@@ -31,7 +32,9 @@ export function routeDemandTo847Input(routeDemand = {}) {
   input.route_technical_terrain_technicality_demand = clamp01To100(complexity, 50);
   input.route_technical_route_finding_demand = clamp01To100(complexity + 6, 55);
   input.route_technical_scrambling_demand = clamp01To100(complexity + 8, 55);
-  input.route_technical_exposure_demand = clamp01To100(complexity + 4, 52);
+  input.route_technical_exposure_demand = Number.isFinite(exposureScore)
+    ? clamp01To100(exposureScore, 52)
+    : clamp01To100(complexity + 4, 52);
 
   input.weather_environment_remoteness_risk = clamp01To100(remoteness, 35);
   input.route_operations_commitment_difficulty = clamp01To100(commitment, 45);
