@@ -94,7 +94,9 @@ test('completion tracks how many refinement fields diverge from defaults', () =>
   });
 
   assert.equal(unchanged.changed, 0);
+  assert.deepEqual(unchanged.changedFields, []);
   assert.equal(changed.changed, 2);
+  assert.deepEqual(changed.changedFields.sort(), ['current_form', 'gear_readiness']);
   assert.equal(changed.total, 6);
 });
 

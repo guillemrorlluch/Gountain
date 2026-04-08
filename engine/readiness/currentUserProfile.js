@@ -116,11 +116,13 @@ export function toExpandedUserProfile(refinementProfile = {}) {
 
 export function getRefinementCompletion(profile = {}) {
   const p = sanitizeCurrentUserProfile(profile);
-  const changed = MINIMAL_REFINEMENT_FIELDS.filter(
+  const changedFields = MINIMAL_REFINEMENT_FIELDS.filter(
     (field) => p[field] !== DEFAULT_MINIMAL_REFINEMENT_PROFILE[field]
-  ).length;
+  );
+  const changed = changedFields.length;
   return {
     changed,
+    changedFields,
     total: MINIMAL_REFINEMENT_FIELDS.length,
     percent: Math.round((changed / MINIMAL_REFINEMENT_FIELDS.length) * 100)
   };
