@@ -72,7 +72,7 @@ export function calculateEstimateQuality(completion = {}) {
   };
 }
 
-export function getConfidencePresentation(rawConfidence, completion = {}) {
+export function getConfidencePresentation(rawConfidence, completion = {}, context = {}) {
   const quality = calculateEstimateQuality(completion);
   const raw = clampPercent(rawConfidence);
   const caps = {
@@ -80,7 +80,10 @@ export function getConfidencePresentation(rawConfidence, completion = {}) {
     partial: 76,
     strong: 92
   };
-  const displayedConfidence = Math.min(raw, caps[quality.state.id]);
+
+  const isGpxSource = context.sourceType === 'gpx_track';
+  const gpxBonus = isGpxSource ? 4 : 0;
+  const displayedConfidence = Math.min(raw, caps[quality.state.id] + gpxBonus);
 
   const detailByState = {
     preliminary: 'Confidence is intentionally capped until more personalization is provided.',
@@ -88,10 +91,14 @@ export function getConfidencePresentation(rawConfidence, completion = {}) {
     strong: 'Confidence can rise because key personalization inputs are now covered.'
   };
 
+  const gpxDetail = isGpxSource
+    ? ' GPX geometry improves route evidence quality versus static inferred route fields.'
+    : '';
+
   return {
     displayedConfidence,
     rawConfidence: raw,
-    detail: detailByState[quality.state.id]
+    detail: `${detailByState[quality.state.id]}${gpxDetail}`
   };
 }
 
