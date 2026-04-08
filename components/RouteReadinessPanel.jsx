@@ -124,7 +124,8 @@ export default function RouteReadinessPanel({
   const explanation = buildReadinessExplanation({
     readiness,
     summary,
-    estimateQuality
+    estimateQuality,
+    routeContext: destination
   });
   const topSubscores = Object.entries(readiness.subScores)
     .sort((a, b) => b[1] - a[1])
@@ -190,6 +191,7 @@ export default function RouteReadinessPanel({
         <strong>Why this score looks like this</strong>
         <ul>
           <li>{explanation.routeDriven}</li>
+          <li>{explanation.technicalWhy}</li>
           <li>{explanation.userGap}</li>
           <li>{explanation.uncertainty}</li>
         </ul>

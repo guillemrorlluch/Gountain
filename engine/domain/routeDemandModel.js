@@ -35,6 +35,11 @@ export function createRouteDemandModel(overrides = {}) {
       completeness: 0,
       source: 'gpx',
       ...(overrides.confidence || {})
+    },
+    insights: {
+      terrain_model: 'baseline',
+      highlights: [],
+      ...(overrides.insights || {})
     }
   };
 }
