@@ -85,8 +85,8 @@ export default function RouteReadinessPanel({
   const completion = useMemo(() => getRefinementCompletion(userProfile), [userProfile]);
   const estimateQuality = useMemo(() => calculateEstimateQuality(completion), [completion]);
   const confidencePresentation = useMemo(
-    () => getConfidencePresentation(readiness?.confidence, completion),
-    [readiness?.confidence, completion]
+    () => getConfidencePresentation(readiness?.confidence, completion, destination),
+    [readiness?.confidence, completion, destination]
   );
 
   useEffect(() => {
