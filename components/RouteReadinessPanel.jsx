@@ -138,55 +138,49 @@ export default function RouteReadinessPanel({
   });
   const topSubscores = Object.entries(readiness.subScores)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
+    .slice(0, 2);
 
   return (
     <section className="route-readiness" aria-live="polite">
       <h3>Selected route</h3>
 
       <div className="route-readiness__primary" data-testid="readiness-primary">
-        <h4>Readiness decision</h4>
-        <div className="route-readiness__metrics">
-          <span>Score: <strong>{readiness.score}</strong></span>
-          <span>Band: <strong>{readiness.band}</strong></span>
-          <span>Decision: <strong>{readiness.decision}</strong></span>
-          <span>State: <strong>{estimateQuality.state.label}</strong></span>
-          <span>Confidence: <strong>{confidencePresentation.displayedConfidence}</strong></span>
+        <h4>{formatValue(destination.name || destination.nombre)}</h4>
+        <div className="route-readiness__headline-metrics">
+          <span className="route-readiness__metric route-readiness__metric--score">Score {readiness.score}</span>
+          <span className="route-readiness__metric">Decision {readiness.decision}</span>
+          <span className="route-readiness__metric">Confidence {confidencePresentation.displayedConfidence}</span>
         </div>
         <p className="route-readiness__summary">{summary.sentence}</p>
         <p className="route-readiness__quality-message">{estimateQuality.qualityMessage}</p>
-        <p className="route-readiness__progressive-note">
-          Estimate starts from route demand and improves as you refine {completion.changed}/{completion.total} high-impact fields.
-        </p>
-        <div className="route-readiness__source-mix">
-          <span>Route data {estimateQuality.sourceMix.route}%</span>
-          <span>User inputs {estimateQuality.sourceMix.user}%</span>
-          <span>Estimated/default {estimateQuality.sourceMix.defaults}%</span>
+      </div>
+
+      <div className="route-readiness__secondary-grid">
+        <div className="route-readiness__route-info" data-testid="route-info">
+          <h4>Route facts</h4>
+          <dl>
+            <div><dt>Continent</dt><dd>{formatValue(destination.continente)}</dd></div>
+            <div><dt>Type</dt><dd>{formatValue(destination.tipo)}</dd></div>
+            <div><dt>Altitude</dt><dd>{destination.altitud_m ? `${destination.altitud_m} m` : '—'}</dd></div>
+            <div><dt>Difficulty</dt><dd>{formatValue(destination.dificultad)}</dd></div>
+            <div><dt>Season</dt><dd>{formatValue(destination.meses)}</dd></div>
+          </dl>
         </div>
-        <p className="route-readiness__confidence-note">
-          Confidence uses data coverage guardrails ({confidencePresentation.rawConfidence} raw): {confidencePresentation.detail}
-        </p>
-      </div>
 
-      <div className="route-readiness__route-info" data-testid="route-info">
-        <h4>{formatValue(destination.name || destination.nombre)}</h4>
-        <dl>
-          <div><dt>Continent</dt><dd>{formatValue(destination.continente)}</dd></div>
-          <div><dt>Type</dt><dd>{formatValue(destination.tipo)}</dd></div>
-          <div><dt>Altitude</dt><dd>{destination.altitud_m ? `${destination.altitud_m} m` : '—'}</dd></div>
-          <div><dt>Difficulty</dt><dd>{formatValue(destination.dificultad)}</dd></div>
-          <div><dt>Months</dt><dd>{formatValue(destination.meses)}</dd></div>
-          <div><dt>Boots</dt><dd>{formatValue(destination.botas)}</dd></div>
-          <div><dt>Gear</dt><dd>{formatValue(destination.equipo)}</dd></div>
-          <div><dt>Logistics</dt><dd>{formatValue(destination.logistica || destination.permisos || destination.guia)}</dd></div>
-        </dl>
+        <div className="route-readiness__compact-detail">
+          <p className="route-readiness__progressive-note">
+            Inputs refined: {completion.changed}/{completion.total}. Data mix — Route {estimateQuality.sourceMix.route}% · User {estimateQuality.sourceMix.user}% · Estimated {estimateQuality.sourceMix.defaults}%.
+          </p>
+          <p className="route-readiness__confidence-note">Confidence note: {confidencePresentation.detail}</p>
+          {topSubscores.length > 0 ? (
+            <ul className="route-readiness__subscores">
+              {topSubscores.map(([name, value]) => (
+                <li key={name}>{formatFallbackLabel(name)}: {Math.round(value)}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
       </div>
-
-      <ul className="route-readiness__subscores">
-        {topSubscores.map(([name, value]) => (
-          <li key={name}>{formatFallbackLabel(name)}: {Math.round(value)}</li>
-        ))}
-      </ul>
 
       {summary.gaps.length > 0 ? (
         <ul className="route-readiness__gaps">
@@ -197,12 +191,10 @@ export default function RouteReadinessPanel({
       )}
 
       <div className="route-readiness__explanation">
-        <strong>Why this score looks like this</strong>
+        <strong>Quick rationale</strong>
         <ul>
           <li>{explanation.routeDriven}</li>
-          <li>{explanation.technicalWhy}</li>
           <li>{explanation.userGap}</li>
-          <li>{explanation.uncertainty}</li>
         </ul>
       </div>
 
