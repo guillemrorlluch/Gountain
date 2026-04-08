@@ -33,13 +33,13 @@ const REFINEMENT_FIELDS = [
 
 export default function ReadinessRefinementForm({ profile, onChange, completion }) {
   return (
-    <section className="readiness-refinement" aria-live="polite">
-      <div className="readiness-refinement__header">
-        <h4>Refine estimate</h4>
-        <span>{completion.percent}% refined</span>
-      </div>
+    <details className="readiness-refinement" aria-live="polite">
+      <summary className="readiness-refinement__summary-row">
+        <span>Refine estimate</span>
+        <strong>{completion.percent}% refined</strong>
+      </summary>
       <p className="readiness-refinement__hint">
-        Start with route demand, then tune only high-impact fields.
+        Keep this secondary: adjust only high-impact fields to refine the decision score.
       </p>
       <div className="readiness-refinement__fields">
         {REFINEMENT_FIELDS.map((field) => {
@@ -70,6 +70,6 @@ export default function ReadinessRefinementForm({ profile, onChange, completion 
           );
         })}
       </div>
-    </section>
+    </details>
   );
 }
