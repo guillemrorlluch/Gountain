@@ -339,8 +339,6 @@ function popupHtml(d){
   const q = encodeURIComponent(`${title}${where ? ' ' + d.pais : ''}`);
   const gUrl = `https://www.google.com/search?q=${q}`;
 
-  const boots = Array.isArray(d.botas) ? d.botas.map(asPill).join('') : '';
-
   const links = [
     ['AllTrails', d.alltrails],
     ['Wikiloc', d.wikiloc],
@@ -361,17 +359,8 @@ function popupHtml(d){
       ${field('Altitud', d.altitud_m ? `${d.altitud_m} m` : '')}
       ${field('Dificultad', d.dificultad)}
       ${field('Meses', d.meses)}
-      ${field('Temp aprox', d.temp_aprox)}
     </div>
-    ${boots ? `<div class="section"><strong>Botas:</strong><div class="pills">${boots}</div></div>` : ''}
-    <div class="section">
-      ${field('Equipo', d.equipo || '—')}
-      ${field('Vivac', d.vivac)}
-      ${field('Permisos', d.permisos)}
-      ${field('Guía', d.guia)}
-      ${field('Coste estancia', d.coste_estancia)}
-    </div>
-    ${field('Reseña', d.resena ? `“${d.resena}”` : '')}
+    <p><strong>Decision panel:</strong> readiness score + full route detail is now shown in the selected-route panel.</p>
     ${linksHtml}
     ${photosHtml(d)}
   </div>`;

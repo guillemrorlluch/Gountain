@@ -53,6 +53,12 @@ function summarize(result) {
   return { sentence, gaps: sortedPenalties };
 }
 
+function formatValue(value, fallback = '—') {
+  if (value == null || value === '') return fallback;
+  if (Array.isArray(value)) return value.length ? value.join(', ') : fallback;
+  return value;
+}
+
 export default function RouteReadinessPanel({
   destination,
   userProfile,
@@ -76,8 +82,8 @@ export default function RouteReadinessPanel({
   if (!destination) {
     return (
       <section className="route-readiness" aria-live="polite">
-        <h3>Route readiness</h3>
-        <p>Select a route to start readiness from route demand.</p>
+        <h3>Selected route</h3>
+        <p>Select a route to open the decision panel.</p>
       </section>
     );
   }
@@ -85,7 +91,7 @@ export default function RouteReadinessPanel({
   if (!readiness) {
     return (
       <section className="route-readiness" aria-live="polite">
-        <h3>Route readiness</h3>
+        <h3>Selected route</h3>
         <p>Readiness data is not available for this route yet.</p>
       </section>
     );
@@ -98,18 +104,35 @@ export default function RouteReadinessPanel({
 
   return (
     <section className="route-readiness" aria-live="polite">
-      <h3>Route readiness</h3>
-      <div className="route-readiness__metrics">
-        <span>Score: <strong>{readiness.score}</strong></span>
-        <span>Band: <strong>{readiness.band}</strong></span>
-        <span>Decision: <strong>{readiness.decision}</strong></span>
-        <span>Confidence: <strong>{readiness.confidence}</strong></span>
+      <h3>Selected route</h3>
+
+      <div className="route-readiness__primary" data-testid="readiness-primary">
+        <h4>Readiness decision</h4>
+        <div className="route-readiness__metrics">
+          <span>Score: <strong>{readiness.score}</strong></span>
+          <span>Band: <strong>{readiness.band}</strong></span>
+          <span>Decision: <strong>{readiness.decision}</strong></span>
+          <span>Confidence: <strong>{readiness.confidence}</strong></span>
+        </div>
+        <p className="route-readiness__summary">{summary.sentence}</p>
+        <p className="route-readiness__progressive-note">
+          Estimate starts from route demand and improves as you refine {completion.changed}/{completion.total} high-impact fields.
+        </p>
       </div>
 
-      <p className="route-readiness__summary">{summary.sentence}</p>
-      <p className="route-readiness__progressive-note">
-        Estimate starts from route demand and improves as you refine {completion.changed}/{completion.total} high-impact fields.
-      </p>
+      <div className="route-readiness__route-info" data-testid="route-info">
+        <h4>{formatValue(destination.name || destination.nombre)}</h4>
+        <dl>
+          <div><dt>Continent</dt><dd>{formatValue(destination.continente)}</dd></div>
+          <div><dt>Type</dt><dd>{formatValue(destination.tipo)}</dd></div>
+          <div><dt>Altitude</dt><dd>{destination.altitud_m ? `${destination.altitud_m} m` : '—'}</dd></div>
+          <div><dt>Difficulty</dt><dd>{formatValue(destination.dificultad)}</dd></div>
+          <div><dt>Months</dt><dd>{formatValue(destination.meses)}</dd></div>
+          <div><dt>Boots</dt><dd>{formatValue(destination.botas)}</dd></div>
+          <div><dt>Gear</dt><dd>{formatValue(destination.equipo)}</dd></div>
+          <div><dt>Logistics</dt><dd>{formatValue(destination.logistica || destination.permisos || destination.guia)}</dd></div>
+        </dl>
+      </div>
 
       <ul className="route-readiness__subscores">
         {topSubscores.map(([name, value]) => (
