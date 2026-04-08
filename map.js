@@ -1,5 +1,6 @@
 // map.js — v14 (sidebar toggle fix, no re-render panels)
 import { MAPBOX_TOKEN, getBuildId } from '/dist/config.js';
+import { markerColor, normalizeDestination, withinFilters } from '/engine/domain/routeDomain.js';
 
 /* global mapboxgl */
 let map;
@@ -15,8 +16,7 @@ const STYLES = {
   hybrid:   'mapbox://styles/mapbox/satellite-streets-v12'
 };
 
-const state = (window.__FILTERS__ = window.__FILTERS__ || {});
-state.continent = state.continent || '';
+const legacyFilters = window.__FILTERS__ || {};
 
 let allDestinations = [];
 
@@ -334,7 +334,7 @@ function photosHtml(d){
 }
 
 function popupHtml(d){
-  const title = d.nombre || '';
+  const title = d.name || d.nombre || '';
   const where = d.pais ? ` (${d.pais})` : '';
   const q = encodeURIComponent(`${title}${where ? ' ' + d.pais : ''}`);
   const gUrl = `https://www.google.com/search?q=${q}`;
@@ -380,53 +380,6 @@ function popupHtml(d){
 // =====================================================
 // COLORS + GEO
 // =====================================================
-const BOOT_COLORS = {
-  "Cualquiera": "#22c55e",
-  "Depende": "#f59e0b",
-  "Bestard Teix Lady GTX": "#3498db",
-  "Scarpa Ribelle Lite HD": "#e74c3c",
-  "Scarpa Zodiac Tech LT GTX": "#7f8c8d",
-  "La Sportiva Aequilibrium ST GTX": "#9b59b6",
-  "La Sportiva Nepal Cube GTX": "#ef4444",
-  "Nepal (doble bota técnica de alta montaña)": "#dc2626",
-  "Botas triple capa (8000 m+)": "#d97706",
-  "Otras ligeras (para trekking no técnico)": "#14b8a6"
-};
-
-function markerColor(d, bootColors = BOOT_COLORS) {
-  const pr = [
-    'Scarpa Ribelle Lite HD',
-    'La Sportiva Aequilibrium ST GTX',
-    'Scarpa Zodiac Tech LT GTX',
-    'Bestard Teix Lady GTX',
-    'La Sportiva Nepal Cube GTX',
-    'Nepal (doble bota técnica de alta montaña)',
-    'Botas triple capa (8000 m+)',
-    'Cualquiera',
-    'Depende',
-    'Otras ligeras (para trekking no técnico)'
-  ];
-  for (const p of pr)
-    if (Array.isArray(d.botas) && d.botas.includes(p)) return bootColors[p] || '#22c55e';
-  return '#22c55e';
-}
-
-const MAP_CONT = new Map([
-  ['asia','Asia'], ['áfrica','África'], ['africa','África'],
-  ['north america','América del Norte'], ['norteamérica','América del Norte'],
-  ['south america','América del Sur'], ['sudamérica','América del Sur'],
-  ['antarctica','Antártida'], ['antartida','Antártida'],
-  ['europe','Europa'],
-  ['oceania','Oceanía'], ['oceanía','Oceanía']
-]);
-
-function normalizeContinent(d){
-  if (!d.continente) return d;
-  const k = String(d.continente).trim().toLowerCase();
-  d.continente = MAP_CONT.get(k) || d.continente;
-  return d;
-}
-
 function buildGeo(list){
   return {
     type: 'FeatureCollection',
@@ -634,6 +587,8 @@ function onUnclusteredClick(e) {
 
   const coords = f.geometry.coordinates.slice();
   const html   = f.properties.html || '';
+  const destination = normalizeDestination(f.properties || {});
+  window.dispatchEvent(new CustomEvent('gountain:destination-selected', { detail: destination }));
 
   const sa  = getSafeAreas();
   const gap = getMarkerGap();
@@ -670,18 +625,31 @@ function onClusterClick(e) {
 // =====================================================
 // Filters + fit
 // =====================================================
-function onFiltersChanged() {
-  const c = (window.__FILTERS__ && window.__FILTERS__.continent) || '';
-  const visible = allDestinations.filter(d => !c || d.continente === c);
-  updateMapWith(visible);
-  fitToList(visible);
-  syncAvailableDestinations(visible);
+function normalizeFilterPayload(payload = {}) {
+  return {
+    continente: new Set(payload.continent ? [payload.continent] : []),
+    dificultad: new Set(Array.isArray(payload.dificultad) ? payload.dificultad : []),
+    botas: new Set(Array.isArray(payload.botas) ? payload.botas : []),
+    tipo: new Set(Array.isArray(payload.tipo) ? payload.tipo : []),
+    season: new Set(Array.isArray(payload.season) ? payload.season : []),
+    altitude: {
+      min: Number.isFinite(payload.altMin) ? payload.altMin : payload.altMin == null ? null : Number(payload.altMin),
+      max: Number.isFinite(payload.altMax) ? payload.altMax : payload.altMax == null ? null : Number(payload.altMax)
+    }
+  };
+}
+
+let activeFilters = normalizeFilterPayload(legacyFilters.state || legacyFilters);
+
+function onFiltersChanged(event) {
+  const payload = event?.detail || legacyFilters.state || legacyFilters || {};
+  activeFilters = normalizeFilterPayload(payload);
+  applyFilters();
 }
 window.addEventListener('gountain:filters-changed', onFiltersChanged);
 
 function passContinent(d){
-  if (!state.continent) return true;
-  return d.continente === state.continent;
+  return withinFilters(d, activeFilters);
 }
 
 function fitToList(list){
@@ -711,7 +679,7 @@ async function loadDestinos(){
   try {
     const res = await fetch(`/data/destinos.json?v=${getBuildId()}`, { cache: 'no-store' });
     const data = await res.json();
-    allDestinations = data.map(normalizeContinent);
+    allDestinations = data.map(normalizeDestination);
     applyFilters();
   } catch(err){
     console.error('Error loading destinos:', err);
@@ -791,45 +759,3 @@ function setupPanelToggles() {
   if (sidebar?.classList.contains('hidden')) { sidebar.setAttribute('inert',''); btnMenu?.setAttribute('aria-expanded','false'); }
   if (glossary?.classList.contains('hidden')) { glossary.setAttribute('inert',''); btnInfo?.setAttribute('aria-expanded','false'); }
 }
-
-// =====================================================
-// Filtros básicos integrados (extend passContinent)
-// =====================================================
-state.filters = state.filters || {};
-const __passContinentBase = passContinent;
-passContinent = function(d){
-  if (!__passContinentBase(d)) return false;
-
-  const f = state.filters || {};
-  if (f.dificultad?.length && !f.dificultad.some(tag => (d.dificultad || '').includes(tag))) return false;
-
-  if (f.botas?.length) {
-    const boots = Array.isArray(d.botas) ? d.botas : [];
-    if (!boots.some(b => f.botas.includes(b))) return false;
-  }
-
-  if (f.tipo?.length && !f.tipo.includes(d.tipo)) return false;
-
-  if (f.meses?.length) {
-    const m = String(d.meses || '');
-    if (!f.meses.some(x => m.includes(x))) return false;
-  }
-
-  const minI = byId('alt-min'); const maxI = byId('alt-max');
-  const min = minI?.value ? Number(minI.value) : -Infinity;
-  const max = maxI?.value ? Number(maxI.value) :  Infinity;
-  const alt = Number(d.altitud_m ?? d.altitud ?? NaN);
-  if (!Number.isNaN(alt) && !(alt >= min && alt <= max)) return false;
-
-  return true;
-};
-
-// ---- Hook select continente (topbar)
-(function hookContinentSelect(){
-  const sel = byId('continent-select');
-  if (!sel) return;
-  sel.addEventListener('change', () => {
-    state.continent = sel.value || '';
-    applyFilters();
-  });
-})();
