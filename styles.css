@@ -620,13 +620,15 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   }
 }
 
-/* Route readiness panel (MVP, read-only) */
+/* Route readiness (route-first) */
 .app-ui__route-panel{
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 6.25rem;
+  bottom: calc(5.75rem + env(safe-area-inset-bottom));
   width: min(92vw, 24rem);
+  max-height: calc(100dvh - 10.5rem);
+  overflow: auto;
   z-index: 1050;
 }
 
@@ -640,11 +642,50 @@ button:focus-visible, a:focus-visible, select:focus-visible{
   backdrop-filter: blur(4px);
 }
 
+@media (max-height: 760px){
+  .app-ui__route-panel{
+    bottom: calc(5.35rem + env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 9.5rem);
+  }
+}
+
 .route-readiness h3{ margin: 0 0 .35rem; font-size: .85rem; color: #f8fafc; }
 .route-readiness__metrics{ display:grid; grid-template-columns:1fr 1fr; gap:.2rem .5rem; }
 .route-readiness__summary{ margin:.45rem 0; color:#cbd5e1; }
+.route-readiness__progressive-note{ margin:.2rem 0 .45rem; color:#93c5fd; }
 .route-readiness__subscores,
 .route-readiness__gaps,
 .route-readiness__hardstops ul{ margin:.3rem 0; padding-left:1rem; }
 .route-readiness__hardstops{ color:#fecaca; }
 .route-readiness__gaps-empty{ margin:.2rem 0; color:#86efac; }
+
+.readiness-refinement{
+  margin-top:.55rem;
+  border-top:1px solid rgba(148,163,184,.28);
+  padding-top:.5rem;
+}
+
+.readiness-refinement__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.4rem;
+}
+
+.readiness-refinement__header h4{ margin:0; font-size:.8rem; color:#f8fafc; }
+.readiness-refinement__header span{ color:#93c5fd; font-size:.72rem; font-weight:700; }
+.readiness-refinement__hint{ margin:.25rem 0 .45rem; color:#cbd5e1; }
+.readiness-refinement__fields{ display:grid; grid-template-columns:1fr; gap:.4rem; }
+.readiness-refinement__field{ display:flex; flex-direction:column; gap:.2rem; }
+.readiness-refinement__field small{ color:#94a3b8; }
+.readiness-refinement__inputs{ display:flex; align-items:center; gap:.25rem; }
+.readiness-refinement__inputs input[type="range"]{ width:100%; }
+.readiness-refinement__inputs input[type="number"]{
+  width:3.1rem;
+  border-radius:.35rem;
+  border:1px solid rgba(148,163,184,.5);
+  background:rgba(15,23,42,.7);
+  color:#e2e8f0;
+  font-size:.72rem;
+  padding:.15rem .2rem;
+}

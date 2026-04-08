@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import BottomNavigation from './components/BottomNavigation.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import RouteReadinessPanel from './components/RouteReadinessPanel.jsx';
+import {
+  createUpdatedCurrentUserProfile,
+  loadCurrentUserProfile,
+  saveCurrentUserProfile
+} from './engine/readiness/currentUserProfile.js';
 
 const EVENT_NAME = 'gountain:destinations-updated';
 const SELECT_EVENT = 'gountain:destination-selected';
@@ -27,6 +32,7 @@ export default function App({ destinations = [], onSelectDestination }) {
     return fromWindow.length ? fromWindow : destinations;
   });
   const [selectedDestination, setSelectedDestination] = useState(null);
+  const [userProfile, setUserProfile] = useState(() => loadCurrentUserProfile());
 
   useEffect(() => {
     if (destinations.length) {
@@ -52,6 +58,10 @@ export default function App({ destinations = [], onSelectDestination }) {
     return () => window.removeEventListener(SELECT_EVENT, onDestinationSelected);
   }, []);
 
+  useEffect(() => {
+    saveCurrentUserProfile(userProfile);
+  }, [userProfile]);
+
   const sanitizedDestinations = useMemo(
     () =>
       availableDestinations
@@ -71,9 +81,9 @@ export default function App({ destinations = [], onSelectDestination }) {
     }
   };
 
-  const userProfile = typeof window !== 'undefined'
-    ? (window.__CURRENT_USER_PROFILE__ || {})
-    : {};
+  const handleProfileChange = (key, value) => {
+    setUserProfile((current) => createUpdatedCurrentUserProfile(current, key, value));
+  };
 
   return (
     <div className="app-ui">
@@ -85,7 +95,11 @@ export default function App({ destinations = [], onSelectDestination }) {
         />
       </div>
       <div className="app-ui__route-panel">
-        <RouteReadinessPanel destination={selectedDestination} userProfile={userProfile} />
+        <RouteReadinessPanel
+          destination={selectedDestination}
+          userProfile={userProfile}
+          onChangeUserProfile={handleProfileChange}
+        />
       </div>
       <BottomNavigation initialActiveId="search" />
     </div>
