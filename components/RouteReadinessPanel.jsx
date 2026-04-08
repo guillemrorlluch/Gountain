@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { userTo847Input } from '../engine/readiness/adapters/userTo847Input.js';
 import { merge847Input } from '../engine/readiness/adapters/merge847Input.js';
 import { readinessSourceTo847Input } from '../engine/readiness/adapters/readinessSourceTo847Input.js';
@@ -78,6 +78,19 @@ export default function RouteReadinessPanel({
   }, [destination, expandedProfile]);
 
   const completion = useMemo(() => getRefinementCompletion(userProfile), [userProfile]);
+
+  useEffect(() => {
+    if (!destination) {
+      console.debug('[RouteReadinessPanel] destination prop is empty');
+      return;
+    }
+    console.debug('[RouteReadinessPanel] destination prop received', destination);
+  }, [destination]);
+
+  useEffect(() => {
+    if (!destination) return;
+    console.debug('[RouteReadinessPanel] readiness result generated', readiness);
+  }, [destination, readiness]);
 
   if (!destination) {
     return (
