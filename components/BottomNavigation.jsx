@@ -70,10 +70,10 @@ const UserIcon = ({ filled }) => (
 );
 
 const DEFAULT_ITEMS = [
-  { id: 'home', label: 'Inicio', Icon: HomeIcon },
-  { id: 'search', label: 'Explorar', Icon: SearchIcon },
-  { id: 'alerts', label: 'Alertas', Icon: BellIcon },
-  { id: 'profile', label: 'Perfil', Icon: UserIcon }
+  { id: 'map', label: 'Map', Icon: HomeIcon },
+  { id: 'explore', label: 'Explore', Icon: SearchIcon },
+  { id: 'saved', label: 'Saved', Icon: BellIcon },
+  { id: 'profile', label: 'Profile', Icon: UserIcon }
 ];
 
 export default function BottomNavigation({ items = DEFAULT_ITEMS, initialActiveId, onChange }) {

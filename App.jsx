@@ -28,6 +28,8 @@ const normalizeDestinationName = (destination) => {
   };
 };
 
+const MOBILE_QUERY = '(max-width: 768px)';
+
 export default function App({ destinations = [], onSelectDestination }) {
   const [availableDestinations, setAvailableDestinations] = useState(() => {
     const fromWindow = getWindowDestinations();
@@ -37,7 +39,25 @@ export default function App({ destinations = [], onSelectDestination }) {
   const [userProfile, setUserProfile] = useState(() => loadCurrentUserProfile());
   const [gpxError, setGpxError] = useState('');
   const [gpxStatus, setGpxStatus] = useState('');
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches);
+  const [mobileTab, setMobileTab] = useState('explore');
   const gpxInputRef = useRef(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const media = window.matchMedia(MOBILE_QUERY);
+    const sync = () => setIsMobile(media.matches);
+    sync();
+    media.addEventListener('change', sync);
+    return () => media.removeEventListener('change', sync);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    if (selectedDestination) {
+      setMobileTab('explore');
+    }
+  }, [isMobile, selectedDestination]);
 
   useEffect(() => {
     if (destinations.length) {
@@ -61,6 +81,24 @@ export default function App({ destinations = [], onSelectDestination }) {
     };
     window.addEventListener(SELECT_EVENT, onDestinationSelected);
     return () => window.removeEventListener(SELECT_EVENT, onDestinationSelected);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const syncPanelState = () => {
+      const menuExpanded = document.getElementById('btnMenu')?.getAttribute('aria-expanded') === 'true';
+      const infoExpanded = document.getElementById('btnInfo')?.getAttribute('aria-expanded') === 'true';
+      document.body.classList.toggle('app-major-panel-open', menuExpanded || infoExpanded);
+    };
+
+    window.addEventListener('click', syncPanelState);
+    window.addEventListener('keydown', syncPanelState);
+    syncPanelState();
+    return () => {
+      window.removeEventListener('click', syncPanelState);
+      window.removeEventListener('keydown', syncPanelState);
+      document.body.classList.remove('app-major-panel-open');
+    };
   }, []);
 
   useEffect(() => {
@@ -137,6 +175,8 @@ export default function App({ destinations = [], onSelectDestination }) {
     }
   };
 
+  const shouldShowRoutePanel = !isMobile || mobileTab === 'explore';
+
   return (
     <div className="app-ui">
       <div className="app-ui__search">
@@ -145,39 +185,45 @@ export default function App({ destinations = [], onSelectDestination }) {
           onSelect={handleSelect}
           showActionIcon
         />
-        <div className="app-ui__gpx-upload" role="group" aria-label="Analyze GPX route">
-          <input
-            id="gpx-upload-input"
-            className="app-ui__gpx-input"
-            type="file"
-            ref={gpxInputRef}
-            accept=".gpx,application/gpx+xml,application/xml,text/xml"
-            onChange={handleGPXUpload}
-            aria-describedby="gpx-upload-help"
-          />
-          <button
-            type="button"
-            className="app-ui__gpx-trigger"
-            onClick={() => gpxInputRef.current?.click()}
-            aria-controls="gpx-upload-input"
-          >
-            Upload GPX
-          </button>
-          <span id="gpx-upload-help" className="app-ui__gpx-help">Upload or analyze a .gpx track file</span>
-          {gpxStatus ? (
-            <p className="app-ui__gpx-status" aria-live="polite">{gpxStatus}</p>
-          ) : null}
-          {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
-        </div>
       </div>
-      <div className="app-ui__route-panel">
+
+      <div className={`app-ui__route-panel ${shouldShowRoutePanel ? '' : 'hidden'}`}>
         <RouteReadinessPanel
           destination={selectedDestination}
           userProfile={userProfile}
           onChangeUserProfile={handleProfileChange}
         />
       </div>
-      <BottomNavigation initialActiveId="search" />
+
+      <div className={`app-ui__gpx-upload ${isMobile && mobileTab !== 'saved' ? 'hidden' : ''}`} role="group" aria-label="Analyze GPX route">
+        <input
+          id="gpx-upload-input"
+          className="app-ui__gpx-input"
+          type="file"
+          ref={gpxInputRef}
+          accept=".gpx,application/gpx+xml,application/xml,text/xml"
+          onChange={handleGPXUpload}
+          aria-describedby="gpx-upload-help"
+        />
+        <button
+          type="button"
+          className="app-ui__gpx-trigger"
+          onClick={() => gpxInputRef.current?.click()}
+          aria-controls="gpx-upload-input"
+        >
+          Upload GPX
+        </button>
+        <span id="gpx-upload-help" className="app-ui__gpx-help">Upload or analyze a .gpx track file</span>
+        {gpxStatus ? (
+          <p className="app-ui__gpx-status" aria-live="polite">{gpxStatus}</p>
+        ) : null}
+        {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
+      </div>
+
+      <BottomNavigation
+        initialActiveId={isMobile ? 'map' : 'explore'}
+        onChange={(id) => setMobileTab(id)}
+      />
     </div>
   );
 }

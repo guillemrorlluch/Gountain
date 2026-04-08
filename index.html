@@ -34,19 +34,29 @@
     <button id="btnMenu" type="button" class="hamburger" aria-label="Abrir filtros" aria-controls="sidebar" aria-expanded="false">
       <span class="bars"></span>
     </button>
-    <h1>Gountain</h1>
-    <select id="continent-select" aria-label="Filtrar continente">
-      <option value="">Todos los continentes</option>
-      <option value="América del Norte">América del Norte</option>
-      <option value="América del Sur">América del Sur</option>
-      <option value="Europa">Europa</option>
-      <option value="África">África</option>
-      <option value="Asia">Asia</option>
-      <option value="Oceanía">Oceanía</option>
-      <option value="Antártida">Antártida</option>
-    </select>
-    <button id="btnInfo" type="button" class="info-btn" aria-label="Open glossary" aria-controls="glossary" aria-expanded="false">ℹ️</button>
+    <h1>
+      <img src="/assets/Gountain-192.png" alt="" class="topbar__logo" />
+      <span class="topbar__title">Gountain</span>
+    </h1>
+    <div class="topbar__spacer" aria-hidden="true"></div>
+    <div class="topbar__utility-group">
+      <div class="topbar__select-wrap">
+        <button type="button" class="topbar__utility" aria-hidden="true" tabindex="-1">🌐</button>
+        <select id="continent-select" class="topbar__utility-select" aria-label="Filtrar continente">
+          <option value="">Todos los continentes</option>
+          <option value="América del Norte">América del Norte</option>
+          <option value="América del Sur">América del Sur</option>
+          <option value="Europa">Europa</option>
+          <option value="África">África</option>
+          <option value="Asia">Asia</option>
+          <option value="Oceanía">Oceanía</option>
+          <option value="Antártida">Antártida</option>
+        </select>
+      </div>
+      <button id="btnInfo" type="button" class="info-btn" aria-label="Open glossary" aria-controls="glossary" aria-expanded="false">ⓘ</button>
+    </div>
   </header>
+  <div id="react-ui" class="app-ui-root"></div>
 
   <!-- ========================= -->
 <!-- Static content (no-JS)   -->
@@ -124,7 +134,6 @@
 
     <!-- Mapa -->
     <section id="map-container">
-      <div id="react-ui" class="app-ui-root"></div>
       <div id="map"></div>
       <!-- Botón Layers -->
       <button id="layers-toggle" class="layers-btn" aria-label="Mostrar estilos de mapa" aria-pressed="false">

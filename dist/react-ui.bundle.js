@@ -94,10 +94,10 @@ var UserIcon = ({ filled }) => /* @__PURE__ */ React.createElement("svg", {
   strokeLinecap: "round"
 }));
 var DEFAULT_ITEMS = [
-  { id: "home", label: "Inicio", Icon: HomeIcon },
-  { id: "search", label: "Explorar", Icon: SearchIcon },
-  { id: "alerts", label: "Alertas", Icon: BellIcon },
-  { id: "profile", label: "Perfil", Icon: UserIcon }
+  { id: "map", label: "Map", Icon: HomeIcon },
+  { id: "explore", label: "Explore", Icon: SearchIcon },
+  { id: "saved", label: "Saved", Icon: BellIcon },
+  { id: "profile", label: "Profile", Icon: UserIcon }
 ];
 function BottomNavigation({ items = DEFAULT_ITEMS, initialActiveId, onChange }) {
   const initialId = useMemo(() => initialActiveId ?? items[0]?.id, [initialActiveId, items]);
@@ -2037,6 +2037,7 @@ var normalizeDestinationName = (destination) => {
     name: destination.name || destination.nombre || ""
   };
 };
+var MOBILE_QUERY = "(max-width: 768px)";
 function App({ destinations = [], onSelectDestination }) {
   const [availableDestinations, setAvailableDestinations] = useState3(() => {
     const fromWindow = getWindowDestinations();
@@ -2046,7 +2047,25 @@ function App({ destinations = [], onSelectDestination }) {
   const [userProfile, setUserProfile] = useState3(() => loadCurrentUserProfile());
   const [gpxError, setGpxError] = useState3("");
   const [gpxStatus, setGpxStatus] = useState3("");
+  const [isMobile, setIsMobile] = useState3(() => typeof window !== "undefined" && window.matchMedia(MOBILE_QUERY).matches);
+  const [mobileTab, setMobileTab] = useState3("explore");
   const gpxInputRef = useRef(null);
+  useEffect2(() => {
+    if (typeof window === "undefined")
+      return;
+    const media = window.matchMedia(MOBILE_QUERY);
+    const sync = () => setIsMobile(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+  useEffect2(() => {
+    if (!isMobile)
+      return;
+    if (selectedDestination) {
+      setMobileTab("explore");
+    }
+  }, [isMobile, selectedDestination]);
   useEffect2(() => {
     if (destinations.length) {
       setAvailableDestinations(destinations);
@@ -2066,6 +2085,23 @@ function App({ destinations = [], onSelectDestination }) {
     };
     window.addEventListener(SELECT_EVENT, onDestinationSelected);
     return () => window.removeEventListener(SELECT_EVENT, onDestinationSelected);
+  }, []);
+  useEffect2(() => {
+    if (typeof window === "undefined")
+      return;
+    const syncPanelState = () => {
+      const menuExpanded = document.getElementById("btnMenu")?.getAttribute("aria-expanded") === "true";
+      const infoExpanded = document.getElementById("btnInfo")?.getAttribute("aria-expanded") === "true";
+      document.body.classList.toggle("app-major-panel-open", menuExpanded || infoExpanded);
+    };
+    window.addEventListener("click", syncPanelState);
+    window.addEventListener("keydown", syncPanelState);
+    syncPanelState();
+    return () => {
+      window.removeEventListener("click", syncPanelState);
+      window.removeEventListener("keydown", syncPanelState);
+      document.body.classList.remove("app-major-panel-open");
+    };
   }, []);
   useEffect2(() => {
     if (typeof window === "undefined")
@@ -2127,6 +2163,7 @@ function App({ destinations = [], onSelectDestination }) {
       event.target.value = "";
     }
   };
+  const shouldShowRoutePanel = !isMobile || mobileTab === "explore";
   return /* @__PURE__ */ React5.createElement("div", {
     className: "app-ui"
   }, /* @__PURE__ */ React5.createElement("div", {
@@ -2135,8 +2172,14 @@ function App({ destinations = [], onSelectDestination }) {
     destinations: sanitizedDestinations,
     onSelect: handleSelect,
     showActionIcon: true
-  }), /* @__PURE__ */ React5.createElement("div", {
-    className: "app-ui__gpx-upload",
+  })), /* @__PURE__ */ React5.createElement("div", {
+    className: `app-ui__route-panel ${shouldShowRoutePanel ? "" : "hidden"}`
+  }, /* @__PURE__ */ React5.createElement(RouteReadinessPanel, {
+    destination: selectedDestination,
+    userProfile,
+    onChangeUserProfile: handleProfileChange
+  })), /* @__PURE__ */ React5.createElement("div", {
+    className: `app-ui__gpx-upload ${isMobile && mobileTab !== "saved" ? "hidden" : ""}`,
     role: "group",
     "aria-label": "Analyze GPX route"
   }, /* @__PURE__ */ React5.createElement("input", {
@@ -2160,14 +2203,9 @@ function App({ destinations = [], onSelectDestination }) {
     "aria-live": "polite"
   }, gpxStatus) : null, gpxError ? /* @__PURE__ */ React5.createElement("p", {
     className: "app-ui__gpx-error"
-  }, gpxError) : null)), /* @__PURE__ */ React5.createElement("div", {
-    className: "app-ui__route-panel"
-  }, /* @__PURE__ */ React5.createElement(RouteReadinessPanel, {
-    destination: selectedDestination,
-    userProfile,
-    onChangeUserProfile: handleProfileChange
-  })), /* @__PURE__ */ React5.createElement(BottomNavigation, {
-    initialActiveId: "search"
+  }, gpxError) : null), /* @__PURE__ */ React5.createElement(BottomNavigation, {
+    initialActiveId: isMobile ? "map" : "explore",
+    onChange: (id) => setMobileTab(id)
   }));
 }
 
