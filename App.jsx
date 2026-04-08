@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import BottomNavigation from './components/BottomNavigation.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import RouteReadinessPanel from './components/RouteReadinessPanel.jsx';
+import { parseGPX } from './engine/gpx/parseGPX.js';
+import { gpxToRouteDemand } from './engine/gpx/gpxToRouteDemand.js';
 import {
   createUpdatedCurrentUserProfile,
   loadCurrentUserProfile,
@@ -33,6 +35,7 @@ export default function App({ destinations = [], onSelectDestination }) {
   });
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [userProfile, setUserProfile] = useState(() => loadCurrentUserProfile());
+  const [gpxError, setGpxError] = useState('');
 
   useEffect(() => {
     if (destinations.length) {
@@ -94,6 +97,41 @@ export default function App({ destinations = [], onSelectDestination }) {
     setUserProfile((current) => createUpdatedCurrentUserProfile(current, key, value));
   };
 
+  const handleGPXUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setGpxError('');
+      const parsed = await parseGPX(file);
+      const routeDemand = gpxToRouteDemand(parsed);
+      const gpxDestination = {
+        id: `gpx-${Date.now()}`,
+        sourceType: 'gpx_track',
+        name: `GPX: ${file.name}`,
+        nombre: `GPX: ${file.name}`,
+        routeDemand,
+        gpxMetrics: parsed,
+        altitud_m: parsed.altitudeProfile?.max || null,
+        distancia_km: parsed.totalDistanceKm,
+        desnivel_m: parsed.elevationGainM,
+        tipo: 'GPX import',
+        dificultad: 'Auto-estimated',
+        meses: 'Unknown',
+        botas: [],
+        equipo: []
+      };
+
+      setSelectedDestination(gpxDestination);
+      onSelectDestination?.(gpxDestination);
+    } catch (error) {
+      console.error('[RouteReadiness] failed to parse GPX', error);
+      setGpxError('Could not parse GPX file. Please upload a valid GPX track.');
+    } finally {
+      event.target.value = '';
+    }
+  };
+
   return (
     <div className="app-ui">
       <div className="app-ui__search">
@@ -102,6 +140,16 @@ export default function App({ destinations = [], onSelectDestination }) {
           onSelect={handleSelect}
           showActionIcon
         />
+        <div className="app-ui__gpx-upload">
+          <label htmlFor="gpx-upload-input">Analyze GPX</label>
+          <input
+            id="gpx-upload-input"
+            type="file"
+            accept=".gpx,application/gpx+xml,application/xml,text/xml"
+            onChange={handleGPXUpload}
+          />
+          {gpxError ? <p>{gpxError}</p> : null}
+        </div>
       </div>
       <div className="app-ui__route-panel">
         <RouteReadinessPanel
