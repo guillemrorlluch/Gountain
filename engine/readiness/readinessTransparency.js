@@ -81,7 +81,8 @@ export function getConfidencePresentation(rawConfidence, completion = {}, contex
     strong: 92
   };
 
-  const isGpxSource = context.sourceType === 'gpx_track';
+  const safeContext = context && typeof context === 'object' ? context : {};
+  const isGpxSource = safeContext.sourceType === 'gpx_track';
   const gpxBonus = isGpxSource ? 4 : 0;
   const displayedConfidence = Math.min(raw, caps[quality.state.id] + gpxBonus);
 

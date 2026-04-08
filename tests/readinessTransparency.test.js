@@ -69,3 +69,16 @@ test('confidence messaging is guarded when refinement coverage is low', () => {
   assert.ok(highCoverage.displayedConfidence > lowCoverage.displayedConfidence);
   assert.ok(highCoverage.detail.includes('key personalization'));
 });
+
+test('confidence presentation tolerates null route context', () => {
+  const presentation = getConfidencePresentation(72, {
+    changed: 0,
+    total: 6,
+    percent: 0,
+    changedFields: []
+  }, null);
+
+  assert.equal(presentation.displayedConfidence, 62);
+  assert.equal(presentation.rawConfidence, 72);
+  assert.ok(typeof presentation.detail === 'string');
+});
