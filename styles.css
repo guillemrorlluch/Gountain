@@ -351,6 +351,7 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
   letter-spacing:.01em;
   cursor:pointer;
   transition:transform .12s ease, box-shadow .2s ease, background-color .2s ease;
+  appearance:none;
 }
 
 .app-ui__gpx-trigger:hover{
@@ -361,7 +362,7 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
   transform:translateY(1px);
 }
 
-.app-ui__gpx-input:focus-visible + .app-ui__gpx-trigger{
+.app-ui__gpx-trigger:focus-visible{
   outline:.125rem solid #7aa2ff;
   outline-offset:.15rem;
 }
@@ -375,6 +376,13 @@ summary{ cursor:pointer; color:var(--muted); font-weight:700; list-style:none; }
   margin:0;
   font-size:.82rem;
   color:#fecaca;
+  flex-basis:100%;
+}
+
+.app-ui__gpx-status{
+  margin:0;
+  font-size:.82rem;
+  color:#d1fae5;
   flex-basis:100%;
 }
 

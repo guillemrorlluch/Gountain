@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import BottomNavigation from './components/BottomNavigation.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import RouteReadinessPanel from './components/RouteReadinessPanel.jsx';
@@ -36,6 +36,8 @@ export default function App({ destinations = [], onSelectDestination }) {
   const [selectedDestination, setSelectedDestination] = useState(null);
   const [userProfile, setUserProfile] = useState(() => loadCurrentUserProfile());
   const [gpxError, setGpxError] = useState('');
+  const [gpxStatus, setGpxStatus] = useState('');
+  const gpxInputRef = useRef(null);
 
   useEffect(() => {
     if (destinations.length) {
@@ -103,6 +105,7 @@ export default function App({ destinations = [], onSelectDestination }) {
 
     try {
       setGpxError('');
+      setGpxStatus(`Processing ${file.name}...`);
       const parsed = await parseGPX(file);
       const routeDemand = gpxToRouteDemand(parsed);
       const gpxDestination = {
@@ -124,9 +127,11 @@ export default function App({ destinations = [], onSelectDestination }) {
 
       setSelectedDestination(gpxDestination);
       onSelectDestination?.(gpxDestination);
+      setGpxStatus(`Loaded ${file.name}`);
     } catch (error) {
       console.error('[RouteReadiness] failed to parse GPX', error);
       setGpxError('Could not parse GPX file. Please upload a valid GPX track.');
+      setGpxStatus('');
     } finally {
       event.target.value = '';
     }
@@ -145,12 +150,23 @@ export default function App({ destinations = [], onSelectDestination }) {
             id="gpx-upload-input"
             className="app-ui__gpx-input"
             type="file"
+            ref={gpxInputRef}
             accept=".gpx,application/gpx+xml,application/xml,text/xml"
             onChange={handleGPXUpload}
             aria-describedby="gpx-upload-help"
           />
-          <label className="app-ui__gpx-trigger" htmlFor="gpx-upload-input">Analyze GPX</label>
-          <span id="gpx-upload-help" className="app-ui__gpx-help">Upload a .gpx track file</span>
+          <button
+            type="button"
+            className="app-ui__gpx-trigger"
+            onClick={() => gpxInputRef.current?.click()}
+            aria-controls="gpx-upload-input"
+          >
+            Upload GPX
+          </button>
+          <span id="gpx-upload-help" className="app-ui__gpx-help">Upload or analyze a .gpx track file</span>
+          {gpxStatus ? (
+            <p className="app-ui__gpx-status" aria-live="polite">{gpxStatus}</p>
+          ) : null}
           {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
         </div>
       </div>
