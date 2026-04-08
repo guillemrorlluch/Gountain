@@ -140,15 +140,18 @@ export default function App({ destinations = [], onSelectDestination }) {
           onSelect={handleSelect}
           showActionIcon
         />
-        <div className="app-ui__gpx-upload">
-          <label htmlFor="gpx-upload-input">Analyze GPX</label>
+        <div className="app-ui__gpx-upload" role="group" aria-label="Analyze GPX route">
           <input
             id="gpx-upload-input"
+            className="app-ui__gpx-input"
             type="file"
             accept=".gpx,application/gpx+xml,application/xml,text/xml"
             onChange={handleGPXUpload}
+            aria-describedby="gpx-upload-help"
           />
-          {gpxError ? <p>{gpxError}</p> : null}
+          <label className="app-ui__gpx-trigger" htmlFor="gpx-upload-input">Analyze GPX</label>
+          <span id="gpx-upload-help" className="app-ui__gpx-help">Upload a .gpx track file</span>
+          {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
         </div>
       </div>
       <div className="app-ui__route-panel">
