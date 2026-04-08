@@ -7,6 +7,11 @@ import {
   getRefinementCompletion,
   toExpandedUserProfile
 } from '../engine/readiness/currentUserProfile.js';
+import {
+  calculateEstimateQuality,
+  getConfidencePresentation,
+  buildReadinessExplanation
+} from '../engine/readiness/readinessTransparency.js';
 import ReadinessRefinementForm from './ReadinessRefinementForm.jsx';
 
 const PENALTY_LABELS = {
@@ -78,6 +83,11 @@ export default function RouteReadinessPanel({
   }, [destination, expandedProfile]);
 
   const completion = useMemo(() => getRefinementCompletion(userProfile), [userProfile]);
+  const estimateQuality = useMemo(() => calculateEstimateQuality(completion), [completion]);
+  const confidencePresentation = useMemo(
+    () => getConfidencePresentation(readiness?.confidence, completion),
+    [readiness?.confidence, completion]
+  );
 
   useEffect(() => {
     if (!destination) {
@@ -111,6 +121,11 @@ export default function RouteReadinessPanel({
   }
 
   const summary = summarize(readiness);
+  const explanation = buildReadinessExplanation({
+    readiness,
+    summary,
+    estimateQuality
+  });
   const topSubscores = Object.entries(readiness.subScores)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
@@ -125,11 +140,21 @@ export default function RouteReadinessPanel({
           <span>Score: <strong>{readiness.score}</strong></span>
           <span>Band: <strong>{readiness.band}</strong></span>
           <span>Decision: <strong>{readiness.decision}</strong></span>
-          <span>Confidence: <strong>{readiness.confidence}</strong></span>
+          <span>State: <strong>{estimateQuality.state.label}</strong></span>
+          <span>Confidence: <strong>{confidencePresentation.displayedConfidence}</strong></span>
         </div>
         <p className="route-readiness__summary">{summary.sentence}</p>
+        <p className="route-readiness__quality-message">{estimateQuality.qualityMessage}</p>
         <p className="route-readiness__progressive-note">
           Estimate starts from route demand and improves as you refine {completion.changed}/{completion.total} high-impact fields.
+        </p>
+        <div className="route-readiness__source-mix">
+          <span>Route data {estimateQuality.sourceMix.route}%</span>
+          <span>User inputs {estimateQuality.sourceMix.user}%</span>
+          <span>Estimated/default {estimateQuality.sourceMix.defaults}%</span>
+        </div>
+        <p className="route-readiness__confidence-note">
+          Confidence uses data coverage guardrails ({confidencePresentation.rawConfidence} raw): {confidencePresentation.detail}
         </p>
       </div>
 
@@ -160,6 +185,15 @@ export default function RouteReadinessPanel({
       ) : (
         <p className="route-readiness__gaps-empty">No major limiting gaps detected.</p>
       )}
+
+      <div className="route-readiness__explanation">
+        <strong>Why this score looks like this</strong>
+        <ul>
+          <li>{explanation.routeDriven}</li>
+          <li>{explanation.userGap}</li>
+          <li>{explanation.uncertainty}</li>
+        </ul>
+      </div>
 
       {readiness.hardStops.length > 0 ? (
         <div className="route-readiness__hardstops">
