@@ -170,16 +170,22 @@ function getSafeAreas() {
   const topbar   = $('.topbar');
   const sidebar  = byId('sidebar');
   const glossary = byId('glossary');
+  const routePanel = $('.app-ui__route-panel');
   const chipbar  = $('.chip-bar') || byId('dest-chips');
 
-  const base = isMobile() ? 28 : 16;
+  const mobile = isMobile();
+  const base = mobile ? 28 : 16;
 
   const top    = (topbar?.offsetHeight || 0) + base;
   const left   = (isVisible(sidebar)  ? sidebar.offsetWidth  : 0) + base;
-  const right  = (isVisible(glossary) ? glossary.offsetWidth : 0) + base;
+  const glossaryRight = (isVisible(glossary) ? glossary.offsetWidth : 0) + base;
+  const routePanelRight = (!mobile && isVisible(routePanel))
+    ? Math.ceil(routePanel.getBoundingClientRect().width) + 28
+    : 0;
+  const right = Math.max(glossaryRight, routePanelRight, base);
 
   const chipH  = (chipbar && isVisible(chipbar)) ? chipbar.getBoundingClientRect().height : 0;
-  const bottom = Math.max(chipH + base, base + (isMobile() ? 12 : 0));
+  const bottom = Math.max(chipH + base, base + (mobile ? 12 : 0));
 
   return { top, right, bottom, left };
 }
@@ -243,7 +249,7 @@ function autopanToFitPoint(mapInstance, lngLat, opts = {}) {
 // =====================================================
 // Popup inteligente
 // =====================================================
-const POPUP_CFG = { maxWidthPx: 420 };
+const POPUP_CFG = { maxWidthPx: 320 };
 
 function getPopupMeasureEl() {
   let el = document.getElementById('popup-measure');
@@ -458,7 +464,7 @@ function openPopupAt(coords, html, anchor = 'auto') {
   const isMobile = matchMedia('(max-width: 768px)').matches
     || document.body.classList.contains('is-mobile');
 
-  const desktopMaxPx = Math.min(window.innerWidth * 0.92, POPUP_CFG.maxWidthPx);
+  const desktopMaxPx = Math.min(window.innerWidth * 0.3, POPUP_CFG.maxWidthPx);
   const maxW = isMobile ? '78vw' : `${desktopMaxPx}px`;
 
   const resolvedAnchor = isMobile ? 'bottom' : anchor;

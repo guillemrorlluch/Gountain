@@ -859,12 +859,12 @@ body{ background:var(--shell-blue); }
   min-width:max-content;
   font-size:1.95rem;
 }
-.topbar__logo{
-  width:2.2rem;
-  height:2.2rem;
-  border-radius:.5rem;
+.topbar__logo-svg{
+  width:3.5rem;
+  height:2.05rem;
+  display:block;
 }
-.topbar__title{ font-size:2.3rem; font-weight:700; }
+.topbar__title{ font-size:2.3rem; font-weight:700; letter-spacing:.01em; }
 .hamburger,
 .info-btn,
 .topbar__utility{
@@ -909,13 +909,13 @@ body{ background:var(--shell-blue); }
 .search-bar{ width:100%; }
 .search-bar__field{ height:3rem; }
 
-.layers-btn{ top:5.15rem; }
-.basemap-switcher{ top:8rem; }
+.layers-btn{ top:5.35rem; }
+.basemap-switcher{ top:8.45rem; }
 
 .app-ui__gpx-upload{
   position:fixed;
   left:1rem;
-  top:8.1rem;
+  top:9.15rem;
   width:auto;
   max-width:26rem;
   margin:0;
@@ -961,8 +961,8 @@ body{ background:var(--shell-blue); }
   .app-ui__search{ width:100%; }
   .search-bar__field{ height:4.6rem; border-radius:2rem; }
 
-  .layers-btn{ top:9rem; }
-  .basemap-switcher{ top:11.5rem; max-width:calc(100vw - 1.7rem); }
+  .layers-btn{ top:8.7rem; }
+  .basemap-switcher{ top:11.1rem; max-width:calc(100vw - 1.7rem); }
 
   .bottom-nav{ display:flex; }
 
@@ -988,7 +988,7 @@ body{ background:var(--shell-blue); }
     max-width:none;
   }
 
-  .mapboxgl-ctrl-top-right{ top:9rem; right:.75rem; }
+  .mapboxgl-ctrl-top-right{ top:8.7rem; right:.75rem; }
 
   body.app-major-panel-open .app-ui__route-panel,
   body.app-major-panel-open .app-ui__gpx-upload{ display:none; }
