@@ -100,6 +100,7 @@ copy(path.join(ROOT, "main.jsx"),  path.join(OUT, "main.jsx"));
 copy(path.join(ROOT, "styles.css"),path.join(OUT, "styles.css"));
 copy(path.join(ROOT, "index.html"),path.join(OUT, "index.html"));
 copy(path.join(ROOT, 'sw-v14.js'), path.join(OUT, 'sw-v14.js'));
+copy(path.join(ROOT, 'sw-v15.js'), path.join(OUT, 'sw-v15.js'));
 copy(path.join(ROOT, "manifest.json"), path.join(OUT, "manifest.json"));
 
 console.log("✅ Build Completed in /vercel/output");
