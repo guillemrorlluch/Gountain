@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'https://esm.sh/react@19.2.0';
 import { userTo847Input } from '../engine/readiness/adapters/userTo847Input.js';
 import { merge847Input } from '../engine/readiness/adapters/merge847Input.js';
 import { readinessSourceTo847Input } from '../engine/readiness/adapters/readinessSourceTo847Input.js';

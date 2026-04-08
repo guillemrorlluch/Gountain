@@ -2,6 +2,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { execSync } from "child_process";
 
 // __dirname for ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -51,6 +52,19 @@ try {
   }
 } catch (e) {
   console.warn("Skip bundle:", e?.message);
+}
+
+// Bundle React UI entry so production does not rely on raw .jsx modules.
+try {
+  const distDir = path.join(ROOT, "dist");
+  ensureDir(distDir);
+  execSync(
+    "bun build main.jsx --outfile dist/react-ui.bundle.js --target browser --jsx-runtime classic",
+    { cwd: ROOT, stdio: "pipe" }
+  );
+  console.log("Bundled React UI to dist/react-ui.bundle.js");
+} catch (e) {
+  console.warn("Skip React UI bundle:", e?.message);
 }
 
 // ✅ Generate /dist/config.js exactly as app.js needs

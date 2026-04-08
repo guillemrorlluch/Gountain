@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'https://esm.sh/react@19.2.0';
 
 const HomeIcon = ({ filled }) => (
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
