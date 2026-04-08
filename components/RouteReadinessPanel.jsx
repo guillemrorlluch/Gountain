@@ -1,8 +1,13 @@
 import { useMemo } from 'react';
-import { routeTo847Input } from '../engine/readiness/adapters/routeTo847Input.js';
 import { userTo847Input } from '../engine/readiness/adapters/userTo847Input.js';
 import { merge847Input } from '../engine/readiness/adapters/merge847Input.js';
+import { readinessSourceTo847Input } from '../engine/readiness/adapters/readinessSourceTo847Input.js';
 import { calculateRouteReadiness847 } from '../engine/readiness/RouteReadinessModelProduction.js';
+import {
+  getRefinementCompletion,
+  toExpandedUserProfile
+} from '../engine/readiness/currentUserProfile.js';
+import ReadinessRefinementForm from './ReadinessRefinementForm.jsx';
 
 const PENALTY_LABELS = {
   fatigue_penalty: 'Fatigue load exceeds current recovery',
@@ -29,47 +34,50 @@ function formatFallbackLabel(key) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function labelForPenalty(key) {
-  return PENALTY_LABELS[key] || formatFallbackLabel(key);
-}
-
-function labelForHardStop(key) {
-  return HARD_STOP_LABELS[key] || formatFallbackLabel(key);
-}
-
 function summarize(result) {
   if (!result) return { sentence: 'Readiness unavailable.', gaps: [] };
   const sentence = result.hardStops.length
     ? 'Critical blockers detected. Do not proceed until hard stops are resolved.'
     : result.score >= 70
-      ? 'Readiness looks solid for current assumptions.'
+      ? 'Preliminary readiness looks solid for this route.'
       : result.score >= 50
-        ? 'Readiness is moderate and requires caution.'
-        : 'Readiness is currently low for this route profile.';
+        ? 'Preliminary readiness is moderate; refine assumptions below.'
+        : 'Preliminary readiness is low; refine assumptions before deciding.';
 
   const sortedPenalties = Object.entries(result.penalties)
     .sort((a, b) => b[1] - a[1])
     .filter(([, value]) => value > 0)
     .slice(0, 3)
-    .map(([name]) => labelForPenalty(name));
+    .map(([name]) => PENALTY_LABELS[name] || formatFallbackLabel(name));
 
   return { sentence, gaps: sortedPenalties };
 }
 
-export default function RouteReadinessPanel({ destination, userProfile }) {
+export default function RouteReadinessPanel({
+  destination,
+  userProfile,
+  onChangeUserProfile
+}) {
+  const expandedProfile = useMemo(
+    () => toExpandedUserProfile(userProfile || {}),
+    [userProfile]
+  );
+
   const readiness = useMemo(() => {
     if (!destination) return null;
-    const routeInput = routeTo847Input(destination);
-    const userInput = userTo847Input(userProfile || {});
+    const routeInput = readinessSourceTo847Input(destination);
+    const userInput = userTo847Input(expandedProfile);
     const merged = merge847Input(routeInput, userInput);
     return calculateRouteReadiness847(merged);
-  }, [destination, userProfile]);
+  }, [destination, expandedProfile]);
+
+  const completion = useMemo(() => getRefinementCompletion(userProfile), [userProfile]);
 
   if (!destination) {
     return (
       <section className="route-readiness" aria-live="polite">
         <h3>Route readiness</h3>
-        <p>Select a route to view readiness.</p>
+        <p>Select a route to start readiness from route demand.</p>
       </section>
     );
   }
@@ -99,6 +107,9 @@ export default function RouteReadinessPanel({ destination, userProfile }) {
       </div>
 
       <p className="route-readiness__summary">{summary.sentence}</p>
+      <p className="route-readiness__progressive-note">
+        Estimate starts from route demand and improves as you refine {completion.changed}/{completion.total} high-impact fields.
+      </p>
 
       <ul className="route-readiness__subscores">
         {topSubscores.map(([name, value]) => (
@@ -118,10 +129,18 @@ export default function RouteReadinessPanel({ destination, userProfile }) {
         <div className="route-readiness__hardstops">
           <strong>Hard stops:</strong>
           <ul>
-            {readiness.hardStops.map((stop) => <li key={stop}>{labelForHardStop(stop)}</li>)}
+            {readiness.hardStops.map((stop) => (
+              <li key={stop}>{HARD_STOP_LABELS[stop] || formatFallbackLabel(stop)}</li>
+            ))}
           </ul>
         </div>
       ) : null}
+
+      <ReadinessRefinementForm
+        profile={userProfile}
+        onChange={onChangeUserProfile}
+        completion={completion}
+      />
     </section>
   );
 }

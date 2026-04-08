@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import BottomNavigation from './components/BottomNavigation.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import RouteReadinessPanel from './components/RouteReadinessPanel.jsx';
-import UserReadinessProfileForm from './components/UserReadinessProfileForm.jsx';
 import {
   createUpdatedCurrentUserProfile,
   loadCurrentUserProfile,
@@ -95,16 +94,12 @@ export default function App({ destinations = [], onSelectDestination }) {
           showActionIcon
         />
       </div>
-      <div className="app-ui__readiness-stack">
-        <div className="app-ui__profile-panel">
-          <UserReadinessProfileForm
-            profile={userProfile}
-            onChange={handleProfileChange}
-          />
-        </div>
-        <div className="app-ui__route-panel">
-          <RouteReadinessPanel destination={selectedDestination} userProfile={userProfile} />
-        </div>
+      <div className="app-ui__route-panel">
+        <RouteReadinessPanel
+          destination={selectedDestination}
+          userProfile={userProfile}
+          onChangeUserProfile={handleProfileChange}
+        />
       </div>
       <BottomNavigation initialActiveId="search" />
     </div>
