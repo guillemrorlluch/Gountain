@@ -1535,33 +1535,41 @@ function RouteReadinessPanel({
     estimateQuality,
     routeContext: destination
   });
-  const topSubscores = Object.entries(readiness.subScores).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const topSubscores = Object.entries(readiness.subScores).sort((a, b) => b[1] - a[1]).slice(0, 2);
   return /* @__PURE__ */ React4.createElement("section", {
     className: "route-readiness",
     "aria-live": "polite"
   }, /* @__PURE__ */ React4.createElement("h3", null, "Selected route"), /* @__PURE__ */ React4.createElement("div", {
     className: "route-readiness__primary",
     "data-testid": "readiness-primary"
-  }, /* @__PURE__ */ React4.createElement("h4", null, "Readiness decision"), /* @__PURE__ */ React4.createElement("div", {
-    className: "route-readiness__metrics"
-  }, /* @__PURE__ */ React4.createElement("span", null, "Score: ", /* @__PURE__ */ React4.createElement("strong", null, readiness.score)), /* @__PURE__ */ React4.createElement("span", null, "Band: ", /* @__PURE__ */ React4.createElement("strong", null, readiness.band)), /* @__PURE__ */ React4.createElement("span", null, "Decision: ", /* @__PURE__ */ React4.createElement("strong", null, readiness.decision)), /* @__PURE__ */ React4.createElement("span", null, "State: ", /* @__PURE__ */ React4.createElement("strong", null, estimateQuality.state.label)), /* @__PURE__ */ React4.createElement("span", null, "Confidence: ", /* @__PURE__ */ React4.createElement("strong", null, confidencePresentation.displayedConfidence))), /* @__PURE__ */ React4.createElement("p", {
+  }, /* @__PURE__ */ React4.createElement("h4", null, formatValue(destination.name || destination.nombre)), /* @__PURE__ */ React4.createElement("div", {
+    className: "route-readiness__headline-metrics"
+  }, /* @__PURE__ */ React4.createElement("span", {
+    className: "route-readiness__metric route-readiness__metric--score"
+  }, "Score ", readiness.score), /* @__PURE__ */ React4.createElement("span", {
+    className: "route-readiness__metric"
+  }, "Decision ", readiness.decision), /* @__PURE__ */ React4.createElement("span", {
+    className: "route-readiness__metric"
+  }, "Confidence ", confidencePresentation.displayedConfidence)), /* @__PURE__ */ React4.createElement("p", {
     className: "route-readiness__summary"
   }, summary.sentence), /* @__PURE__ */ React4.createElement("p", {
     className: "route-readiness__quality-message"
-  }, estimateQuality.qualityMessage), /* @__PURE__ */ React4.createElement("p", {
-    className: "route-readiness__progressive-note"
-  }, "Estimate starts from route demand and improves as you refine ", completion.changed, "/", completion.total, " high-impact fields."), /* @__PURE__ */ React4.createElement("div", {
-    className: "route-readiness__source-mix"
-  }, /* @__PURE__ */ React4.createElement("span", null, "Route data ", estimateQuality.sourceMix.route, "%"), /* @__PURE__ */ React4.createElement("span", null, "User inputs ", estimateQuality.sourceMix.user, "%"), /* @__PURE__ */ React4.createElement("span", null, "Estimated/default ", estimateQuality.sourceMix.defaults, "%")), /* @__PURE__ */ React4.createElement("p", {
-    className: "route-readiness__confidence-note"
-  }, "Confidence uses data coverage guardrails (", confidencePresentation.rawConfidence, " raw): ", confidencePresentation.detail)), /* @__PURE__ */ React4.createElement("div", {
+  }, estimateQuality.qualityMessage)), /* @__PURE__ */ React4.createElement("div", {
+    className: "route-readiness__secondary-grid"
+  }, /* @__PURE__ */ React4.createElement("div", {
     className: "route-readiness__route-info",
     "data-testid": "route-info"
-  }, /* @__PURE__ */ React4.createElement("h4", null, formatValue(destination.name || destination.nombre)), /* @__PURE__ */ React4.createElement("dl", null, /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Continent"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.continente))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Type"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.tipo))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Altitude"), /* @__PURE__ */ React4.createElement("dd", null, destination.altitud_m ? `${destination.altitud_m} m` : "—")), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Difficulty"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.dificultad))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Months"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.meses))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Boots"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.botas))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Gear"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.equipo))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Logistics"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.logistica || destination.permisos || destination.guia))))), /* @__PURE__ */ React4.createElement("ul", {
+  }, /* @__PURE__ */ React4.createElement("h4", null, "Route facts"), /* @__PURE__ */ React4.createElement("dl", null, /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Continent"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.continente))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Type"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.tipo))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Altitude"), /* @__PURE__ */ React4.createElement("dd", null, destination.altitud_m ? `${destination.altitud_m} m` : "—")), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Difficulty"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.dificultad))), /* @__PURE__ */ React4.createElement("div", null, /* @__PURE__ */ React4.createElement("dt", null, "Season"), /* @__PURE__ */ React4.createElement("dd", null, formatValue(destination.meses))))), /* @__PURE__ */ React4.createElement("div", {
+    className: "route-readiness__compact-detail"
+  }, /* @__PURE__ */ React4.createElement("p", {
+    className: "route-readiness__progressive-note"
+  }, "Inputs refined: ", completion.changed, "/", completion.total, ". Data mix — Route ", estimateQuality.sourceMix.route, "% · User ", estimateQuality.sourceMix.user, "% · Estimated ", estimateQuality.sourceMix.defaults, "%."), /* @__PURE__ */ React4.createElement("p", {
+    className: "route-readiness__confidence-note"
+  }, "Confidence note: ", confidencePresentation.detail), topSubscores.length > 0 ? /* @__PURE__ */ React4.createElement("ul", {
     className: "route-readiness__subscores"
   }, topSubscores.map(([name, value]) => /* @__PURE__ */ React4.createElement("li", {
     key: name
-  }, formatFallbackLabel(name), ": ", Math.round(value)))), summary.gaps.length > 0 ? /* @__PURE__ */ React4.createElement("ul", {
+  }, formatFallbackLabel(name), ": ", Math.round(value)))) : null)), summary.gaps.length > 0 ? /* @__PURE__ */ React4.createElement("ul", {
     className: "route-readiness__gaps"
   }, summary.gaps.map((gap) => /* @__PURE__ */ React4.createElement("li", {
     key: gap
@@ -1569,7 +1577,7 @@ function RouteReadinessPanel({
     className: "route-readiness__gaps-empty"
   }, "No major limiting gaps detected."), /* @__PURE__ */ React4.createElement("div", {
     className: "route-readiness__explanation"
-  }, /* @__PURE__ */ React4.createElement("strong", null, "Why this score looks like this"), /* @__PURE__ */ React4.createElement("ul", null, /* @__PURE__ */ React4.createElement("li", null, explanation.routeDriven), /* @__PURE__ */ React4.createElement("li", null, explanation.technicalWhy), /* @__PURE__ */ React4.createElement("li", null, explanation.userGap), /* @__PURE__ */ React4.createElement("li", null, explanation.uncertainty))), readiness.hardStops.length > 0 ? /* @__PURE__ */ React4.createElement("div", {
+  }, /* @__PURE__ */ React4.createElement("strong", null, "Quick rationale"), /* @__PURE__ */ React4.createElement("ul", null, /* @__PURE__ */ React4.createElement("li", null, explanation.routeDriven), /* @__PURE__ */ React4.createElement("li", null, explanation.userGap))), readiness.hardStops.length > 0 ? /* @__PURE__ */ React4.createElement("div", {
     className: "route-readiness__hardstops"
   }, /* @__PURE__ */ React4.createElement("strong", null, "Hard stops:"), /* @__PURE__ */ React4.createElement("ul", null, readiness.hardStops.map((stop) => /* @__PURE__ */ React4.createElement("li", {
     key: stop

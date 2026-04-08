@@ -993,3 +993,82 @@ body{ background:var(--shell-blue); }
   body.app-major-panel-open .app-ui__route-panel,
   body.app-major-panel-open .app-ui__gpx-upload{ display:none; }
 }
+
+/* Stabilization pass: icon consistency + panel readability */
+.topbar__utility,
+.info-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  transition:transform .12s ease, box-shadow .2s ease, filter .2s ease;
+}
+.topbar__utility-icon{
+  width:2.15rem;
+  height:2.15rem;
+  display:block;
+}
+.topbar__utility:hover,
+.info-btn:hover{ filter:brightness(1.08); }
+.topbar__utility:active,
+.info-btn:active{ transform:scale(.97); }
+.topbar__utility:focus-visible,
+.info-btn:focus-visible{
+  outline:2px solid rgba(125,211,252,.95);
+  outline-offset:2px;
+  box-shadow:0 0 0 2px rgba(15,23,42,.45);
+}
+
+.popup--minimal h3{ margin:0; font-size:.95rem; }
+.popup--minimal .popup__hint{
+  margin:.35rem 0 0;
+  font-size:.78rem;
+  color:#475569;
+}
+
+.route-readiness{
+  border-radius:.95rem;
+  padding:.9rem;
+  font-size:.8rem;
+}
+.route-readiness__primary h4{
+  font-size:.95rem;
+  margin:0 0 .5rem;
+}
+.route-readiness__headline-metrics{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:.35rem;
+  margin-bottom:.55rem;
+}
+.route-readiness__metric{
+  border:1px solid rgba(125,211,252,.3);
+  background:rgba(30,41,59,.72);
+  border-radius:.6rem;
+  padding:.35rem .45rem;
+  font-size:.72rem;
+}
+.route-readiness__metric--score{
+  background:rgba(14,165,233,.25);
+  border-color:rgba(56,189,248,.65);
+  color:#e0f2fe;
+}
+.route-readiness__secondary-grid{
+  display:grid;
+  gap:.55rem;
+}
+.route-readiness__compact-detail{
+  border:1px solid rgba(148,163,184,.26);
+  border-radius:.6rem;
+  padding:.45rem .5rem;
+  background:rgba(15,23,42,.58);
+}
+.route-readiness__route-info h4{ font-size:.82rem; }
+.route-readiness__route-info dl div{ grid-template-columns:4.5rem 1fr; }
+.route-readiness__explanation ul li:nth-child(n+3){ display:none; }
+.route-readiness__subscores{ margin:.35rem 0 0; }
+.route-readiness__gaps{ margin:.45rem 0; }
+
+@media (max-width: 768px){
+  .route-readiness__headline-metrics{ grid-template-columns:1fr; }
+}

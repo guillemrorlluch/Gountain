@@ -334,35 +334,10 @@ function photosHtml(d){
 }
 
 function popupHtml(d){
-  const title = d.name || d.nombre || '';
-  const where = d.pais ? ` (${d.pais})` : '';
-  const q = encodeURIComponent(`${title}${where ? ' ' + d.pais : ''}`);
-  const gUrl = `https://www.google.com/search?q=${q}`;
-
-  const links = [
-    ['AllTrails', d.alltrails],
-    ['Wikiloc', d.wikiloc],
-    ['Wikipedia', d.wikipedia]
-  ].filter(([,u]) => u && String(u).trim());
-
-  const linksHtml = links.length
-    ? `<div class="links">${links.map(([L,U]) =>
-         `<a class="btn-link" href="${U}" target="_blank" rel="noopener">${L}</a>`
-       ).join('')}</div>`
-    : '';
-
-  return `<div class="popup">
-    <h3><a href="${gUrl}" target="_blank" rel="noopener">${title}${where}</a></h3>
-    <div class="grid">
-      ${field('Continente', d.continente)}
-      ${field('Tipo', d.tipo)}
-      ${field('Altitud', d.altitud_m ? `${d.altitud_m} m` : '')}
-      ${field('Dificultad', d.dificultad)}
-      ${field('Meses', d.meses)}
-    </div>
-    <p><strong>Decision panel:</strong> readiness score + full route detail is now shown in the selected-route panel.</p>
-    ${linksHtml}
-    ${photosHtml(d)}
+  const title = d.name || d.nombre || 'Route';
+  return `<div class="popup popup--minimal">
+    <h3>${title}</h3>
+    <p class="popup__hint">Use the selected-route panel for readiness score and route details.</p>
   </div>`;
 }
 
