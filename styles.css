@@ -840,6 +840,9 @@ button:focus-visible, a:focus-visible, select:focus-visible{
 ========================= */
 :root{
   --shell-blue:#32587d;
+  --topbar-height:4.5rem;
+  --app-ui-gap:clamp(.65rem, 1.4vw, 1rem);
+  --app-ui-side-padding:clamp(.75rem, 2vw, 1.25rem);
 }
 body{ background:var(--shell-blue); }
 
@@ -847,8 +850,8 @@ body{ background:var(--shell-blue); }
   background:#fff;
   border-bottom:1px solid #dbe3ee;
   color:#0f172a;
-  height:4.5rem;
-  padding:0 1rem;
+  height:var(--topbar-height);
+  padding:0 var(--app-ui-side-padding);
   gap:.9rem;
 }
 .topbar h1{
@@ -913,8 +916,8 @@ body{ background:var(--shell-blue); }
   display:grid;
   grid-template-rows:auto auto 1fr;
   align-content:start;
-  row-gap:.8rem;
-  padding:.75rem 1rem 0;
+  row-gap:var(--app-ui-gap);
+  padding:calc(var(--topbar-height) + var(--app-ui-gap)) var(--app-ui-side-padding) 0;
   pointer-events:none;
 }
 .app-ui__search{
@@ -931,7 +934,7 @@ body{ background:var(--shell-blue); }
   grid-template-columns:minmax(15rem, 26rem) minmax(18rem, 27rem);
   align-items:flex-start;
   justify-content:space-between;
-  gap:1rem;
+  gap:var(--app-ui-gap);
   pointer-events:none;
 }
 .app-ui__overlay-row > *{
@@ -968,7 +971,7 @@ body{ background:var(--shell-blue); }
   .app-ui__gpx-upload{ justify-self:start; }
   .app-ui__route-panel{
     justify-self:end;
-    width:min(26rem, calc(100vw - 2rem));
+    width:min(26rem, calc(100vw - (var(--app-ui-side-padding) * 2)));
     max-height:calc(100dvh - 20.25rem);
   }
 }
