@@ -922,13 +922,28 @@ body{ background:var(--shell-blue); }
 .search-bar{ width:100%; }
 .search-bar__field{ height:3rem; }
 
+.app-ui__overlay-row{
+  position:fixed;
+  left:1rem;
+  right:1rem;
+  top:9.15rem;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+  z-index:1050;
+  pointer-events:none;
+}
+.app-ui__overlay-row > *{
+  pointer-events:auto;
+}
+
 .layers-btn{ top:5.35rem; }
 .basemap-switcher{ top:8.45rem; }
 
 .app-ui__gpx-upload{
-  position:fixed;
-  left:1rem;
-  top:9.15rem;
+  position:static;
+  flex:0 1 26rem;
   width:auto;
   max-width:26rem;
   margin:0;
@@ -936,19 +951,21 @@ body{ background:var(--shell-blue); }
 }
 
 .app-ui__route-panel{
-  position:fixed;
-  right:1rem;
-  left:auto;
+  position:static;
+  margin-left:auto;
   transform:none;
-  top:15.75rem;
+  top:auto;
   bottom:auto;
   width:min(27rem, 34vw);
   max-height:calc(100dvh - 16.8rem);
 }
 
 @media (max-width: 1280px) and (min-width: 769px){
+  .app-ui__overlay-row{
+    flex-wrap:wrap;
+  }
   .app-ui__route-panel{
-    top:19.25rem;
+    margin-left:auto;
     width:min(26rem, calc(100vw - 2rem));
     max-height:calc(100dvh - 20.25rem);
   }
@@ -986,6 +1003,12 @@ body{ background:var(--shell-blue); }
   .basemap-switcher{ top:11.1rem; max-width:calc(100vw - 1.7rem); }
 
   .bottom-nav{ display:flex; }
+
+  .app-ui__overlay-row{
+    position:static;
+    display:block;
+    pointer-events:auto;
+  }
 
   .app-ui__route-panel{
     left:0;
