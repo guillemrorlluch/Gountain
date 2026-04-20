@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'https://esm.sh/react@19.2.0';
-import { createPortal } from 'https://esm.sh/react-dom@19.2.0';
 import BottomNavigation from './components/BottomNavigation.jsx';
 import SearchBar from './components/SearchBar.jsx';
 import RouteReadinessPanel from './components/RouteReadinessPanel.jsx';
@@ -177,55 +176,53 @@ export default function App({ destinations = [], onSelectDestination }) {
   };
 
   const shouldShowRoutePanel = !isMobile || mobileTab === 'explore';
-  const topbarSearchSlot = typeof document !== 'undefined'
-    ? document.getElementById('topbar-search-slot')
-    : null;
-  const searchBarNode = (
-    <div className="app-ui__search">
-      <SearchBar
-        destinations={sanitizedDestinations}
-        onSelect={handleSelect}
-        showActionIcon
-      />
-    </div>
-  );
 
   return (
     <div className="app-ui">
-      {!isMobile && topbarSearchSlot ? createPortal(searchBarNode, topbarSearchSlot) : searchBarNode}
-
-      <div className="app-ui__overlay-row">
-        <div className={`app-ui__gpx-upload ${isMobile && mobileTab !== 'saved' ? 'hidden' : ''}`} role="group" aria-label="Analyze GPX route">
-          <input
-            id="gpx-upload-input"
-            className="app-ui__gpx-input"
-            type="file"
-            ref={gpxInputRef}
-            accept=".gpx,application/gpx+xml,application/xml,text/xml"
-            onChange={handleGPXUpload}
-            aria-describedby="gpx-upload-help"
-          />
-          <button
-            type="button"
-            className="app-ui__gpx-trigger"
-            onClick={() => gpxInputRef.current?.click()}
-            aria-controls="gpx-upload-input"
-          >
-            Upload GPX
-          </button>
-          <span id="gpx-upload-help" className="app-ui__gpx-help">Upload or analyze a .gpx track file</span>
-          {gpxStatus ? (
-            <p className="app-ui__gpx-status" aria-live="polite">{gpxStatus}</p>
-          ) : null}
-          {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
+      <div className="app-ui__top-overlay">
+        <div className="app-ui__search-region">
+          <div className="app-ui__search">
+            <SearchBar
+              destinations={sanitizedDestinations}
+              onSelect={handleSelect}
+              showActionIcon
+            />
+          </div>
         </div>
 
-        <div className={`app-ui__route-panel ${shouldShowRoutePanel ? '' : 'hidden'}`}>
-          <RouteReadinessPanel
-            destination={selectedDestination}
-            userProfile={userProfile}
-            onChangeUserProfile={handleProfileChange}
-          />
+        <div className="app-ui__overlay-row">
+          <div className={`app-ui__gpx-upload ${isMobile && mobileTab !== 'saved' ? 'hidden' : ''}`} role="group" aria-label="Analyze GPX route">
+            <input
+              id="gpx-upload-input"
+              className="app-ui__gpx-input"
+              type="file"
+              ref={gpxInputRef}
+              accept=".gpx,application/gpx+xml,application/xml,text/xml"
+              onChange={handleGPXUpload}
+              aria-describedby="gpx-upload-help"
+            />
+            <button
+              type="button"
+              className="app-ui__gpx-trigger"
+              onClick={() => gpxInputRef.current?.click()}
+              aria-controls="gpx-upload-input"
+            >
+              Upload GPX
+            </button>
+            <span id="gpx-upload-help" className="app-ui__gpx-help">Upload or analyze a .gpx track file</span>
+            {gpxStatus ? (
+              <p className="app-ui__gpx-status" aria-live="polite">{gpxStatus}</p>
+            ) : null}
+            {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
+          </div>
+
+          <div className={`app-ui__route-panel ${shouldShowRoutePanel ? '' : 'hidden'}`}>
+            <RouteReadinessPanel
+              destination={selectedDestination}
+              userProfile={userProfile}
+              onChangeUserProfile={handleProfileChange}
+            />
+          </div>
         </div>
       </div>
 
