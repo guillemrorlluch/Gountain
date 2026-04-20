@@ -1085,3 +1085,75 @@ body{ background:var(--shell-blue); }
 @media (max-width: 768px){
   .route-readiness__headline-metrics{ grid-template-columns:1fr; }
 }
+
+/* =========================
+   FRICTION FIXES (OVERLAP)
+========================= */
+/* Keep floating UI from colliding with map controls in short desktop viewports. */
+@media (min-width: 769px) and (max-height: 900px){
+  .app-ui__gpx-upload{
+    top:8.65rem;
+  }
+
+  .app-ui__route-panel{
+    top:14.9rem;
+    max-height:calc(100dvh - 15.9rem);
+  }
+}
+
+/* Desktop and tablet: ensure route panel never clips under viewport bottom. */
+@media (min-width: 769px){
+  .app-ui__route-panel{
+    scrollbar-gutter:stable;
+    overscroll-behavior:contain;
+  }
+}
+
+/* Mobile: lock vertical stacking so search, layer controls, GPX card, and route panel don't overlap. */
+@media (max-width: 768px){
+  .app-ui-root{
+    z-index:1070;
+  }
+
+  .layers-btn{
+    top:7.35rem;
+  }
+
+  .basemap-switcher{
+    top:9.85rem;
+  }
+
+  .mapboxgl-ctrl-top-right{
+    top:7.3rem;
+  }
+
+  .app-ui__route-panel{
+    bottom:5.9rem;
+    max-height:48dvh;
+    z-index:1065;
+  }
+
+  .app-ui__gpx-upload{
+    bottom:calc(5.9rem + 48dvh + .7rem);
+    max-height:20dvh;
+    overflow:auto;
+    z-index:1060;
+  }
+}
+
+/* Extra-small phones: shrink spacing to avoid collisions with safe area and bottom nav. */
+@media (max-width: 420px){
+  .search-bar__field{
+    height:4.15rem;
+  }
+
+  .app-ui__route-panel{
+    bottom:5.55rem;
+    max-height:46dvh;
+  }
+
+  .app-ui__gpx-upload{
+    bottom:calc(5.55rem + 46dvh + .6rem);
+    padding:.5rem .6rem;
+  }
+}
