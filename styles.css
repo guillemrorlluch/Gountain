@@ -902,36 +902,36 @@ body{ background:var(--shell-blue); }
 
 .app-ui-root{
   position:fixed;
-  left:0;
-  right:0;
-  top:.75rem;
-  width:min(100vw - 2rem, 1400px);
-  margin:0 auto;
+  inset:0;
   z-index:1050;
   pointer-events:none;
 }
 .app-ui,
 .app-ui *{ pointer-events:auto; }
 .app-ui{
-  display:block;
+  height:100%;
+  display:grid;
+  grid-template-rows:auto auto 1fr;
+  align-content:start;
+  row-gap:.8rem;
+  padding:.75rem 1rem 0;
+  pointer-events:none;
 }
 .app-ui__search{
-  margin:0 auto;
+  justify-self:center;
   width:min(62vw, 56rem);
+  pointer-events:auto;
 }
 .search-bar{ width:100%; }
 .search-bar__field{ height:3rem; }
 
 .app-ui__overlay-row{
-  position:fixed;
-  left:1rem;
-  right:1rem;
-  top:9.15rem;
-  display:flex;
+  position:static;
+  display:grid;
+  grid-template-columns:minmax(15rem, 26rem) minmax(18rem, 27rem);
   align-items:flex-start;
   justify-content:space-between;
   gap:1rem;
-  z-index:1050;
   pointer-events:none;
 }
 .app-ui__overlay-row > *{
@@ -943,16 +943,17 @@ body{ background:var(--shell-blue); }
 
 .app-ui__gpx-upload{
   position:static;
-  flex:0 1 26rem;
+  justify-self:start;
   width:auto;
   max-width:26rem;
   margin:0;
   background:#1e2a3dd9;
+  z-index:1051;
 }
 
 .app-ui__route-panel{
   position:static;
-  margin-left:auto;
+  justify-self:end;
   transform:none;
   top:auto;
   bottom:auto;
@@ -962,10 +963,11 @@ body{ background:var(--shell-blue); }
 
 @media (max-width: 1280px) and (min-width: 769px){
   .app-ui__overlay-row{
-    flex-wrap:wrap;
+    grid-template-columns:1fr;
   }
+  .app-ui__gpx-upload{ justify-self:start; }
   .app-ui__route-panel{
-    margin-left:auto;
+    justify-self:end;
     width:min(26rem, calc(100vw - 2rem));
     max-height:calc(100dvh - 20.25rem);
   }
@@ -992,9 +994,11 @@ body{ background:var(--shell-blue); }
   .topbar__utility-group{ margin-left:auto; }
   #layout{ margin-top:0; height:100dvh; }
   .app-ui-root{
-    top:.9rem;
-    width:100%;
-    padding:0 .85rem;
+    inset:0;
+  }
+  .app-ui{
+    row-gap:.7rem;
+    padding:.9rem .85rem 0;
   }
   .app-ui__search{ width:100%; }
   .search-bar__field{ height:4.6rem; border-radius:2rem; }
