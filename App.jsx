@@ -179,45 +179,51 @@ export default function App({ destinations = [], onSelectDestination }) {
 
   return (
     <div className="app-ui">
-      <div className="app-ui__search">
-        <SearchBar
-          destinations={sanitizedDestinations}
-          onSelect={handleSelect}
-          showActionIcon
-        />
-      </div>
+      <div className="app-ui__top-overlay">
+        <div className="app-ui__search-region">
+          <div className="app-ui__search">
+            <SearchBar
+              destinations={sanitizedDestinations}
+              onSelect={handleSelect}
+              showActionIcon
+            />
+          </div>
+        </div>
 
-      <div className={`app-ui__route-panel ${shouldShowRoutePanel ? '' : 'hidden'}`}>
-        <RouteReadinessPanel
-          destination={selectedDestination}
-          userProfile={userProfile}
-          onChangeUserProfile={handleProfileChange}
-        />
-      </div>
+        <div className="app-ui__overlay-row">
+          <div className={`app-ui__gpx-upload ${isMobile && mobileTab !== 'saved' ? 'hidden' : ''}`} role="group" aria-label="Analyze GPX route">
+            <input
+              id="gpx-upload-input"
+              className="app-ui__gpx-input"
+              type="file"
+              ref={gpxInputRef}
+              accept=".gpx,application/gpx+xml,application/xml,text/xml"
+              onChange={handleGPXUpload}
+              aria-describedby="gpx-upload-help"
+            />
+            <button
+              type="button"
+              className="app-ui__gpx-trigger"
+              onClick={() => gpxInputRef.current?.click()}
+              aria-controls="gpx-upload-input"
+            >
+              Upload GPX
+            </button>
+            <span id="gpx-upload-help" className="app-ui__gpx-help">Upload or analyze a .gpx track file</span>
+            {gpxStatus ? (
+              <p className="app-ui__gpx-status" aria-live="polite">{gpxStatus}</p>
+            ) : null}
+            {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
+          </div>
 
-      <div className={`app-ui__gpx-upload ${isMobile && mobileTab !== 'saved' ? 'hidden' : ''}`} role="group" aria-label="Analyze GPX route">
-        <input
-          id="gpx-upload-input"
-          className="app-ui__gpx-input"
-          type="file"
-          ref={gpxInputRef}
-          accept=".gpx,application/gpx+xml,application/xml,text/xml"
-          onChange={handleGPXUpload}
-          aria-describedby="gpx-upload-help"
-        />
-        <button
-          type="button"
-          className="app-ui__gpx-trigger"
-          onClick={() => gpxInputRef.current?.click()}
-          aria-controls="gpx-upload-input"
-        >
-          Upload GPX
-        </button>
-        <span id="gpx-upload-help" className="app-ui__gpx-help">Upload or analyze a .gpx track file</span>
-        {gpxStatus ? (
-          <p className="app-ui__gpx-status" aria-live="polite">{gpxStatus}</p>
-        ) : null}
-        {gpxError ? <p className="app-ui__gpx-error">{gpxError}</p> : null}
+          <div className={`app-ui__route-panel ${shouldShowRoutePanel ? '' : 'hidden'}`}>
+            <RouteReadinessPanel
+              destination={selectedDestination}
+              userProfile={userProfile}
+              onChangeUserProfile={handleProfileChange}
+            />
+          </div>
+        </div>
       </div>
 
       <BottomNavigation
