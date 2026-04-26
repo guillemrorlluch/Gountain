@@ -163,20 +163,24 @@ const $ = s => document.querySelector(s);
 const byId = s => document.getElementById(s);
 const isVisible = el => el && getComputedStyle(el).display !== 'none' && !el.classList.contains('hidden');
 
-const isMobile = () => matchMedia('(max-width: 640px)').matches;
+const MOBILE_BREAKPOINT_PX = 768;
+const isMobile = () => matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX}px)`).matches;
 const getMarkerGap = () => isMobile() ? 24 : 16;
 
 function getSafeAreas() {
-  const topbar   = $('.topbar');
-  const sidebar  = byId('sidebar');
+  const topbar = $('.topbar');
+  const sidebar = byId('sidebar');
   const glossary = byId('glossary');
   const routePanel = $('.app-ui__route-panel');
-  const chipbar  = $('.chip-bar') || byId('dest-chips');
+  const topOverlay = $('.app-ui__top-overlay');
+  const chipbar = $('.chip-bar') || byId('dest-chips');
 
   const mobile = isMobile();
   const base = mobile ? 28 : 16;
 
-  const top    = (topbar?.offsetHeight || 0) + base;
+  const topbarHeight = topbar?.offsetHeight || 0;
+  const overlayBottom = Math.ceil(topOverlay?.getBoundingClientRect().bottom || 0);
+  const top = Math.max(topbarHeight + base, overlayBottom + (mobile ? 6 : 8));
   const left   = (isVisible(sidebar)  ? sidebar.offsetWidth  : 0) + base;
   const glossaryRight = (isVisible(glossary) ? glossary.offsetWidth : 0) + base;
   const routePanelRight = (!mobile && isVisible(routePanel))
