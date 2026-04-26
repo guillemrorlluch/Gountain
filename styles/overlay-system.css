@@ -33,6 +33,9 @@
   pointer-events: none;
 }
 
+.app-ui,
+.app-ui * { pointer-events: auto; }
+
 .app-ui {
   height: 100%;
   display: grid;

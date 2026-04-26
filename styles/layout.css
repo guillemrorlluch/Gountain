@@ -17,6 +17,19 @@
   min-width:max-content;
   font-size:1.95rem;
 }
+.hamburger .bars,
+.hamburger .bars::before,
+.hamburger .bars::after{
+  content:"";
+  display:block;
+  width:1.125rem;
+  height:.125rem;
+  background:currentColor;
+  position:relative;
+  border-radius:.125rem;
+}
+.hamburger .bars::before{ position:absolute; top:-.375rem; }
+.hamburger .bars::after{ position:absolute; top:.375rem; }
 .topbar__logo-svg{ width:3.5rem; height:2.05rem; display:block; }
 .topbar__title{ font-size:2.3rem; font-weight:700; letter-spacing:.01em; }
 .topbar__spacer{ flex:1; }
