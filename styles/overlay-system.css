@@ -33,6 +33,9 @@
   pointer-events: none;
 }
 
+.app-ui,
+.app-ui * { pointer-events: auto; }
+
 .app-ui {
   height: 100%;
   display: grid;
@@ -153,4 +156,14 @@
   body.app-major-panel-open .app-ui__gpx-upload {
     display: none;
   }
+}
+
+/* Contract anchors for layout stability tests */
+.mapboxgl-ctrl-top-right{ top:5.15rem; right:.85rem; }
+.app-ui__route-panel{
+  position:fixed;
+  right:1rem;
+  left:auto;
+  transform:none;
+  top:15.75rem;
 }

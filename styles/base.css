@@ -1,0 +1,38 @@
+:root{
+  --navbar-height:3.5rem;
+  --bg:#017C9B;
+  --panel:#00BDF1;
+  --text:#f8fafc;
+  --muted:#ffffff;
+  --accent:#22c55e;
+  --focus:#3b82f6;
+  --border:#017C9B;
+  --chip:#94a3b81f;
+  --chip-border:#64748b;
+  --danger:#b91c1c;
+  --shell-blue:#32587d;
+  --topbar-height:4.5rem;
+}
+*{ box-sizing:border-box; }
+html, body{ height:100%; margin:0; }
+body{
+  background:var(--shell-blue);
+  color:var(--text);
+  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+#static-intro{ display:none; padding:.5rem .625rem; }
+#glossary #static-intro,
+.no-js #static-intro{ display:block; }
+.no-js #layout{ display:none; }
+#layout{ display:none; }
+html:not(.no-js) #layout{ display:flex; }
+
+.mapboxgl-ctrl button:focus-visible,
+button:focus-visible, a:focus-visible, select:focus-visible{
+  outline:.125rem solid #7aa2ff; outline-offset:.125rem;
+}
+
+.hidden{ display:none !important; }
