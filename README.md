@@ -42,6 +42,11 @@ The goal is to reduce miscalibrated decisions in the mountains and provide a cle
 
 ---
 
+
+## Developer docs
+
+- UI layout and overlay architecture: `docs/UI_LAYOUT.md`
+
 ## Status
 
 In active development.

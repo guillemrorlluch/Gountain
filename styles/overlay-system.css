@@ -1,0 +1,156 @@
+/* ==========================================
+   Gountain overlay architecture (single-source)
+   Loaded after styles.css to override legacy collisions.
+========================================== */
+:root {
+  --z-map-base: 0;
+  --z-map-markers: 10;
+  --z-map-controls: 20;
+  --z-floating-card: 30;
+  --z-floating-dropdown: 40;
+  --z-modal: 50;
+
+  --overlay-shell-max-width: 1400px;
+  --overlay-shell-padding-x: clamp(.75rem, 2vw, 1.25rem);
+  --overlay-shell-gap: clamp(.65rem, 1.4vw, 1rem);
+
+  --topbar-h: 4.5rem;
+  --bottom-nav-h: 4.8rem;
+  --search-region-h: 3.2rem;
+  --map-controls-top: calc(var(--topbar-h) + var(--search-region-h) + 1.4rem);
+}
+
+#map-container { z-index: var(--z-map-base); }
+.destination-chips { z-index: var(--z-map-markers); }
+.mapboxgl-ctrl-top-right,
+.layers-btn,
+.basemap-switcher { z-index: var(--z-map-controls); }
+
+.app-ui-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-floating-card);
+  pointer-events: none;
+}
+
+.app-ui {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  align-content: start;
+  gap: var(--overlay-shell-gap);
+  padding: calc(var(--topbar-h) + .6rem) var(--overlay-shell-padding-x) 0;
+}
+
+.app-ui__top-overlay {
+  width: min(100%, var(--overlay-shell-max-width));
+  margin-inline: auto;
+  display: grid;
+  gap: var(--overlay-shell-gap);
+}
+
+.app-ui__search-region {
+  display: flex;
+  justify-content: center;
+}
+
+.app-ui__search {
+  width: min(62vw, 56rem);
+  min-width: min(24rem, 100%);
+}
+
+.app-ui__overlay-row {
+  display: grid;
+  grid-template-columns: minmax(16rem, 26rem) minmax(18rem, 27rem);
+  justify-content: space-between;
+  align-items: start;
+  gap: var(--overlay-shell-gap);
+  pointer-events: none;
+}
+
+.app-ui__overlay-row > * { pointer-events: auto; }
+
+.app-ui__gpx-upload,
+.app-ui__route-panel {
+  position: static;
+  margin: 0;
+  transform: none;
+}
+
+.app-ui__gpx-upload {
+  max-width: 26rem;
+  background: rgba(30, 42, 61, .86);
+  border: 1px solid rgba(203, 213, 225, .35);
+  z-index: var(--z-floating-card);
+}
+
+.app-ui__route-panel {
+  justify-self: end;
+  width: min(27rem, 34vw);
+  max-height: calc(100dvh - 16.5rem);
+  overflow: auto;
+  z-index: var(--z-floating-card);
+}
+
+.search-bar__results { z-index: var(--z-floating-dropdown); }
+
+.layers-btn { top: var(--map-controls-top); }
+.basemap-switcher { top: calc(var(--map-controls-top) + 2.7rem); }
+.mapboxgl-ctrl-top-right { top: var(--map-controls-top); }
+
+@media (max-width: 1280px) and (min-width: 769px) {
+  .app-ui__overlay-row { grid-template-columns: 1fr; }
+  .app-ui__route-panel {
+    width: min(26rem, calc(100vw - (var(--overlay-shell-padding-x) * 2)));
+    max-height: calc(100dvh - 20rem);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --topbar-h: 5.4rem;
+    --search-region-h: 4.6rem;
+    --map-controls-top: 7.45rem;
+  }
+
+  .bottom-nav { display: flex; z-index: var(--z-floating-card); }
+
+  .app-ui {
+    padding: .85rem .85rem 0;
+  }
+
+  .app-ui__search {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-ui__overlay-row {
+    display: flex;
+    flex-direction: column;
+    gap: .65rem;
+    margin-top: .2rem;
+  }
+
+  .app-ui__gpx-upload {
+    order: 1;
+    max-width: none;
+    width: 100%;
+  }
+
+  .app-ui__route-panel {
+    order: 2;
+    width: 100%;
+    max-height: 42dvh;
+    padding: 0;
+    margin-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+  }
+
+  .route-readiness { border-radius: .95rem; }
+
+  .basemap-switcher { max-width: calc(100vw - 1.7rem); }
+
+  body.app-major-panel-open .app-ui__route-panel,
+  body.app-major-panel-open .app-ui__gpx-upload {
+    display: none;
+  }
+}
